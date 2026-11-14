@@ -1,0 +1,7 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+SecurityEvent
+| where TimeGenerated >= ago(14d) and EventID == 4769
+| where TicketOptions has "0x40810000"
+| summarize Services=dcount(ServiceName), Requests=count(), ServiceSet=make_set(ServiceName, 25) by TargetUserName, IpAddress, bin(TimeGenerated, 15m)
+| where Services >= 3 or Requests >= 10

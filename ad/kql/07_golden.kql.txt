@@ -1,0 +1,8 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+let tgt = SecurityEvent | where TimeGenerated >= ago(7d) and EventID == 4768 | project TargetUserName, TgtTime=TimeGenerated;
+SecurityEvent
+| where TimeGenerated >= ago(7d) and EventID == 4769
+| join kind=leftanti (tgt) on TargetUserName
+| summarize Services=make_set(ServiceName, 30), Tickets=count() by TargetUserName, IpAddress, Computer, bin(TimeGenerated, 1h)
+| where Tickets >= 3

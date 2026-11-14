@@ -1,0 +1,8 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+let tgs = SecurityEvent | where TimeGenerated >= ago(7d) and EventID == 4769 | project TargetUserName, ServiceName, TgsTime=TimeGenerated;
+SecurityEvent
+| where TimeGenerated >= ago(7d) and EventID == 4624 and AuthenticationPackageName =~ "Kerberos"
+| join kind=leftanti (tgs) on TargetUserName
+| summarize Logons=count() by TargetUserName, Computer, IpAddress, bin(TimeGenerated, 1h)
+| where Logons >= 3

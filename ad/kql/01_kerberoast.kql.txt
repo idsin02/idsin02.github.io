@@ -1,0 +1,10 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+let lookback = 14d;
+SecurityEvent
+| where TimeGenerated >= ago(lookback) and EventID == 4769
+| extend EncType = tostring(column_ifexists("TicketEncryptionType", ""))
+| where EncType == "0x17"
+| summarize Tickets=count(), DistinctSPNs=dcount(ServiceName), SPNs=make_set(ServiceName, 25) by TargetUserName, IpAddress, Computer, bin(TimeGenerated, 15m)
+| where Tickets >= 5 or DistinctSPNs >= 5
+| order by Tickets desc

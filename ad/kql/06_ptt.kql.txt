@@ -1,0 +1,6 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+DeviceProcessEvents
+| where Timestamp >= ago(14d)
+| where ProcessCommandLine has_any ("kerberos::ptt", "ptt /ticket", ".kirbi", "Rubeus.exe ptt")
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine, InitiatingProcessFileName

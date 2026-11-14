@@ -1,0 +1,7 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+IdentityDirectoryEvents
+| where Timestamp >= ago(30d)
+| where ActionType in ("Directory Object Modified", "Account UAC changed")
+| where AdditionalFields has_any ("TRUSTED_FOR_DELEGATION", "unconstrained")
+| project Timestamp, TargetDeviceName, AccountName, ActionType, AdditionalFields

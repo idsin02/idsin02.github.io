@@ -1,0 +1,6 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+SecurityEvent
+| where TimeGenerated >= ago(30d) and EventID in (5136, 5145)
+| where EventData has_any ("groupPolicyContainer", "gPCFileSysPath", "Machine\Scripts", "Registry.pol")
+| project TimeGenerated, Computer, SubjectUserName, EventID, ObjectDN, EventData

@@ -1,0 +1,7 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+SecurityEvent
+| where TimeGenerated >= ago(30d)  
+| where EventID == 5136
+| where EventData has "CN=AdminSDHolder" or AttributeLDAPDisplayName =~ "nTSecurityDescriptor"
+| project TimeGenerated, Computer, SubjectUserName, ObjectDN, AttributeLDAPDisplayName, AttributeValue

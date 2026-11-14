@@ -1,0 +1,6 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+SecurityEvent
+| where TimeGenerated >= ago(30d)
+| where (EventID == 5136 and EventData has "msDS-AllowedToActOnBehalfOfOtherIdentity") or EventID == 4741
+| project TimeGenerated, Computer, SubjectUserName, TargetUserName, EventID, EventData

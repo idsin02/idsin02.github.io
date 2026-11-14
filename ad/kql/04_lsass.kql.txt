@@ -1,0 +1,6 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+DeviceProcessEvents
+| where Timestamp >= ago(7d)
+| where ProcessCommandLine has_any ("comsvcs.dll", "MiniDump", "-ma lsass", "sekurlsa")
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine, InitiatingProcessFileName, SHA256

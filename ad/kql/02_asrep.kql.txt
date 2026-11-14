@@ -1,0 +1,8 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+SecurityEvent
+| where TimeGenerated >= ago(14d) and EventID == 4768
+| extend PreAuth = tostring(column_ifexists("PreAuthType", ""))
+| where PreAuth in ("0", "-")
+| summarize Requests=count(), Sources=make_set(IpAddress, 20) by TargetUserName, Computer, bin(TimeGenerated, 30m)
+| where Requests >= 3

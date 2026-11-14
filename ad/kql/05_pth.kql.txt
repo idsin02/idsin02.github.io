@@ -1,0 +1,7 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+DeviceLogonEvents
+| where Timestamp >= ago(7d) and Protocol =~ "NTLM"
+| where LogonType in ("Network", "NewCredentials")
+| summarize Destinations=dcount(DeviceName), Hosts=make_set(DeviceName, 25), Attempts=count() by AccountName, RemoteIP, bin(Timestamp, 30m)
+| where Destinations >= 4 or Attempts >= 8

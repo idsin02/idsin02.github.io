@@ -1,0 +1,7 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+SecurityEvent
+| where TimeGenerated >= ago(30d) 
+| where EventID in (5136, 4662)
+| where EventData has_any ("GenericAll", "WriteDACL", "WriteOwner", "ForceChangePassword", "nTSecurityDescriptor")
+| project TimeGenerated, Computer, SubjectUserName, ObjectDN, EventData

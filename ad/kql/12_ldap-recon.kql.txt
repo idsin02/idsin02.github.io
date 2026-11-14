@@ -1,0 +1,6 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+union isfuzzy=true
+(DeviceProcessEvents | where ProcessCommandLine has_any ("SharpHound", "Invoke-BloodHound", "CollectionMethod", "AzureHound")),
+(IdentityQueryEvents | summarize Queries=count(), Entities=dcount(QueryTarget) by AccountName, DeviceName, bin(Timestamp, 10m) | where Queries >= 100)
+| project Timestamp, DeviceName, AccountName, ActionType, ProcessCommandLine

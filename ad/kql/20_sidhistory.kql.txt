@@ -1,0 +1,6 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+SecurityEvent
+| where TimeGenerated >= ago(30d)
+| where EventID in (4765, 4766) or (EventID == 5136 and EventData has "sIDHistory")
+| project TimeGenerated, Computer, SubjectUserName, TargetUserName, EventID, EventData

@@ -1,0 +1,7 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+DeviceProcessEvents
+| where Timestamp >= ago(14d)
+| where FileName in~ ("ntdsutil.exe", "vssadmin.exe", "diskshadow.exe", "esentutl.exe")
+| where ProcessCommandLine has_any ("ifm", "create shadow", "ntds.dit", "\Windows\NTDS")
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine, InitiatingProcessFileName, SHA256

@@ -1,0 +1,8 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+SecurityEvent
+| where TimeGenerated >= ago(30d) and EventID == 4741
+| where SubjectUserName !in~ ("svc-domainjoin", "svc-provisioning")
+| summarize Machines=make_set(TargetUserName, 25), Created=count() by SubjectUserName, Computer, bin(TimeGenerated, 1h)
+| where Created >= 1
+

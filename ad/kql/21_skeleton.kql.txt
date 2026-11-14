@@ -1,0 +1,7 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+union isfuzzy=true
+(DeviceProcessEvents 
+| where DeviceName startswith "DC-" and ProcessCommandLine has_any ("misc::skeleton", "skeleton key")),
+(DeviceImageLoadEvents | where InitiatingProcessFileName =~ "lsass.exe" and not(SignatureStatus =~ "Signed"))
+| project Timestamp, DeviceName, AccountName, FileName, FolderPath, SHA256, ProcessCommandLine

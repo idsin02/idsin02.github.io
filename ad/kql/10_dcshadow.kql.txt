@@ -1,0 +1,6 @@
+// Sanitized synthetic Active Directory hunt
+// No client, tenant, or production identifiers.
+SecurityEvent
+| where TimeGenerated >= ago(14d) and EventID in (5137, 5141, 4742)
+| where EventData has_any ("nTDSDSA", "GC/", "E3514235-4B06-11D1-AB04-00C04FC2DCD2")
+| project TimeGenerated, Computer, SubjectUserName, EventID, EventData
