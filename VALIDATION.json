@@ -1,0 +1,110 @@
+{
+  "project": "DHRUxMAN Final Portfolio + Advanced Detection Engineering Labs",
+  "generated_at": "2026-11-13T16:52:33Z",
+  "counts": {
+    "total": 66,
+    "labs": {
+      "php2shell": 42,
+      "active-directory": 24
+    },
+    "languages": {
+      "KQL": 37,
+      "CQL": 12,
+      "Sigma": 10,
+      "YARA": 7
+    }
+  },
+  "checks": {
+    "javascript_syntax": "passed",
+    "html_structure_and_local_refs": "passed",
+    "exact_supplied_prefix": "passed",
+    "all_detection_execution": "passed",
+    "ad_incident_and_clean_baseline": "passed",
+    "four_language_engine_self_test": "passed",
+    "attack_metadata_all_detections": "passed",
+    "process_tree_relationships": "passed",
+    "timeline_chronology": "passed",
+    "ioc_event_links": "passed",
+    "tuning_same_ground_truth_corpus": "passed",
+    "private_ad_reference_scan": "passed",
+    "responsive_css": "media queries present; browser automation not run because no executable is installed"
+  },
+  "tuning": {
+    "encps": {
+      "original": {
+        "total": 8,
+        "tp": 3,
+        "fp": 3,
+        "fn": 1,
+        "tn": 1,
+        "precision": 0.5,
+        "recall": 0.75,
+        "fpr": 0.75,
+        "detections": 6
+      },
+      "tuned": {
+        "total": 8,
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "tn": 4,
+        "precision": 1,
+        "recall": 0.75,
+        "fpr": 0,
+        "detections": 3
+      },
+      "sameTotal": true
+    },
+    "lsass": {
+      "original": {
+        "total": 5,
+        "tp": 2,
+        "fp": 1,
+        "fn": 0,
+        "tn": 2,
+        "precision": 0.667,
+        "recall": 1,
+        "fpr": 0.333,
+        "detections": 3
+      },
+      "tuned": {
+        "total": 5,
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3,
+        "precision": 1,
+        "recall": 1,
+        "fpr": 0,
+        "detections": 2
+      },
+      "sameTotal": true
+    },
+    "ad-kerberoast": {
+      "original": {
+        "total": 5,
+        "tp": 2,
+        "fp": 2,
+        "fn": 0,
+        "tn": 1,
+        "precision": 0.5,
+        "recall": 1,
+        "fpr": 0.667,
+        "detections": 4
+      },
+      "tuned": {
+        "total": 5,
+        "tp": 2,
+        "fp": 1,
+        "fn": 0,
+        "tn": 2,
+        "precision": 0.667,
+        "recall": 1,
+        "fpr": 0.333,
+        "detections": 3
+      },
+      "sameTotal": true
+    }
+  },
+  "browser_automation": "not_run: no browser executable installed; DOM, syntax, engine, data integrity, and reference tests passed."
+}

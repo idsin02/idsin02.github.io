@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dhruv Singh (DHRUxMAN) — Threat Hunter & Detection Engineer</title>
+<meta name="description" content="Threat hunting, detection engineering (KQL, CQL, Sigma, YARA), adversary emulation and DFIR by Dhruv Singh (DHRUxMAN), Pune.">
+<meta name="author" content="Dhruv Singh">
+<meta property="og:type" content="website">
+<meta property="og:title" content="DHRUxMAN — Threat Hunter · Detection Engineering · DFIR">
+<meta property="og:description" content="I turn adversary behavior into defensible signal. Research → Detection → Validation.">
+<meta property="og:image" content="{{OG_IMAGE_URL}}">
+<meta property="og:url" content="{{SITE_URL}}">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="{{FAVICON_URL}}">
+<style>
+:root{
+  --bg:#07090c; --bg2:#0d1117; --panel:#111821; --line:#1f2a36;
+  --text:#d7e0ea; --muted:#8a99a8; --accent:#39ff88; --accent2:#22d3ee;
+  --crit:#ff4d6d; --high:#ff9f43; --med:#ffd166; --low:#4cc9f0;
+  --mono:"JetBrains Mono","Fira Code",Consolas,"Courier New",monospace;
+  --sans:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+  --radius:10px; --max:1180px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.65;font-size:16px;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--accent2);outline-offset:3px}
+[hidden]{display:none!important}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 20px}
+.mono{font-family:var(--mono)}
+.skip{position:absolute;left:-999px;top:8px;background:var(--accent);color:#000;padding:8px 12px;z-index:200;border-radius:6px}
+.skip:focus{left:8px}
+/* NAV */
+header{position:sticky;top:0;z-index:100;background:rgba(7,9,12,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{font-family:var(--mono);font-weight:700;color:var(--accent);font-size:15px}
+.brand span{color:var(--muted)}
+.nav ul{display:flex;gap:20px;list-style:none;align-items:center}
+.nav ul a{color:var(--muted);font-family:var(--mono);font-size:13px}
+.nav ul a:hover{color:var(--accent);text-decoration:none}
+.nav .oss{border:1px solid var(--accent);color:var(--accent)!important;padding:5px 10px;border-radius:6px}
+.menu-btn{display:none;background:none;border:1px solid var(--line);color:var(--text);font-family:var(--mono);padding:6px 10px;border-radius:6px;cursor:pointer}
+/* HERO */
+.hero{padding:80px 0 60px;display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
+.status{font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid var(--line);display:inline-flex;gap:8px;align-items:center;padding:6px 12px;border-radius:999px;margin-bottom:24px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.35}}
+h1{font-size:clamp(34px,5vw,56px);line-height:1.1;margin-bottom:20px}
+h1 em{font-style:normal;color:var(--accent)}
+.lead{color:var(--muted);font-size:18px;max-width:600px;margin-bottom:28px}
+.lead strong{color:var(--text)}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:36px}
+.btn{font-family:var(--mono);font-size:14px;padding:11px 18px;border-radius:8px;border:1px solid var(--line);color:var(--text);background:var(--panel);cursor:pointer;display:inline-block}
+.btn:hover{border-color:var(--accent);text-decoration:none}
+.btn.primary{background:var(--accent);color:#04120a;border-color:var(--accent);font-weight:700}
+.stats{display:flex;gap:32px;flex-wrap:wrap}
+.stats div{font-size:13px;color:var(--muted)}
+.stats strong{display:block;font-family:var(--mono);font-size:28px;color:var(--text)}
+/* CONSOLE */
+.console{background:#05070a;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;font-family:var(--mono);font-size:13px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.console-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--line);color:var(--muted);font-size:12px}
+.console-bar i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:#333}
+.console pre{padding:18px;white-space:pre-wrap;word-break:break-word;line-height:1.7}
+.c-p{color:var(--accent)} .c-m{color:var(--muted)} .c-ok{color:var(--accent2)} .c-w{color:var(--high)}
+.cursor{animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+/* SECTIONS */
+section{padding:80px 0;border-top:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:13px;color:var(--accent);margin-bottom:10px;text-transform:lowercase}
+h2{font-size:clamp(26px,3.5vw,38px);line-height:1.2;margin-bottom:14px}
+.sub{color:var(--muted);max-width:720px;margin-bottom:40px}
+.grid{display:grid;gap:20px}
+.g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;transition:border-color .2s,transform .2s}
+.card:hover{border-color:#2d4a3a;transform:translateY(-2px)}
+.card h3{font-size:18px;margin-bottom:8px}
+.card p{color:var(--muted);font-size:15px}
+.tag{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.chip{font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--line);border-radius:4px;color:var(--text);background:var(--bg2)}
+.link-arrow{display:inline-block;margin-top:16px;font-family:var(--mono);font-size:13px}
+/* ABOUT */
+.about{display:grid;grid-template-columns:1.3fr 1fr;gap:40px}
+.about p{color:var(--muted);margin-bottom:16px}
+.about p strong{color:var(--text)}
+.principles{display:grid;gap:14px}
+/* FILTERS */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.filter{font-family:var(--mono);font-size:12px;padding:6px 12px;border:1px solid var(--line);background:var(--bg2);color:var(--muted);border-radius:6px;cursor:pointer}
+.filter[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+.empty{font-family:var(--mono);color:var(--muted);padding:20px;border:1px dashed var(--line);border-radius:var(--radius);text-align:center}
+/* RESEARCH */
+.meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:10px}
+/* DETECTIONS */
+.pipeline{font-family:var(--mono);font-size:12px;color:var(--accent2);background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:24px;overflow-x:auto;white-space:nowrap}
+.det-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start}
+.sev{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:4px;white-space:nowrap}
+.sev.crit{background:rgba(255,77,109,.12);color:var(--crit);border:1px solid rgba(255,77,109,.4)}
+.sev.kev{background:rgba(255,159,67,.12);color:var(--high);border:1px solid rgba(255,159,67,.4)}
+/* PLAYGROUND */
+.lab{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.lab-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--bg2)}
+.lab-top .mono{font-size:12px;color:var(--accent)}
+.lab-body{display:grid;grid-template-columns:1fr 1fr}
+.pane{padding:18px;min-width:0}
+.pane+.pane{border-left:1px solid var(--line)}
+.pane-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-family:var(--mono);font-size:11px;color:var(--muted);gap:8px}
+.query{background:#05070a;border:1px solid var(--line);border-radius:8px;padding:14px;font-family:var(--mono);font-size:12px;color:#b8f5cf;white-space:pre;overflow-x:auto;min-height:220px}
+.small-btn{font-family:var(--mono);font-size:11px;background:none;border:1px solid var(--line);color:var(--muted);padding:4px 8px;border-radius:4px;cursor:pointer}
+.small-btn:hover{color:var(--accent);border-color:var(--accent)}
+.rows{display:grid;gap:8px;max-height:300px;overflow-y:auto}
+.row{display:grid;grid-template-columns:70px 1fr;gap:10px;font-family:var(--mono);font-size:12px;background:#05070a;border:1px solid var(--line);border-left:3px solid var(--line);border-radius:6px;padding:8px 10px}
+.row.critical{border-left-color:var(--crit)} .row.high{border-left-color:var(--high)} .row.medium{border-left-color:var(--med)}
+.row b{font-weight:700} .row .critical-t{color:var(--crit)} .row .high-t{color:var(--high)} .row .medium-t{color:var(--med)}
+.row small{display:block;color:var(--muted);word-break:break-all}
+.lab-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding:12px 18px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted)}
+.disclaimer{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:12px}
+/* ATT&CK */
+.matrix{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.tactic h3{font-family:var(--mono);font-size:13px;color:var(--accent2);text-transform:uppercase;padding:10px 12px;border:1px solid var(--line);border-radius:8px 8px 0 0;background:var(--bg2)}
+.tactic ul{list-style:none;border:1px solid var(--line);border-top:none;border-radius:0 0 8px 8px;padding:8px;display:grid;gap:6px;background:var(--panel)}
+.tech{width:100%;text-align:left;background:var(--bg2);border:1px solid var(--line);color:var(--text);padding:10px;border-radius:6px;cursor:pointer;font-size:13px;font-family:var(--sans)}
+.tech:hover{border-color:var(--accent)}
+.tech span{display:block;font-family:var(--mono);font-size:11px;color:var(--accent)}
+.hint{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:16px}
+/* DRAWER */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:150}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(460px,100%);background:var(--bg2);border-left:1px solid var(--line);z-index:160;padding:28px;overflow-y:auto}
+.drawer h3{font-size:22px;margin:6px 0 18px}
+.drawer h4{font-family:var(--mono);font-size:12px;color:var(--accent);text-transform:uppercase;margin:22px 0 8px}
+.drawer p,.drawer li{color:var(--muted);font-size:14px}
+.drawer ul{padding-left:18px}
+.close{position:absolute;top:16px;right:16px;background:none;border:1px solid var(--line);color:var(--text);width:34px;height:34px;border-radius:6px;cursor:pointer;font-size:18px}
+/* KILL CHAIN */
+.chain{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;counter-reset:s}
+.stage{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:var(--radius);padding:18px}
+.stage .tag{color:var(--muted)}
+.stage h3{font-size:16px;margin-bottom:6px}
+.stage p{font-size:13px;color:var(--muted)}
+.stage .ids{font-family:var(--mono);font-size:11px;color:var(--accent2);margin-top:12px}
+/* CAPABILITIES */
+.out{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.out b{color:var(--accent)}
+/* LEARNING */
+.badge{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:4px;margin-left:8px;vertical-align:middle;border:1px solid}
+.badge.on{color:var(--accent);border-color:var(--accent)}
+.badge.next{color:var(--accent2);border-color:var(--accent2)}
+/* RESUME */
+.resume{display:grid;grid-template-columns:1.4fr 1fr;gap:30px;align-items:center}
+.resume ul{list-style:none;display:grid;gap:10px;margin-top:18px}
+.resume li{color:var(--muted);padding-left:22px;position:relative}
+.resume li::before{content:"▸";position:absolute;left:0;color:var(--accent)}
+.resume .actions{display:grid;gap:12px}
+/* CONTACT */
+.contact a.card{display:block;color:var(--text)}
+.contact a.card:hover{text-decoration:none}
+.contact .tag{margin-bottom:4px}
+.contact span.v{font-family:var(--mono);font-size:14px;word-break:break-all}
+footer{border-top:1px solid var(--line);padding:30px 0;font-family:var(--mono);font-size:12px;color:var(--muted);text-align:center}
+/* RESPONSIVE */
+@media (max-width:980px){
+  .hero,.about,.resume{grid-template-columns:1fr}
+  .g3,.g4,.matrix{grid-template-columns:repeat(2,1fr)}
+  .chain{grid-template-columns:repeat(2,1fr)}
+  .lab-body{grid-template-columns:1fr}
+  .pane+.pane{border-left:none;border-top:1px solid var(--line)}
+}
+@media (max-width:760px){
+  .menu-btn{display:block}
+  .nav ul{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;background:var(--bg2);border-bottom:1px solid var(--line);padding:16px;gap:14px}
+  .nav ul.open{display:flex}
+  .g2,.g3,.g4,.matrix,.chain{grid-template-columns:1fr}
+  section{padding:60px 0}
+  .hero{padding:50px 0 40px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header>
+  <nav class="wrap nav" aria-label="Primary">
+    <a class="brand" href="#top">>_DHRUxMAN <span>// THREAT_HUNTER</span></a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links">MENU</button>
+    <ul id="nav-links">
+      <li><a href="#about">about</a></li>
+      <li><a href="#research">research</a></li>
+      <li><a href="#detection">detections</a></li>
+      <li><a href="#playground">playground</a></li>
+      <li><a href="#attack">ATT&amp;CK</a></li>
+      <li><a href="#projects">projects</a></li>
+      <li><a href="#skills">capabilities</a></li>
+      <li><a href="#contact">contact</a></li>
+      <li><a class="oss" href="https://github.com/idsin02" target="_blank" rel="noopener noreferrer">OPEN_SOURCE</a></li>
+    </ul>
+  </nav>
+</header>
+<main id="main">
+<!-- HERO -->
+<div class="wrap hero" id="top">
+  <div>
+    <div class="status"><span class="dot" aria-hidden="true"></span>STATUS: Active · Open to research collaboration | Track: GCIH (SEC504)</div>
+    <h1>I turn adversary behavior into <em>defensible signal.</em></h1>
+    <p class="lead"><strong>Dhruv Singh / DHRUxMAN</strong> — Threat Hunter and security researcher focused on detection engineering, adversary emulation, vulnerability analysis, and practical security tooling.</p>
+    <div class="cta">
+      <a class="btn primary" href="#playground">Launch detection lab ↗</a>
+      <a class="btn" href="https://github.com/idsin02" target="_blank" rel="noopener noreferrer">Inspect GitHub →</a>
+      <a class="btn" href="#contact">Establish contact</a>
+    </div>
+    <div class="stats">
+      <div><strong>100+</strong>custom KQL queries</div>
+      <div><strong>15+</strong>hunts per engagement</div>
+      <div><strong>7+</strong>ATT&amp;CK techniques emulated in lab</div>
+    </div>
+  </div>
+  <div class="console" aria-label="Simulated hunt console">
+    <div class="console-bar"><span><i></i><i></i><i></i></span><span>HUNT_CONSOLE // SESSION_04</span></div>
+<pre><span class="c-m"># simulated output — lab data only</span>
+<span class="c-p">dhruv@huntlab:~$</span> run-hunt --hypothesis credential-access
+<span class="c-m"># correlating process, identity and memory telemetry</span>
+<span class="c-ok">[+]</span> 3 analytic paths loaded
+<span class="c-ok">[+]</span> ATT&amp;CK: T1003.001 / T1055
+<span class="c-w">[!]</span> anomalous LSASS access → triage
+<span class="c-m">sha256: 7d9f...a30c · host: LAB-WS-042</span>
+<span class="c-p">dhruv@huntlab:~$</span> <span class="cursor">▌</span></pre>
+  </div>
+</div>
+<!-- 01 ABOUT -->
+<section id="about">
+  <div class="wrap">
+    <p class="eyebrow">01 — operator profile</p>
+    <h2>Security research, grounded in practice.</h2>
+    <div class="about">
+      <div>
+        <p>I'm <strong>Dhruv Singh</strong>, a threat hunter based in Pune, India, publishing security work as <strong>DHRUxMAN</strong>. I work in Cyber Threat Intelligence &amp; Hunting at Tata Consultancy Services. There I turn threat intelligence into hunts, run dark web and digital risk monitoring, and build hypothesis-driven hunts across endpoint, identity, network, and cloud telemetry.</p>
+        <p>I start with the adversary. I break down the vulnerability or TTP, engineer the detection, then validate it against real telemetry. I maintain multi-format detection content for actively exploited CVEs and hunt across Sysmon, Microsoft Sentinel, Defender XDR (KQL), and CrowdStrike Falcon (CQL).</p>
+        <p>Before this, I completed a VAPT internship at Qseap Infotech and was acknowledged in NASA's Hall of Fame on Bugcrowd for responsible disclosure. My research and tooling are public, so you can check them yourself.</p>
+      </div>
+      <div class="principles">
+        <div class="card"><h3>Research → detection → validation</h3><p>Translate exploit mechanics and TTPs into telemetry hypotheses, analytics, and repeatable triage.</p></div>
+        <div class="card"><h3>Practical security, not buzzwords</h3><p>Emulate the tradecraft, capture the traces, hunt the behavior, and publish the method.</p></div>
+        <div class="card"><h3>Evidence over assertion</h3><p>Repositories, detection packages, write-ups, and lab telemetry back every capability on this site.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 02 FOCUS -->
+<section id="focus">
+  <div class="wrap">
+    <p class="eyebrow">02 — core focus</p>
+    <h2>Where I spend my time.</h2>
+    <p class="sub">Six operational areas. Each one connects to published work, a maintained repository, or professional practice.</p>
+    <div class="grid g3">
+      <div class="card"><span class="tag">F-01 / INTEL</span><h3>Threat Research</h3><p>Vulnerability mechanics, exploitation timelines, and adversary activity, with confirmed findings kept separate from reported claims.</p></div>
+      <div class="card"><span class="tag">F-02 / DETECT</span><h3>Detection Engineering</h3><p>KQL, CQL, Sigma, and YARA content for actively exploited CVEs, covering exposure through post-exploitation.</p></div>
+      <div class="card"><span class="tag">F-03 / HUNT</span><h3>Threat Hunting</h3><p>Hypothesis-driven hunts mapped to MITRE ATT&amp;CK and validated against lab and enterprise telemetry.</p></div>
+      <div class="card"><span class="tag">F-04 / RESEARCH</span><h3>Vulnerability Analysis</h3><p>Technical deep-dives into web and application flaws, with reproducible proofs of concept.</p></div>
+      <div class="card"><span class="tag">F-05 / APPSEC</span><h3>Application Security</h3><p>Hands-on offensive testing that shows how exploitation paths turn into detection opportunities.</p></div>
+      <div class="card"><span class="tag">F-06 / BUILD</span><h3>Security Tooling</h3><p>Python behavior simulators, telemetry generators, and automation for enrichment and analysis workflows.</p></div>
+    </div>
+  </div>
+</section>
+<link rel="stylesheet" href="assets/css/portfolio-continuation.css">
+<link rel="stylesheet" href="assets/css/playground.css">
+<link rel="stylesheet" href="assets/css/phase2.css">
+<!-- ============ RESEARCH ============ -->
+<section id="research">
+  <div class="wrap">
+    <p class="eyebrow reveal">02 — featured research</p>
+    <h2 class="reveal">Published threat research.</h2>
+    <p class="section-lede reveal">In-depth analyses published on Medium under DHRUxMAN. Verified activity is separated from reported claims — no inflated findings.</p>
+
+    <div class="search-bar reveal">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="m11 11 4 4"/></svg>
+      <input type="search" id="articleSearch" placeholder="search articles… (e.g. ransomware, xss, php)" aria-label="Search articles">
+      <kbd aria-hidden="true">/</kbd>
+    </div>
+
+    <div class="article-list" id="articleList">
+      <article class="article reveal" data-title="php2shell cve-2026-109618 cve-2026-109619 php zend engine threat analysis rce vulnerability mechanics exploitation timeline">
+        <span class="date">nov 2026</span>
+        <div>
+          <span class="cat">threat research</span>
+          <h3><a href="https://medium.com/@DhruxMan" rel="noopener">PHP2Shell (CVE-2026-109618 / 109619) hits PHP 5.4+</a></h3>
+          <p>An in-depth threat analysis of a PHP core (Zend Engine) memory-corruption flaw enabling unauthenticated RCE under default Apache mod_php configurations — affecting every PHP release from 5.4 to 8.5.11. Covers vulnerability mechanics, the exploitation timeline, and carefully separates confirmed in-the-wild activity from unconfirmed claims.</p>
+        </div>
+        <a class="read" href="https://medium.com/@DhruxMan" rel="noopener">read on medium →</a>
+      </article>
+      <article class="article reveal" data-title="ransomware landscape operational patterns q1 2026 threat research gangs leak sites">
+        <span class="date">apr 2026</span>
+        <div>
+          <span class="cat">threat research</span>
+          <h3><a href="https://medium.com/@DhruxMan" rel="noopener">Ransomware Landscape and Operational Patterns — Q1 2026</a></h3>
+          <p>A quarterly review of ransomware operations: actor behavior, leak-site dynamics, and the operational patterns that defined the first quarter of 2026 — written from the perspective of someone who tracks these ecosystems professionally.</p>
+        </div>
+        <a class="read" href="https://medium.com/@DhruxMan" rel="noopener">read on medium →</a>
+      </article>
+      <article class="article reveal" data-title="hex encoding xss bypass filter vulnerability research web security">
+        <span class="date">dec 2024</span>
+        <div>
+          <span class="cat">vulnerability research · web security</span>
+          <h3><a href="https://medium.com/@DhruxMan" rel="noopener">Hex Encoding in XSS: A Sneaky Bypass Story</a></h3>
+          <p>How hex encoding defeats naive XSS filtering — a technical walkthrough of the bypass primitive, why filters miss it, and how to think about encoder-aware validation.</p>
+        </div>
+        <a class="read" href="https://medium.com/@DhruxMan" rel="noopener">read on medium →</a>
+      </article>
+      <article class="article reveal" data-title="blind os command injection time delays poc theory practical vulnerability research">
+        <span class="date">jul 2024</span>
+        <div>
+          <span class="cat">vulnerability research · web security</span>
+          <h3><a href="https://medium.com/@DhruxMan" rel="noopener">Blind OS Command Injection with Time Delays: From Theory to Practical POC</a></h3>
+          <p>Turning an invisible vulnerability into a measurable signal — building a time-delay-based proof of concept for blind OS command injection, step by step.</p>
+        </div>
+        <a class="read" href="https://medium.com/@DhruxMan" rel="noopener">read on medium →</a>
+      </article>
+      <div class="no-results" id="noResults">no articles match your search.</div>
+    </div>
+    <p class="section-lede reveal" style="margin-top:24px;font-size:14px">Full archive with reading time and responses on <a href="https://medium.com/@DhruxMan" rel="noopener">medium.com/@DhruxMan</a>.</p>
+  </div>
+</section>
+
+<!-- ============ DETECTION ============ -->
+<section id="detection">
+  <div class="wrap">
+    <p class="eyebrow reveal">03 — detection engineering</p>
+    <h2 class="reveal">Detection content I maintain.</h2>
+    <p class="section-lede reveal">My <a href="https://github.com/idsin02/Queries-and-Detection-rules" rel="noopener">Queries-and-Detection-rules</a> repository is a library of detection &amp; triage packages for actively exploited vulnerabilities. Each package follows the same defensive pipeline and ships content in multiple formats so it works across the tools teams actually run.</p>
+
+    <div class="card det-note reveal">
+      <b>Package design:</b> every CVE package is organized as a hunt pipeline, not a single rule —
+      <div class="det-pipeline" aria-label="detection pipeline">
+        <span>exposure inventory</span><span class="arrow">→</span>
+        <span>edge / waf</span><span class="arrow">→</span>
+        <span>server logs</span><span class="arrow">→</span>
+        <span>execution</span><span class="arrow">→</span>
+        <span>post-exploitation</span><span class="arrow">→</span>
+        <span>ioc sweep</span>
+      </div>
+    </div>
+
+    <div class="filter-row reveal" role="group" aria-label="Filter detection packages">
+      <button class="chip active" type="button" data-filter="all">all packages</button>
+      <button class="chip" type="button" data-filter="kql">KQL / Sentinel</button>
+      <button class="chip" type="button" data-filter="cql">CQL / Chronicle</button>
+      <button class="chip" type="button" data-filter="sigma">Sigma</button>
+      <button class="chip" type="button" data-filter="yara">YARA</button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;margin-top:24px">
+      <div class="card det-package reveal" data-tags="kql cql sigma yara">
+        <h3>PHP2Shell — CVE-2026-109618 / CVE-2026-109619 <span class="cve-tag crit">CVSS 9.8 · CRITICAL</span></h3>
+        <p style="margin-top:12px">Unauthenticated RCE in the PHP core Zend Engine (use-after-free via malformed <code>serialize()</code> input), exploitable under default Apache mod_php across PHP 5.4–8.5.11. Detection content targets webserver file drops, shell spawns from PHP workers, environment-variable exfiltration markers, OOM crash bursts, and campaign IOCs.</p>
+        <div class="det-stats">
+          <div><b>9</b><small>KQL · Sentinel</small></div>
+          <div><b>7</b><small>CQL · Chronicle</small></div>
+          <div><b>5</b><small>Sigma rules</small></div>
+          <div><b>1</b><small>YARA rule</small></div>
+          <div><b>1</b><small>IOC list</small></div>
+        </div>
+        <div class="det-tags"><span>linux</span><span>web server</span><span>rce</span><span>threat hunting queries</span><span>exposure inventory</span></div>
+        <p style="margin-top:16px"><a class="btn sm magnetic" href="https://github.com/idsin02/Queries-and-Detection-rules" rel="noopener">view repository →</a></p>
+      </div>
+      <div class="card det-package reveal" data-tags="kql">
+        <h3>SAP NetWeaver Unauthenticated File Upload — CVE-2025-31324 <span class="cve-tag crit">CVSS 10.0 · CISA KEV</span></h3>
+        <p style="margin-top:12px">Detection &amp; triage package for the SAP NetWeaver file-upload flaw abused for webshell delivery and linked to ransomware operations. KQL content covers edge/WAF metadata-uploader requests, JSP writes to webroot, SAP Java process spawning children, exposure inventory across endpoints, and IOC hash sweeps.</p>
+        <div class="det-stats">
+          <div><b>5</b><small>KQL · Sentinel</small></div>
+          <div><b>5</b><small>layers</small></div>
+          <div><b>1</b><small>campaign focus</small></div>
+        </div>
+        <div class="det-tags"><span>enterprise app</span><span>webshell</span><span>waf logs</span><span>ioc sweep</span></div>
+        <p style="margin-top:16px"><a class="btn sm magnetic" href="https://github.com/idsin02/Queries-and-Detection-rules" rel="noopener">view repository →</a></p>
+      </div>
+      <div class="card det-package reveal" data-tags="kql cql sigma yara">
+        <h3>GitLab CI/CD Regex Compiler Overflow — CVE-2026-97229 <span class="cve-tag crit">CVSS 10.0 · CISA KEV</span></h3>
+        <p style="margin-top:12px">Integer overflow in Ruby's bundled Onigmo regex compiler (nested bounded-repetition quantifiers) → out-of-bounds VM instruction pointer → worker compromise on self-managed GitLab. Includes version-exposure caveats, crash-based detection, execution analytics, post-exploitation sweeps — and YARA rules to hunt <b>poisoned public PoCs</b> carrying backdoors aimed at operators.</p>
+        <div class="det-stats">
+          <div><b>7</b><small>KQL · Sentinel</small></div>
+          <div><b>7</b><small>CQL · Chronicle</small></div>
+          <div><b>4</b><small>Sigma rules</small></div>
+          <div><b>3</b><small>YARA rules</small></div>
+          <div><b>1</b><small>IOC list</small></div>
+        </div>
+        <div class="det-tags"><span>ci/cd</span><span>ruby / onigmo</span><span>cve triage</span><span>poisoned-poc hunting</span></div>
+        <p style="margin-top:16px"><a class="btn sm magnetic" href="https://github.com/idsin02/Queries-and-Detection-rules" rel="noopener">view repository →</a></p>
+      </div>
+    </div>
+    <p class="section-lede reveal" style="margin-top:24px;font-size:14px">Every query is mapped to a detection layer and documented with its telemetry source, logic, and triage notes in the package README.</p>
+  </div>
+</section>
+
+<!-- ============ INTERACTIVE DETECTION LAB ============ -->
+<section id="playground">
+  <div class="wrap">
+    <p class="eyebrow reveal">04 — detection engineering lab</p>
+    <h2 class="reveal">Run a hunt. Investigate, correlate, tune.</h2>
+    <p class="section-lede reveal">Choose a lab, load a KQL, CQL, Sigma, or YARA rule, execute deterministic synthetic telemetry, and move through ATT&amp;CK mapping, process investigation, attack timeline, IOC enrichment, and detection tuning.</p>
+    <div class="lab-selector reveal" role="group" aria-label="Select detection lab">
+      <button type="button" class="lab-option active" data-lab="php2shell"><b>PHP2Shell lab</b><small>Preserved 42-rule detection library and public-safe simulation.</small></button>
+      <button type="button" class="lab-option" data-lab="active-directory"><b>Active Directory lab</b><small>24 sanitized identity and directory threat-hunting use cases.</small></button>
+      <button type="button" class="lab-option" data-lab="artex" disabled aria-disabled="true"><b>Artex lab</b><span class="under">Under Construction</span><small>Listed for future publication; no placeholder functionality.</small></button>
+    </div>
+    <div class="lab-shell reveal" id="detectionLab">
+      <div class="lab-toolbar">
+        <input class="lab-search" id="labSearch" type="search" placeholder="Search name, MITRE technique, category, IOC type…" aria-label="Search detection library">
+        <div class="lab-dataset" aria-label="Synthetic dataset"><button type="button" class="active" data-dataset="incident">incident</button><button type="button" data-dataset="clean">clean baseline</button></div>
+        <span class="lab-honesty" id="labSelfTest">self-test: loading</span>
+      </div>
+      <div class="lab-grid">
+        <aside class="lab-library" aria-label="Detection library"><div class="lab-library-head"><strong>detection library</strong><small>schema-driven · selected lab only</small></div><div id="labLibrary"></div></aside>
+        <div class="lab-main">
+          <header class="lab-detection-head"><div class="lab-title-row"><div><h3 id="labTitle">Detection</h3><p id="labDesc"></p></div><div class="lab-badges" id="labBadges"></div></div><div class="lab-meta" id="labMeta"></div></header>
+          <nav class="lab-tabs" aria-label="Detection workspace tabs">
+            <button type="button" class="active" data-tab="editor">query / rule</button><button type="button" data-tab="results">results</button><button type="button" data-tab="intel">analyst guidance</button>
+            <button type="button" class="phase-tab" data-tab="coverage">ATT&amp;CK mapping</button><button type="button" class="phase-tab" data-tab="process">process tree</button><button type="button" class="phase-tab" data-tab="timeline">attack timeline</button><button type="button" class="phase-tab" data-tab="iocs">IOC enrichment</button><button type="button" class="phase-tab" data-tab="tuning">tuning mode</button>
+          </nav>
+          <section class="lab-panel active" data-panel="editor"><div class="lab-editor-bar"><span id="labFile">query.kql</span><div class="lab-actions"><button class="lab-btn" id="labCopy" type="button">copy query</button><button class="lab-btn" id="labReset" type="button">reset query</button><button class="lab-btn primary" id="labRun" type="button">▶ RUN DETECTION</button></div></div><div class="lab-editor-wrap"><pre class="lab-highlight" id="labHighlight" aria-hidden="true"></pre><textarea class="lab-editor" id="labEditor" spellcheck="false" aria-label="Editable detection query"></textarea></div><p class="lab-sim-note">SIMULATED LAB ONLY — rules run against predefined synthetic telemetry in this browser. No tenant, endpoint, file, provider, or SIEM is queried.</p></section>
+          <section class="lab-panel" data-panel="results"><div class="lab-results-bar"><span id="labCount">0 results</span><div class="lab-actions"><button class="lab-btn" id="labExport" type="button">export JSON</button><button class="lab-btn danger" id="labClear" type="button">clear simulation</button></div></div><div class="lab-filterbar"><input class="lab-input" id="labResultSearch" type="search" placeholder="Search result fields…" aria-label="Search results"><div class="lab-sevfilters"><button class="active" data-sev="critical">critical</button><button class="active" data-sev="high">high</button><button class="active" data-sev="medium">medium</button><button class="active" data-sev="low">low</button></div><select class="lab-select" id="labSort" aria-label="Sort results"><option value="timestamp">timestamp</option><option value="severity">severity</option><option value="host">hostname</option><option value="process">process</option></select></div><div class="lab-status" id="labStatus">ready · synthetic incident dataset selected</div><div class="lab-table-wrap"><table class="lab-table"><thead><tr><th data-sort="severity">severity</th><th data-sort="timestamp">timestamp</th><th data-sort="host">hostname</th><th>username</th><th data-sort="process">process</th><th>parent</th><th>command line</th><th>source → destination</th><th>file</th><th>reason</th></tr></thead><tbody id="labResultsBody"></tbody></table></div><div class="lab-investigation hidden" id="labInvestigation"></div></section>
+          <section class="lab-panel" data-panel="intel"><div class="lab-intel"><div class="lab-intel-grid" id="labIntel"></div></div></section>
+          <section class="lab-panel" data-panel="coverage" id="phaseCoverage"></section><section class="lab-panel" data-panel="process" id="phaseProcess"></section><section class="lab-panel" data-panel="timeline" id="phaseTimeline"></section><section class="lab-panel" data-panel="iocs" id="phaseIocs"></section><section class="lab-panel" data-panel="tuning" id="phaseTuning"></section>
+        </div>
+      </div>
+    </div>
+    <p class="pg-foot reveal">// deterministic synthetic telemetry · reserved documentation addresses · no client data · simulated TI only · PHP2Shell public copy excludes private-feed indicators and working exploit links</p>
+  </div>
+</section>
+<div class="lab-toast" id="labToast" role="status" aria-live="polite"></div>
+
+<!-- ============ ATT&CK ============ -->
+<section id="attack">
+  <div class="wrap">
+    <p class="eyebrow reveal">05 — att&amp;ck coverage</p>
+    <h2 class="reveal">Techniques I actively hunt.</h2>
+    <p class="section-lede reveal">A focused slice of MITRE ATT&amp;CK across four tactics. Select a technique to see how I hunt it and which forensic artifacts I scrutinize.</p>
+    <div class="legend reveal">
+      <span><i class="cov-hunt"></i>enterprise hunts</span>
+      <span><i class="cov-lab"></i>lab-emulated (temp.hex)</span>
+      <span><i class="cov-pub"></i>published detection content</span>
+    </div>
+    <div class="matrix reveal" id="matrix"></div>
+  </div>
+</section>
+
+<!-- ============ PROJECTS ============ -->
+<section id="projects">
+  <div class="wrap">
+    <p class="eyebrow reveal">06 — featured projects</p>
+    <h2 class="reveal">Built, maintained, and documented.</h2>
+    <p class="section-lede reveal">Quality over quantity — these are the projects that best represent how I work.</p>
+    <div class="article-list reveal" style="margin-top:36px">
+      <article class="article project" style="grid-template-columns:1fr auto">
+        <div>
+          <span class="cat">adversary emulation · threat hunting</span>
+          <h3><a href="https://github.com/idsin02/temphex-threat-hunting-lab" rel="noopener">temp.hex — Threat Hunting Lab</a></h3>
+          <p>An end-to-end emulation of TEMP.Hex (Sogu) espionage tradecraft: five staged attacks from USB-borne execution through C2 beaconing, persistence, and payload obfuscation — each with Sysmon telemetry and a hunt report mapped to MITRE ATT&amp;CK. <a href="#temphex" target="_self">Full breakdown below ↓</a></p>
+          <div class="proj-tech"><span>Sysmon</span><span>PowerShell</span><span>MITRE ATT&amp;CK</span><span>Windows 11</span><span>hunt reports</span></div>
+        </div>
+        <a class="read" href="https://github.com/idsin02/temphex-threat-hunting-lab" rel="noopener">github →</a>
+      </article>
+      <article class="article project" style="grid-template-columns:1fr auto">
+        <div>
+          <span class="cat">detection engineering</span>
+          <h3><a href="https://github.com/idsin02/Queries-and-Detection-rules" rel="noopener">Queries-and-Detection-rules</a></h3>
+          <p>My maintained detection library: multi-format rule content (KQL, CQL, Sigma, YARA) for actively exploited CVEs, structured as defensive pipelines with IOC inventories and triage documentation. <a href="#detection" target="_self">See the packages above ↑</a></p>
+          <div class="proj-tech"><span>KQL</span><span>CQL</span><span>Sigma</span><span>YARA</span><span>Sentinel</span><span>Chronicle</span></div>
+        </div>
+        <a class="read" href="https://github.com/idsin02/Queries-and-Detection-rules" rel="noopener">github →</a>
+      </article>
+      <article class="article project" style="grid-template-columns:1fr auto">
+        <div>
+          <span class="cat">security tooling · malware analysis</span>
+          <h3><a href="https://github.com/idsin02/swatlock" rel="noopener">Swatlock — Ransomware Behavior Simulator</a></h3>
+          <p>A Python-based simulation of ransomware encryption and persistence tradecraft, built to study the behaviors defenders must detect — the project directly informed the detection logic I develop.</p>
+          <div class="proj-tech"><span>Python</span><span>file encryption behavior</span><span>persistence tradecraft</span></div>
+        </div>
+        <a class="read" href="https://github.com/idsin02/swatlock" rel="noopener">github →</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TEMP.HEX ============ -->
+<section id="temphex">
+  <div class="wrap">
+    <p class="eyebrow reveal">07 — temp.hex</p>
+    <h2 class="reveal">temp.hex — adversary emulation, end to end.</h2>
+    <p class="section-lede reveal"><b>temp.hex</b> is my threat hunting lab: a controlled, staged emulation of the tradecraft associated with TEMP.Hex — a China-nexus espionage actor also tracked as <b>Sogu</b>, known for USB-borne entry into air-gapped and isolated networks. Rather than reading about the actor, I rebuilt its attack chain in a lab, captured the telemetry, and wrote the hunts.</p>
+    <div class="tex-flow reveal">
+      <div class="card tex-stage"><span class="s-num">STAGE 1</span><h4>USB Execution</h4><p>A weaponized USB drops a RECYCLER.BIN payload; execution fires on insertion — the actor's signature entry vector.</p><span class="tt">T1091 · Replication via Removable Media</span></div>
+      <div class="card tex-stage"><span class="s-num">STAGE 2</span><h4>Discovery &amp; Staging</h4><p>Host and network reconnaissance, staging collected data for exfiltration.</p><span class="tt">Discovery tactics</span></div>
+      <div class="card tex-stage"><span class="s-num">STAGE 3</span><h4>C2 Beaconing</h4><p>Periodic command-and-control callbacks simulating the actor's beacon pattern.</p><span class="tt">Command &amp; Control</span></div>
+      <div class="card tex-stage"><span class="s-num">STAGE 4</span><h4>Registry Persistence</h4><p>Survival across reboots via registry modification.</p><span class="tt">Persistence · T1547</span></div>
+      <div class="card tex-stage"><span class="s-num">STAGE 5</span><h4>Obfuscation &amp; Decode</h4><p>A Base64 payload hides in config.dat; decoder.ps1 reconstructs and executes it — validating visibility into runtime decoding.</p><span class="tt">T1027 · T1140 · T1059.001</span></div>
+    </div>
+    <div class="tex-attack-flow reveal" aria-label="attack flow diagram">
+<div><span class="k">USB</span></div>
+<div>└── <span class="t">RECYCLER.BIN</span></div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;├── config.dat &nbsp;&nbsp;<span style="color:var(--dim)">(Base64-encoded payload)</span></div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;├── decoder.ps1</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;└── payload.ps1</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└──▶ <span class="t">decoded-output.txt</span></div>
+    </div>
+    <div class="grid-3 reveal" style="margin-top:20px">
+      <div class="card"><span class="num">TELEMETRY</span><h3>Sysmon, end to end</h3><p>Every stage generates Sysmon telemetry mirroring real-world malware behavior — the raw material each hunt report is written against.</p></div>
+      <div class="card"><span class="num">METHODOLOGY</span><h3>Hunt reports per stage</h3><p>Each stage ships with an executive summary, hunt objective, hypothesis, and ATT&amp;CK mapping — the same documentation standard I use professionally.</p></div>
+      <div class="card"><span class="num">COVERAGE</span><h3>7+ ATT&amp;CK techniques</h3><p>The full chain maps to 7+ MITRE ATT&amp;CK techniques across execution, persistence, defense evasion, and command-and-control.</p></div>
+    </div>
+    <div class="hero-cta reveal" style="margin-top:32px">
+      <a class="btn primary magnetic" href="https://github.com/idsin02/temphex-threat-hunting-lab" rel="noopener">view lab on github →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SKILLS (BENTO) ============ -->
+<section id="skills">
+  <div class="wrap">
+    <p class="eyebrow reveal">08 — operational capabilities</p>
+    <h2 class="reveal">Proof of work, not percentages.</h2>
+    <p class="section-lede reveal">Capabilities organized into operational pillars — each tied to work you can see on this page. Dashed tags mark tooling I'm actively building depth in.</p>
+    <div class="bento reveal">
+      <div class="card pillar b-lg">
+        <div class="pillar-head">
+          <div class="pillar-ico" style="color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg></div>
+          <div><span class="kicker" style="color:var(--emerald)">pillar 01</span><h3>Threat Hunting &amp; SIEM/EDR</h3></div>
+        </div>
+        <p style="margin-top:14px">Hypothesis-driven hunts across endpoint, identity, network and cloud — AD abuse (Kerberoasting, DCSync, delegation, ACL/GPO abuse), removable-media campaigns, and CVE exploitation chains.</p>
+        <div class="stack"><span>CrowdStrike Falcon</span><span>Defender XDR</span><span>Microsoft Sentinel</span><span>KQL</span><span>CQL</span><span>Sigma</span><span>YARA</span><span>Google Threat Intelligence</span></div>
+        <div class="proof"><b>proof</b>3 CVE detection packages · 100+ custom KQL queries · 15+ hunts per engagement</div>
+      </div>
+      <div class="card pillar b-lg">
+        <div class="pillar-head">
+          <div class="pillar-ico" style="color:var(--cyan)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9zM9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg></div>
+          <div><span class="kicker" style="color:var(--cyan)">pillar 02</span><h3>DFIR / Host Forensics</h3></div>
+        </div>
+        <p style="margin-top:14px">Reconstructing what happened on a host: live investigation, differential analysis, memory and timeline work, and registry-based execution evidence.</p>
+        <div class="stack"><span>Windows live investigation</span><span>Registry analysis</span><span>Timeline analysis</span><span>Sysmon forensics</span><span class="dev">Volatility</span><span class="dev">Plaso</span><span class="dev">Memory forensics</span></div>
+        <div class="proof"><b>proof</b>temp.hex Sysmon reconstruction · SEC504 self-study lab write-ups</div>
+      </div>
+      <div class="card pillar b-md">
+        <div class="pillar-head">
+          <div class="pillar-ico" style="color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m8 6-6 6 6 6M16 6l6 6-6 6M14 4l-4 16"/></svg></div>
+          <div><span class="kicker" style="color:var(--amber)">pillar 03</span><h3>Security Automation</h3></div>
+        </div>
+        <p style="margin-top:14px">Python pipelines that remove toil from analysis — telemetry generation, IOC enrichment, and repeatable triage workflows.</p>
+        <div class="stack"><span>Python pipelines</span><span>VirusTotal API enrichment</span><span>PowerShell</span><span>Hunt telemetry generators</span></div>
+        <div class="proof"><b>proof</b>Swatlock ransomware behavior simulator</div>
+      </div>
+      <div class="card mini b-md">
+        <h3>Intelligence Practice</h3>
+        <ul>
+          <li>IOC / IOA development</li>
+          <li>Threat actor &amp; campaign tracking</li>
+          <li>Dark web / leak-site monitoring</li>
+          <li>Threat briefings for technical &amp; client stakeholders</li>
+        </ul>
+      </div>
+      <div class="card mini b-sm">
+        <h3>Offensive &amp; AppSec</h3>
+        <ul><li>Web application security (VAPT)</li><li>OSINT collection &amp; analysis</li><li>Bug bounty &amp; responsible disclosure</li></ul>
+      </div>
+      <div class="card mini b-sm">
+        <h3>Frameworks</h3>
+        <ul><li>MITRE ATT&amp;CK</li><li>Cyber Kill Chain</li><li>Structured hunt documentation</li></ul>
+      </div>
+      <div class="card mini b-sm">
+        <h3>Platforms</h3>
+        <ul><li>Chronicle NG-SIEM (CQL)</li><li>MISP fundamentals</li><li>Windows · Linux telemetry</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LEARNING ============ -->
+<section id="learning">
+  <div class="wrap">
+    <p class="eyebrow reveal">09 — learning &amp; development</p>
+    <h2 class="reveal">Always studying the adversary.</h2>
+    <div style="margin-top:32px">
+      <div class="learning-item reveal">
+        <span class="when">self-study · in progress</span>
+        <div>
+          <h3>SANS SEC504 — Hacker Tools, Techniques, and Incident Handling <span class="selfstudy">SELF-STUDY</span></h3>
+          <p>Self-directed study of enterprise incident handling and adversary tools/techniques, with hands-on lab write-ups (Windows live-investigation labs, differential analysis). Presented strictly as self-study — not a completed certification.</p>
+        </div>
+      </div>
+      <div class="learning-item reveal">
+        <span class="when">certifications</span>
+        <div>
+          <h3>Microsoft SC-200 · ISC2 CC · C3SA · CAP</h3>
+          <p>Microsoft Certified: Security Operations Analyst Associate, ISC2 Certified in Cybersecurity, Certified Cyber Security Analyst, and Certified AppSec Practitioner.</p>
+        </div>
+      </div>
+      <div class="learning-item reveal" style="border-bottom:none">
+        <span class="when">2021 — 2025</span>
+        <div>
+          <h3>B.E. Computer Science &amp; Engineering (Cyber Security) — CGPA 9.00</h3>
+          <p>Thakur College of Engineering and Technology, Mumbai.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESUME ============ -->
+<section id="resume">
+  <div class="wrap">
+    <p class="eyebrow reveal">10 — resume</p>
+    <h2 class="reveal">The formal version.</h2>
+    <div class="card resume-box reveal">
+      <div>
+        <h3>Dhruv Singh — Threat Hunter, CTI &amp; Hunting</h3>
+        <p>Threat Hunter at Tata Consultancy Services with hands-on work across threat intelligence operationalization, dark web &amp; digital risk monitoring, and hypothesis-driven hunting in Sentinel, Defender XDR, and CrowdStrike telemetry — alongside independent research and detection engineering published under DHRUxMAN.</p>
+        <ul class="resume-facts">
+          <li>15+ hunts per engagement · 100+ custom KQL queries</li>
+          <li>Recognized with an on-the-spot award at TCS for contribution &amp; impact</li>
+          <li>NASA Hall of Fame acknowledgment (Bugcrowd, responsible disclosure)</li>
+          <li>Threat-hunting SME: training analysts on hunting methodology &amp; KQL</li>
+        </ul>
+      </div>
+      <div class="resume-dl">
+        <a class="btn primary magnetic" href="Dhruv_Singh_Resume.docx" download>
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1a.5.5 0 0 1 .5.5v7.8l2.6-2.65a.5.5 0 0 1 .7.7l-3.5 3.56a.5.5 0 0 1-.7 0L3.7 7.35a.5.5 0 0 1 .7-.7l2.6 2.64V1.5A.5.5 0 0 1 8 1zM2 11.5a.5.5 0 0 1 .5.5v1a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-1a.5.5 0 0 1 1 0v1a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2v-1a.5.5 0 0 1 .5-.5z"/></svg>
+          Download résumé (DOCX)
+        </a>
+        <a class="btn magnetic" href="https://www.linkedin.com/in/dhruv-singh-810ba6201" rel="noopener">LinkedIn profile →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section id="contact">
+  <div class="wrap">
+    <p class="eyebrow reveal">11 — contact</p>
+    <h2 class="reveal">Let's talk security.</h2>
+    <p class="section-lede reveal">Open to conversations about threat research, detection engineering, hunting, and security tooling.</p>
+    <div class="contact-grid reveal">
+      <a class="card contact-card" href="mailto:dhruvsingh2371@gmail.com">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1.5 3A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3h-13zM1.6 4.4 8 8.9l6.4-4.5H1.6zM15 5.5v7a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-7l6.7 4.7a.5.5 0 0 0 .6 0L15 5.5z"/></svg>
+        <div><span class="lbl">email</span><div class="val">dhruvsingh2371@gmail.com</div></div>
+      </a>
+      <a class="card contact-card" href="https://github.com/idsin02" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        <div><span class="lbl">github</span><div class="val">github.com/idsin02</div></div>
+      </a>
+      <a class="card contact-card" href="https://medium.com/@DhruxMan" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4.5 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm6.4.3c1.05 0 1.9 1.66 1.9 3.7s-.85 3.7-1.9 3.7S9 10.04 9 8s.85-3.7 1.9-3.7zm3.15.5c.37 0 .67 1.43.67 3.2s-.3 3.2-.67 3.2-.67-1.43-.67-3.2.3-3.2.67-3.2z"/></svg>
+        <div><span class="lbl">medium</span><div class="val">medium.com/@DhruxMan</div></div>
+      </a>
+      <a class="card contact-card" href="https://www.linkedin.com/in/dhruv-singh-810ba6201" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.63 1H2.37A1.37 1.37 0 0 0 1 2.37v11.26A1.37 1.37 0 0 0 2.37 15h11.26A1.37 1.37 0 0 0 15 13.63V2.37A1.37 1.37 0 0 0 13.63 1zM5.2 12.6H3.4V6.4h1.8v6.2zM4.3 5.6a1.05 1.05 0 1 1 0-2.1 1.05 1.05 0 0 1 0 2.1zm8.3 7h-1.8V9.4c0-.83-.3-1.4-1.05-1.4-.57 0-.9.38-1.05.75-.06.13-.07.32-.07.5v3.35H6.85V6.4h1.8v.8c.24-.37.67-.9 1.63-.9 1.19 0 2.32.78 2.32 2.45v3.85z"/></svg>
+        <div><span class="lbl">linkedin</span><div class="val">in/dhruv-singh-810ba6201</div></div>
+      </a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span>© <span id="yr">2026</span> DHRUxMAN · Dhruv Singh</span>
+    <span><a href="https://github.com/idsin02" rel="noopener">github</a> · <a href="https://medium.com/@DhruxMan" rel="noopener">medium</a> · <a href="#top" target="_self">back to top ↑</a></span>
+  </div>
+</footer>
+
+<!-- drawer -->
+<div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drTitle" aria-hidden="true">
+  <div class="drawer-head">
+    <div class="row1"><code id="drId">T0000</code><button class="icon-btn" type="button" id="drClose" aria-label="Close panel">esc ✕</button></div>
+    <h3 id="drTitle">Technique</h3>
+    <div class="tac" id="drTac"></div>
+  </div>
+  <div class="drawer-body" id="drBody"></div>
+</aside>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var finePointer = window.matchMedia('(pointer: fine)').matches;
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+var toastEl=$('#toast'),toastT;
+function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},1800)}
+$('#yr').textContent=new Date().getFullYear();
+
+/* ---- nav ---- */
+var menu=$('#nav-links'),tog=$('.menu-btn');
+if(menu&&tog){
+  tog.addEventListener('click',function(){var o=menu.classList.toggle('open');tog.setAttribute('aria-expanded',o)});
+  $$('#nav-links a').forEach(function(a){a.addEventListener('click',function(){menu.classList.remove('open');tog.setAttribute('aria-expanded','false')})});
+}
+
+/* ---- reveal ---- */
+if('IntersectionObserver' in window && !reduce){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}})},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+  $$('.reveal').forEach(function(el){io.observe(el)});
+}else{$$('.reveal').forEach(function(el){el.classList.add('visible')})}
+
+/* ---- scrollspy ---- */
+var links=$$('#nav-links a');
+if('IntersectionObserver' in window){
+  var spy=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id)})}})},{rootMargin:'-45% 0px -50% 0px'});
+  $$('main section[id]').forEach(function(s){spy.observe(s)});
+}
+
+/* ---- ambient spotlight + card glow ---- */
+if(finePointer && !reduce){
+  var raf=null,px=0,py=0;
+  window.addEventListener('pointermove',function(e){px=e.clientX;py=e.clientY;if(!raf){raf=requestAnimationFrame(function(){document.documentElement.style.setProperty('--mx',px+'px');document.documentElement.style.setProperty('--my',py+'px');raf=null})}},{passive:true});
+  document.addEventListener('pointermove',function(e){
+    var c=e.target.closest && e.target.closest('.card');if(!c)return;
+    var r=c.getBoundingClientRect();c.style.setProperty('--cx',(e.clientX-r.left)+'px');c.style.setProperty('--cy',(e.clientY-r.top)+'px');
+  },{passive:true});
+  /* magnetic buttons */
+  $$('.magnetic').forEach(function(b){
+    b.addEventListener('pointermove',function(e){var r=b.getBoundingClientRect();var x=(e.clientX-r.left-r.width/2)*.22,y=(e.clientY-r.top-r.height/2)*.32;b.style.transform='translate('+x+'px,'+y+'px)'});
+    b.addEventListener('pointerleave',function(){b.style.transform=''});
+  });
+}
+
+/* ---- article search ---- */
+var search=$('#articleSearch'),arts=$$('#articleList .article'),noRes=$('#noResults');
+search.addEventListener('input',function(){
+  var q=search.value.trim().toLowerCase(),n=0;
+  arts.forEach(function(a){var hit=!q||(a.dataset.title+' '+a.textContent).toLowerCase().indexOf(q)>-1;a.classList.toggle('hidden',!hit);if(hit)n++});
+  noRes.style.display=n?'none':'block';
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='/' && document.activeElement.tagName!=='INPUT' && document.activeElement.tagName!=='TEXTAREA'){e.preventDefault();search.focus();search.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'})}
+});
+
+/* ---- detection filter ---- */
+$$('.filter-row .chip').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    $$('.filter-row .chip').forEach(function(b){b.classList.remove('active')});btn.classList.add('active');
+    var f=btn.dataset.filter;
+    $$('.det-package').forEach(function(p){p.classList.toggle('hidden',f!=='all' && p.dataset.tags.split(' ').indexOf(f)<0)});
+  });
+});
+
+/* ---- shared KQL highlighter used by the ATT&CK drawer ---- */
+var KQL_KW='where project extend summarize by join kind on let order desc asc and or not has has_any has_all in contains startswith endswith matches regex between union distinct top take count make_set dcount min max ago extract dynamic isnotempty bin tolower'.split(' ');
+function hlKQL(src){return esc(src).replace(/(\/\/[^\n]*)/g,'<span class="tk-c">$1</span>').replace(/(&quot;.*?&quot;)/g,'<span class="tk-s">$1</span>').replace(/\b(where|project|extend|summarize|join|let|order|by|has|contains|matches|regex|and|or|not)\b/g,'<span class="tk-k">$1</span>');}
+function toLines(html){return html.split('\n').map(function(l){return '<span class="l">'+(l||' ')+'</span>';}).join('');}
+
+/* =========================================================
+   ATT&CK MATRIX + DRAWER
+   ========================================================= */
+var COV={hunt:{c:'var(--emerald)',l:'enterprise hunts'},lab:{c:'var(--cyan)',l:'lab-emulated'},pub:{c:'var(--amber)',l:'published detection'}};
+var TAC=[
+ {name:'Execution',techs:[
+  {id:'T1059.001',n:'PowerShell',cov:'lab',how:['Baseline PowerShell parents per host role; flag Office, browsers, wscript or removable-media parents.','Hunt encoded and hidden-window launches (-enc, -w hidden, -ep bypass) and pivot to Script Block Logging for decoded content.','Correlate with outbound connections within 60s of launch to separate admin scripts from download cradles.'],art:[['Event Logs','4104 script block, 4103 module, 400/600 engine'],['Prefetch','POWERSHELL.EXE-*.pf run counts and timestamps'],['Amcache','Script-host and dropped binary first-execution'],['PSReadLine','ConsoleHost_history.txt per user']],q:'DeviceProcessEvents\n| where FileName =~ "powershell.exe"\n| where ProcessCommandLine has_any ("-enc","FromBase64String","-w hidden")'},
+  {id:'T1059.004',n:'Unix Shell',cov:'pub',how:['Hunt web-server and PHP workers spawning sh/bash/curl/wget — the post-RCE pivot point.','Score command lines for recon trios, /dev/tcp, base64 -d and pipe-to-shell patterns.','Correlate with access logs and worker crash bursts to anchor the exploit time.'],art:[['Process telemetry','MDE Linux / auditd execve'],['Web logs','Apache access/error logs around spawn time'],['File system','/tmp, /dev/shm and webroot new files'],['Shell history','.bash_history for service accounts']],q:'DeviceProcessEvents\n| where InitiatingProcessFileName in~ ("apache2","php-fpm")\n| where FileName in~ ("sh","bash","curl","wget")'},
+  {id:'T1204.002',n:'User Execution: Malicious File',cov:'lab',how:['Track executions whose image path is a removable drive or a hidden folder on one.','Join USB mount events to process starts within a short window.','Check LNK targets on the device for masquerading folder icons.'],art:[['Registry','USBSTOR, MountedDevices, MountPoints2'],['Event Logs','Partition/Diagnostic 1006, Sysmon EID 1'],['LNK / Jump Lists','Target paths pointing at the USB volume'],['$MFT','File creation times on the removable volume image']],q:'DeviceProcessEvents\n| where FolderPath matches regex @"^[D-Z]:\\\\"'}
+ ]},
+ {name:'Persistence',techs:[
+  {id:'T1547.001',n:'Registry Run Keys',cov:'lab',how:['Inventory Run/RunOnce values and diff against a known-good baseline.','Flag values launching script hosts or pointing to user-writable or removable paths.','Look for value names masquerading as vendor updaters (OneDrive, Adobe, Google).'],art:[['Registry','NTUSER.DAT and SOFTWARE hive Run keys'],['Event Logs','Sysmon EID 12/13 registry set'],['Autoruns','Baseline snapshots for differential analysis'],['Amcache','First execution of the referenced binary']],q:'DeviceRegistryEvents\n| where RegistryKey has @"CurrentVersion\\Run"\n| where RegistryValueData has_any ("powershell","\\\\RECYCLER")'},
+  {id:'T1505.003',n:'Web Shell',cov:'pub',how:['Hunt new script files (.php/.jsp/.aspx) written to webroot by the web-server account.','Correlate file writes with first-seen URIs receiving POSTs.','Watch for web workers spawning shells right after a file drop.'],art:[['File system','Webroot mtime/ctime, unexpected dotfiles'],['Web logs','Rare URI + POST + 200 patterns'],['$MFT','Creation timestamps vs. deploy windows (Windows IIS)'],['EDR','DeviceFileEvents by w3wp / apache2']],q:'DeviceFileEvents\n| where InitiatingProcessFileName in~ ("w3wp.exe","java.exe","apache2")\n| where FileName endswith_cs ".jsp" or FileName endswith ".php"'},
+  {id:'T1053.005',n:'Scheduled Task',cov:'hunt',how:['Hunt task creation by non-admin tooling or from unusual parents.','Inspect task XML for hidden flags, SYSTEM principals and script-host actions.','Compare task inventory across hosts — outliers stand out.'],art:[['Event Logs','4698 task created, TaskScheduler 106/200'],['File system','C:\\Windows\\System32\\Tasks XML'],['Registry','TaskCache\\Tree and Tasks keys'],['Prefetch','SCHTASKS.EXE-*.pf']],q:'DeviceProcessEvents\n| where FileName =~ "schtasks.exe" and ProcessCommandLine has "/create"'},
+  {id:'T1098',n:'Account Manipulation (AdminSDHolder / ACL)',cov:'hunt',how:['Hunt directory-service changes to AdminSDHolder and privileged group ACLs.','Flag new GenericAll / WriteDacl ACEs granted to non-tier-0 principals.','Re-verify after SDProp runs — backdoored ACEs propagate within the hour.'],art:[['Event Logs','5136 DS object modified, 4662 object access'],['AD','nTSecurityDescriptor diffs on protected objects'],['Event Logs','4728/4732/4756 group membership changes'],['Defender for Identity','Suspicious ACL modification alerts']],q:'SecurityEvent\n| where EventID == 5136\n| where EventData has "CN=AdminSDHolder"'}
+ ]},
+ {name:'Defense Evasion',techs:[
+  {id:'T1027',n:'Obfuscated Files or Information',cov:'lab',how:['Hunt high-entropy or Base64-shaped blobs written next to script loaders.','Look for config/data files read by script hosts shortly before network activity.','Decode offline and pivot on recovered indicators.'],art:[['$MFT','Co-created .dat/.ps1 pairs in staging folders'],['Event Logs','4104 for de-obfuscated content'],['File system','Entropy of staged files'],['Amcache','Loader binaries first-seen']],q:'DeviceFileEvents\n| where FileName endswith ".dat"\n| where InitiatingProcessFileName =~ "powershell.exe"'},
+  {id:'T1140',n:'Deobfuscate / Decode',cov:'lab',how:['Hunt certutil -decode, FromBase64String and XOR loops in script blocks.','Chain decode events to the subsequent child process or network connection.','Treat decode followed by execution within seconds as high-signal.'],art:[['Event Logs','4104 script block, Sysmon EID 1'],['Prefetch','CERTUTIL.EXE-*.pf'],['File system','Decoded output files (decoded-output.txt in lab)'],['EDR','Process tree timing']],q:'DeviceProcessEvents\n| where ProcessCommandLine has_any ("FromBase64String","certutil -decode")'},
+  {id:'T1218.011',n:'Rundll32',cov:'hunt',how:['Hunt rundll32 loading DLLs from user-writable paths or exporting by ordinal.','Flag comsvcs.dll MiniDump and other LOLBin abuse patterns.','Baseline legitimate control-panel and shell32 calls to cut noise.'],art:[['Prefetch','RUNDLL32.EXE-*.pf loaded file list'],['Amcache','Unsigned DLL first-seen'],['Event Logs','Sysmon EID 1 / EID 7 image load'],['$MFT','DLL drop timestamps']],q:'DeviceProcessEvents\n| where FileName =~ "rundll32.exe"\n| where ProcessCommandLine has_any ("comsvcs","\\\\Users\\\\Public","#")'},
+  {id:'T1550.002',n:'Pass the Hash',cov:'hunt',how:['Hunt NTLM network logons (type 3) from workstations to many hosts in short windows.','Flag logon type 9 with seclogo — classic overpass/PtH tooling.','Correlate with prior LSASS access on the source host.'],art:[['Event Logs','4624 (type 3/9), 4776 NTLM validation'],['Event Logs','4648 explicit credential use'],['Defender for Identity','Pass-the-hash alerts'],['EDR','Source-host LSASS access']],q:'SecurityEvent\n| where EventID == 4624 and LogonType == 9\n| where LogonProcessName =~ "seclogo"'},
+  {id:'T1207',n:'Rogue Domain Controller (DCShadow)',cov:'hunt',how:['Hunt computer objects gaining GC / DRS SPNs that are not real DCs.','Flag nTDSDSA object creation under Sites outside change windows.','Correlate with replication from non-DC IPs.'],art:[['Event Logs','4742 computer account SPN changes'],['Event Logs','5137 / 5141 nTDSDSA create/delete'],['AD','Configuration partition Sites container'],['Network','DRSUAPI traffic from non-DC hosts']],q:'SecurityEvent\n| where EventID in (5137, 5141)\n| where EventData has "nTDSDSA"'}
+ ]},
+ {name:'Credential Access',techs:[
+  {id:'T1003.001',n:'LSASS Memory',cov:'hunt',how:['Hunt comsvcs MiniDump, ProcDump and unusual handles to lsass with read access.','Resolve PIDs in command lines to images before escalating.','Hunt for .dmp files created in user-writable paths and their later access.'],art:[['Event Logs','Sysmon EID 10 (GrantedAccess 0x1010/0x1410)'],['Prefetch','PROCDUMP*.pf, RUNDLL32.EXE-*.pf'],['$MFT','.dmp creation in Public/Temp'],['Amcache','Dump tool first execution']],q:'DeviceProcessEvents\n| where ProcessCommandLine has_any ("MiniDump","-ma lsass")'},
+  {id:'T1003.006',n:'DCSync',cov:'hunt',how:['Hunt 4662 replication rights used by accounts that are not domain controllers.','Key on DS-Replication-Get-Changes(-All) GUIDs from non-DC sources.','Review who holds replication rights — the ACL is the root cause.'],art:[['Event Logs','4662 with 1131f6aa / 1131f6ad GUIDs'],['Network','DRSUAPI GetNCChanges from workstations'],['AD','Replication rights on the domain head'],['Defender for Identity','DCSync alerts']],q:'SecurityEvent\n| where EventID == 4662\n| where Properties has_any ("1131f6aa-9c07-11d1-f79f-00c04fc2dcd2","1131f6ad-9c07-11d1-f79f-00c04fc2dcd2")'},
+  {id:'T1003.003',n:'NTDS.dit Extraction',cov:'hunt',how:['Hunt ntdsutil IFM, vssadmin shadow creation and esentutl copies on DCs.','Flag NTDS.dit or SYSTEM hive reads by non-backup processes.','Track staging archives leaving the DC.'],art:[['Event Logs','4688/Sysmon 1 for ntdsutil, vssadmin'],['Event Logs','VSS 8222 shadow copy created'],['$MFT','Copies of ntds.dit outside NTDS folder'],['Prefetch','NTDSUTIL.EXE-*.pf on DCs']],q:'DeviceProcessEvents\n| where ProcessCommandLine has_any ("ntdsutil","ifm","create shadow")'},
+  {id:'T1558.003',n:'Kerberoasting',cov:'hunt',how:['Hunt bursts of TGS requests with RC4 (0x17) for many SPNs from one account.','Baseline service-ticket volume per user; outliers indicate roasting.','Prioritize SPN accounts with old passwords and privileged membership.'],art:[['Event Logs','4769 TicketEncryptionType 0x17'],['AD','SPN-bearing user accounts, pwdLastSet'],['Defender for Identity','Kerberoasting / LDAP SPN recon alerts'],['EDR','Rubeus / LDAP query tooling on source']],q:'SecurityEvent\n| where EventID == 4769 and TicketEncryptionType == "0x17"\n| summarize SPNs = dcount(ServiceName) by TargetUserName, IpAddress'},
+  {id:'T1558.001',n:'Golden Ticket',cov:'hunt',how:['Hunt 4769 service-ticket requests with no matching 4768 TGT on any DC.','Flag tickets with anomalous lifetimes or nonexistent account names.','Track krbtgt password age and rotate twice after compromise.'],art:[['Event Logs','4768 / 4769 correlation across DCs'],['Event Logs','4624 with mismatched account / SID'],['AD','krbtgt pwdLastSet'],['Defender for Identity','Forged-ticket alerts']],q:'// TGS without preceding TGT across DCs\nSecurityEvent\n| where EventID in (4768, 4769)'}
+ ]}
+];
+var matrixEl=$('#matrix');
+matrixEl.innerHTML=TAC.map(function(t,ti){
+  return '<div class="tactic"><h3>'+esc(t.name)+'<small>'+t.techs.length+'</small></h3>'+t.techs.map(function(x,xi){
+    return '<button type="button" class="tech" style="--c:'+COV[x.cov].c+'" data-t="'+ti+'" data-x="'+xi+'" aria-haspopup="dialog"><code>'+x.id+'</code><span>'+esc(x.n)+'</span></button>';
+  }).join('')+'</div>';
+}).join('');
+
+var drawer=$('#drawer'),ov=$('#drawerOverlay'),lastFocus=null;
+function openDrawer(ti,xi){
+  var t=TAC[ti],x=t.techs[xi],cv=COV[x.cov];lastFocus=document.activeElement;
+  $('#drId').textContent=x.id;$('#drTitle').textContent=x.n;
+  $('#drTac').innerHTML='tactic: '+esc(t.name)+' &nbsp; <span class="cov-badge" style="color:'+cv.c+'">'+cv.l+'</span>';
+  $('#drBody').innerHTML='<h4>How I hunt this technique</h4><ol>'+x.how.map(function(h){return '<li>'+esc(h)+'</li>'}).join('')+'</ol><h4>Artifacts scrutinized</h4><div class="art-grid">'+x.art.map(function(a){return '<div class="art"><b>'+esc(a[0])+'</b><small>'+esc(a[1])+'</small></div>'}).join('')+'</div><h4>Starter query</h4><pre><code>'+toLines(hlKQL(x.q))+'</code></pre><p style="margin-top:14px;font-size:12.5px;color:var(--dim)">Starter logic only — production hunts add environment baselines, allow-lists, and correlation joins.</p>';
+  ov.classList.add('open');drawer.classList.add('open');drawer.setAttribute('aria-hidden','false');ov.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+  setTimeout(function(){$('#drClose').focus()},50);
+}
+function closeDrawer(){
+  if(!drawer.classList.contains('open'))return;
+  drawer.classList.remove('open');ov.classList.remove('open');drawer.setAttribute('aria-hidden','true');ov.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+  if(lastFocus && lastFocus.focus)lastFocus.focus();
+}
+$$('.tech',matrixEl).forEach(function(b){b.addEventListener('click',function(){openDrawer(+b.dataset.t,+b.dataset.x)})});
+$('#drClose').addEventListener('click',closeDrawer);
+ov.addEventListener('click',closeDrawer);
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape')closeDrawer();
+  if(e.key==='Tab' && drawer.classList.contains('open')){
+    var f=$$('button,a[href],[tabindex]:not([tabindex="-1"])',drawer);if(!f.length)return;
+    var first=f[0],last=f[f.length-1];
+    if(e.shiftKey && document.activeElement===first){e.preventDefault();last.focus()}
+    else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first.focus()}
+  }
+});
+})();
+</script>
+<script src="assets/js/library.js"></script>
+<script src="assets/js/ad-library.js"></script>
+<script src="assets/js/investigations.js"></script>
+<script src="assets/js/engine.js"></script>
+<script src="assets/js/phase2-engine.js"></script>
+<script src="assets/js/playground.js"></script>
+</body>
+</html>
