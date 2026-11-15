@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 1 Lab - Office Application Spawns PowerShell</title>
+<style>
+:root{--bg:#08111f;--panel:#101d31;--panel2:#152641;--text:#eef5ff;--muted:#aebed5;--line:#29415f;--cyan:#4fd1c5;--blue:#61a9ff;--amber:#ffcc66;--red:#ff7d8d;--green:#6ee7a8;--shadow:0 18px 46px rgba(0,0,0,.24)}
+[data-theme="light"]{--bg:#eef4fb;--panel:#fff;--panel2:#f4f8fd;--text:#10213b;--muted:#586b84;--line:#cfdaea;--cyan:#087f78;--blue:#1768c4;--amber:#9b6500;--red:#ba2940;--green:#087d48;--shadow:0 16px 40px rgba(26,52,90,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(97,169,255,.12),transparent 28%),var(--bg);color:var(--text);font:16px/1.55 Inter,Segoe UI,Arial,sans-serif;min-height:100vh}
+button,a{font:inherit}.shell{max-width:1180px;margin:auto;padding:18px}.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.topbar-inner{max-width:1180px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:12px}.brand{font-weight:800;letter-spacing:.2px}.brand span{color:var(--cyan)}.grow{flex:1}.icon-btn,.nav-btn,.answer-btn,.small-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer}.icon-btn:hover,.nav-btn:hover,.answer-btn:hover,.small-btn:hover{border-color:var(--cyan);transform:translateY(-1px)}.progress{height:4px;background:var(--line)}.progress>div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .25s}
+.hero{padding:32px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(79,209,197,.10),rgba(97,169,255,.06)),var(--panel);box-shadow:var(--shadow)}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);font-weight:800}.hero h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.02;margin:.35rem 0 1rem;max-width:850px}.hero p{max-width:800px;color:var(--muted);font-size:1.08rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.chip{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);font-size:.86rem}.chip.good{color:var(--green)}.chip.warn{color:var(--amber)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.stat strong{display:block;font-size:1.8rem;color:var(--cyan)}.stat span{color:var(--muted);font-size:.88rem}
+.page{display:none;animation:fade .22s ease}.page.active{display:block}@keyframes fade{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:22px 0}.page-head h2{font-size:clamp(1.8rem,4vw,3rem);margin:.2rem 0}.page-no{color:var(--muted);font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{grid-column:span 6;padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}.card h3{margin-top:0}.card p,.card li{color:var(--muted)}.callout{border-left:4px solid var(--cyan);padding:12px 16px;background:var(--panel2);border-radius:0 12px 12px 0}.warning{border-left-color:var(--amber)}.danger{border-left-color:var(--red)}
+.week-map{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-top:18px}.day-tile{padding:14px 10px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);cursor:pointer;min-height:110px}.day-tile:hover{border-color:var(--cyan)}.day-tile b{display:block;color:var(--cyan);margin-bottom:6px}.day-tile span{font-size:.82rem;color:var(--muted)}
+.flow{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;padding:22px}.node{min-width:185px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);text-align:center}.node strong{display:block}.node small{color:var(--muted)}.arrow{font-size:2rem;color:var(--cyan)}
+.attack{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:15px}.attack-card{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.attack-card b{font-size:1.2rem;color:var(--amber)}.attack-link{color:var(--blue);text-decoration:none}.attack-link:hover{text-decoration:underline}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:820px;background:var(--panel2)}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);background:var(--panel)}td{font-size:.9rem}.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.76rem;font-weight:800}.tp{color:var(--green);background:rgba(110,231,168,.12)}.tn{color:var(--blue);background:rgba(97,169,255,.12)}
+pre{margin:0;padding:18px;overflow:auto;background:#050a12;color:#dce9fa;border-radius:14px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}.code-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.answer{display:none;margin-top:10px}.answer.open{display:block}.raw{max-height:430px}.field-map{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field-map div{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}.field-map code{color:var(--cyan)}
+.event-picker{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.event-picker button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}.event-detail{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.detail-item{padding:10px;border-radius:10px;background:var(--panel)}.detail-item small{display:block;color:var(--muted)}
+.quiz{padding:16px;border:1px dashed var(--line);border-radius:14px}.quiz label{display:block;margin:8px 0}.result{margin-top:12px;padding:12px;border-radius:12px;background:var(--panel2);min-height:48px}.result.pass{border:1px solid var(--green);color:var(--green)}.result.fail{border:1px solid var(--red);color:var(--red)}
+.checklist{list-style:none;padding:0}.checklist li{padding:10px 0;border-bottom:1px solid var(--line)}.checklist li:before{content:'âœ“';color:var(--green);font-weight:900;margin-right:9px}.validator-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{padding:16px;border:1px solid var(--line);border-radius:14px;text-align:center;background:var(--panel2)}.metric strong{display:block;font-size:2rem}.nav-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:24px 0 8px}.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.dot{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--muted);cursor:pointer}.dot.active{background:var(--cyan);color:#03111b;border-color:var(--cyan);font-weight:900}.status-bar{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.88rem}
+@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.week-map{grid-template-columns:repeat(2,1fr)}.card,.card.third{grid-column:1/-1}.attack{grid-template-columns:1fr}.attack .arrow{transform:rotate(90deg);text-align:center}.detail-grid,.validator-grid{grid-template-columns:1fr}.topbar .brand{font-size:.9rem}.topbar-inner{gap:7px}.icon-btn{padding:8px}.hero{padding:22px}}
+@media(max-width:520px){.shell{padding:12px}.stats{grid-template-columns:1fr}.week-map{grid-template-columns:1fr}.page-head{align-items:start;flex-direction:column}.nav-footer .nav-btn{font-size:.84rem;padding:8px}.dots{display:none}}
+@media print{.topbar,.nav-footer,.code-tools{display:none}.page{display:block!important;break-after:page}.shell{max-width:none}.card,.hero{box-shadow:none}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><div class="brand">Detection Lab <span>W1</span></div><div class="grow"></div><button class="icon-btn" id="textBtn" title="Increase text size">A+</button><button class="icon-btn" id="themeBtn" title="Switch theme">Light</button></div><div class="progress"><div id="progress"></div></div></header>
+<main class="shell">
+<section class="page active" data-page="1">
+  <div class="hero">
+    <div class="eyebrow">Month 1 - Endpoint Foundations Â· Week 1 Â· Starter</div>
+    <h1>Office application spawns PowerShell</h1>
+    <p>An easy, process-only learning lab. You will move from reading five endpoint events to writing and validating one small hunt across KQL, CrowdStrike CQL, Sigma, Python, and Go.</p>
+    <div class="chips"><span class="chip">Windows endpoint</span><span class="chip">Process creation</span><span class="chip">T1204.002</span><span class="chip">T1059.001</span><span class="chip good">2 true positives</span><span class="chip">3 benign negatives</span><span class="chip warn">No YARA - process only</span></div>
+  </div>
+  <div class="stats"><div class="stat"><strong>6</strong><span>months in the full plan</span></div><div class="stat"><strong>26</strong><span>weekly scenarios</span></div><div class="stat"><strong>182</strong><span>daily activities</span></div><div class="stat"><strong>7</strong><span>labs in this week</span></div></div>
+  <div class="grid">
+    <article class="card full"><h3>How this learning plan works</h3><p>The six-month roadmap is a sequence of small, publishable detection-engineering exercises. Each week starts with telemetry and ends with a validated hunt. Week 1 deliberately uses one clear behavior: Word, Excel, or PowerPoint starts PowerShell. The attached roadmap emphasizes reproducible telemetry, malicious and benign test data, false-positive tuning, and detection-as-code evidence; this lab applies that idea without making the code complex.</p>
+      <div class="week-map">
+        <button class="day-tile" onclick="go(2)"><b>Day 1</b><span>Read process events and labels</span></button>
+        <button class="day-tile" onclick="go(3)"><b>Day 2</b><span>Build and tune the KQL hunt</span></button>
+        <button class="day-tile" onclick="go(4)"><b>Day 3</b><span>Translate to CrowdStrike CQL</span></button>
+        <button class="day-tile" onclick="go(5)"><b>Day 4</b><span>Write the Sigma rule</span></button>
+        <button class="day-tile" onclick="go(6)"><b>Day 5</b><span>Filter JSONL with Python</span></button>
+        <button class="day-tile" onclick="go(7)"><b>Day 6</b><span>Stream JSONL with Go</span></button>
+        <button class="day-tile" onclick="go(8)"><b>Day 7</b><span>Run the capstone validation</span></button>
+      </div>
+    </article>
+    <article class="card"><h3>Week goal</h3><p>Detect <b>WINWORD.EXE</b>, <b>EXCEL.EXE</b>, or <b>POWERPNT.EXE</b> creating <b>powershell.exe</b> or <b>pwsh.exe</b>, while excluding one explicitly approved automation path.</p><div class="callout">Success means events 1 and 2 match; events 3, 4, and 5 do not.</div></article>
+    <article class="card"><h3>What you will keep</h3><ul class="checklist"><li>Five labeled JSONL fixtures</li><li>Tuned KQL and CrowdStrike CQL</li><li>Sigma selection + filter rule</li><li>Small Python and Go readers</li><li>Validation evidence and analyst notes</li></ul></article>
+  </div>
+</section>
+
+<section class="page" data-page="2">
+  <div class="page-head"><div><div class="eyebrow">Week 1 Â· Day 1</div><h2>Understand the event</h2></div><div class="page-no">Page 2 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>What should be done</h3><ol><li>Read the six process fields: parent, child, command line, user, device, and timestamp.</li><li>Find Office â†’ PowerShell behavior.</li><li>Check whether the matching behavior is explicitly approved.</li><li>Use the labeled fixtures as your expected answer.</li></ol></article>
+    <article class="card full"><h3>Visual process chain</h3><div class="flow"><div class="node"><small>Parent process</small><strong>WINWORD.EXE</strong><small>Office document is open</small></div><div class="arrow">â†’</div><div class="node"><small>Child process</small><strong>powershell.exe</strong><small>Script interpreter starts</small></div><div class="arrow">â†’</div><div class="node"><small>Analyst decision</small><strong>Investigate or allow</strong><small>Use context, not the name alone</small></div></div></article>
+    <article class="card full"><h3>Five sample events</h3><div class="table-wrap"><table><thead><tr><th>#</th><th>Timestamp</th><th>Device / user</th><th>Parent</th><th>Child</th><th>Expected</th><th>Why</th></tr></thead><tbody id="eventsTable"></tbody></table></div></article>
+    <article class="card"><h3>Explore one event</h3><div class="event-picker" id="eventPicker"></div><div class="event-detail" id="eventDetail"></div></article>
+    <article class="card"><h3>Raw JSONL</h3><p>JSONL means one JSON object per line. Save these five lines as <code>events.jsonl</code>.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('rawJson')">Show raw JSONL</button><button class="small-btn" onclick="copyFrom('rawJsonCode',this)">Copy JSONL</button></div><div class="answer" id="rawJson"><pre class="raw"><code id="rawJsonCode"></code></pre></div></article>
+    <article class="card full"><h3>MITRE ATT&amp;CK - visual map</h3><div class="attack"><div class="attack-card"><b>T1204.002</b><h4>User Execution: Malicious File</h4><p>A user may open a file that leads to code execution. In this lab, Office is the visible parent process.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1204/002/" target="_blank" rel="noreferrer">Official MITRE page â†—</a></div><div class="arrow">â†’</div><div class="attack-card"><b>T1059.001</b><h4>Command and Scripting Interpreter: PowerShell</h4><p>PowerShell is the child interpreter. The process chain is a hunting signal, not automatic proof of malware.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1059/001/" target="_blank" rel="noreferrer">Official MITRE page â†—</a></div></div></article>
+  </div>
+</section>
+
+<section class="page" data-page="3">
+  <div class="page-head"><div><div class="eyebrow">Week 1 Â· Day 2</div><h2>KQL behavior query + tuning</h2></div><div class="page-no">Page 3 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><ol><li>Start with <code>DeviceProcessEvents</code>.</li><li>Keep only the three Office parents.</li><li>Keep only PowerShell children.</li><li>Exclude the exact approved user + script pair.</li><li>Project the fields an analyst needs.</li></ol></article>
+    <article class="card"><h3>Why the tuning is narrow</h3><p>Do not allowlist every macro, add-in, user, or PowerShell command. The example exclusion requires both the approved service account and the approved script path. Any change to either value remains visible.</p><div class="callout warning">Validate allowlists with an owner and expiry date before using them in production.</div></article>
+    <article class="card full"><h3>KQL answer</h3><p>Validation place: paste this into Microsoft Defender Advanced Hunting after confirming that <code>DeviceProcessEvents</code> is available.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('kqlAnswer')">Show KQL answer</button><button class="small-btn" onclick="copyFrom('kqlCode',this)">Copy KQL</button></div><div class="answer" id="kqlAnswer"><pre><code id="kqlCode">let ApprovedUsers = dynamic(["svc_office_automation"]);
+DeviceProcessEvents
+| where InitiatingProcessFileName in~ ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE")
+| where FileName in~ ("powershell.exe", "pwsh.exe")
+| where not(
+    AccountName in~ (ApprovedUsers)
+    and ProcessCommandLine has @"C:\ProgramData\Contoso\OfficeAutomation\inventory.ps1"
+)
+| project Timestamp, DeviceName, AccountName,
+          InitiatingProcessFileName, FileName, ProcessCommandLine
+| order by Timestamp desc</code></pre></div></article>
+    <article class="card full"><h3>Analyst note</h3><p><b>Likely false positives:</b> signed Office add-ins that call approved PowerShell, approved macros used for reporting or document workflows, and IT automation launched from Office. Tune only after confirming the signer, script path, user or service account, command line, owner, and expected devices.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="4">
+  <div class="page-head"><div><div class="eyebrow">Week 1 Â· Day 3</div><h2>CrowdStrike CQL translation</h2></div><div class="page-no">Page 4 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Translate the same behavior, not just the words. Keep the same parent set, child set, approved automation pair, and analyst output fields.</p><div class="callout">CQL here means CrowdStrike Falcon LogScale query language.</div></article>
+    <article class="card"><h3>Small field map</h3><div class="field-map"><div>KQL<br><code>InitiatingProcessFileName</code></div><div>CrowdStrike<br><code>ParentBaseFileName</code></div><div>KQL<br><code>FileName</code></div><div>CrowdStrike<br><code>FileName</code></div><div>KQL<br><code>ProcessCommandLine</code></div><div>CrowdStrike<br><code>CommandLine</code></div><div>KQL<br><code>DeviceName</code></div><div>CrowdStrike<br><code>ComputerName</code></div><div>KQL<br><code>AccountName</code></div><div>CrowdStrike<br><code>UserName</code></div></div></article>
+    <article class="card full"><h3>CrowdStrike CQL answer</h3><p>Validation place: paste this into Falcon LogScale or Next-Gen SIEM Search after confirming the field map with one known process event.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('cqlAnswer')">Show CrowdStrike CQL answer</button><button class="small-btn" onclick="copyFrom('cqlCode',this)">Copy CQL</button></div><div class="answer" id="cqlAnswer"><pre><code id="cqlCode">#event_simpleName=ProcessRollup2
+| ParentBaseFileName=/^(WINWORD|EXCEL|POWERPNT)\.EXE$/i
+| FileName=/^(powershell|pwsh)\.exe$/i
+| not(
+    UserName="svc_office_automation"
+    and CommandLine=/C:\\ProgramData\\Contoso\\OfficeAutomation\\inventory\.ps1/i
+  )
+| table([@timestamp, ComputerName, UserName,
+         ParentBaseFileName, FileName, CommandLine])</code></pre></div></article>
+    <article class="card full"><h3>Analyst note</h3><p><b>Likely false positives:</b> approved macros, signed add-ins, and IT support workflows. Falcon tenants can use different field availability or normalization, so confirm the field map with one known process event before relying on the query.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="5">
+  <div class="page-head"><div><div class="eyebrow">Week 1 Â· Day 4</div><h2>Sigma selection + filter</h2></div><div class="page-no">Page 5 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Build one parent selection, one child selection, and one narrow approved-automation filter. The condition joins them. The rule intentionally has no <code>id</code> or <code>status</code> field.</p></article>
+    <article class="card"><h3>Read the condition</h3><div class="flow"><div class="node"><strong>Office parent</strong><small>selection_parent</small></div><div class="arrow">+</div><div class="node"><strong>PowerShell child</strong><small>selection_child</small></div><div class="arrow">âˆ’</div><div class="node"><strong>Approved pair</strong><small>filter_approved_automation</small></div></div></article>
+    <article class="card full"><h3>Sigma answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('sigmaAnswer')">Show Sigma answer</button><button class="small-btn" onclick="copyFrom('sigmaCode',this)">Copy Sigma</button></div><div class="answer" id="sigmaAnswer"><pre><code id="sigmaCode">title: Office Application Spawns PowerShell
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_parent:
+    ParentImage|endswith:
+      - '\WINWORD.EXE'
+      - '\EXCEL.EXE'
+      - '\POWERPNT.EXE'
+  selection_child:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  filter_approved_automation:
+    User|endswith: '\svc_office_automation'
+    CommandLine|contains: '\ProgramData\Contoso\OfficeAutomation\inventory.ps1'
+  condition: selection_parent and selection_child and not filter_approved_automation
+falsepositives:
+  - Signed Office add-ins launching approved PowerShell
+  - Approved macros that call PowerShell
+  - IT automation launched from Office
+level: medium</code></pre></div></article>
+    <article class="card full"><h3>Analyst note</h3><p>A Sigma match means the process relationship deserves review. It does not prove the document is malicious. Compare the command line, file origin, signer, user behavior, device role, and nearby process or network activity.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="6">
+  <div class="page-head"><div><div class="eyebrow">Week 1 Â· Day 5</div><h2>Simple Python filter</h2></div><div class="page-no">Page 6 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Save the Day 1 data as <code>events.jsonl</code>. The program reads one line at a time and prints the matching event numbers. For the supplied fixtures, the answer is <code>1</code> and <code>2</code>.</p></article>
+    <article class="card"><h3>Easy reading plan</h3><ol><li>Open the file.</li><li>Turn each line into a dictionary.</li><li>Get the final executable name.</li><li>Check Office + PowerShell.</li><li>Skip the approved user + script pair.</li></ol></article>
+    <article class="card full"><h3>Python answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('pythonAnswer')">Show Python answer</button><button class="small-btn" onclick="copyFrom('pythonCode',this)">Copy Python</button></div><div class="answer" id="pythonAnswer"><pre><code id="pythonCode">import json
+
+OFFICE = {"winword.exe", "excel.exe", "powerpnt.exe"}
+POWERSHELL = {"powershell.exe", "pwsh.exe"}
+
+
+def name(path):
+    return path.replace("\\", "/").split("/")[-1].lower()
+
+
+with open("events.jsonl", encoding="utf-8") as file:
+    for line in file:
+        event = json.loads(line)
+
+        approved = (
+            event["user"].lower() == "corp\\svc_office_automation"
+            and "\\programdata\\contoso\\officeautomation\\inventory.ps1"
+            in event["command_line"].lower()
+        )
+
+        if (
+            name(event["parent_image"]) in OFFICE
+            and name(event["child_image"]) in POWERSHELL
+            and not approved
+        ):
+            print(event["event_number"])</code></pre></div></article>
+    <article class="card full"><h3>Run and expected output</h3><pre><code>python solution.py
+1
+2</code></pre></article>
+  </div>
+</section>
+
+<section class="page" data-page="7">
+  <div class="page-head"><div><div class="eyebrow">Week 1 Â· Day 6</div><h2>Simple Go line reader</h2></div><div class="page-no">Page 7 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Read the same JSONL file with a scanner. For every non-approved match, print the parent and child executable names. Two lines should be printed.</p></article>
+    <article class="card"><h3>Run and expected output</h3><pre><code>go run main.go
+WINWORD.EXE -> powershell.exe
+EXCEL.EXE -> pwsh.exe</code></pre></article>
+    <article class="card full"><h3>Go answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('goAnswer')">Show Go answer</button><button class="small-btn" onclick="copyFrom('goCode',this)">Copy Go</button></div><div class="answer" id="goAnswer"><pre><code id="goCode">package main
+
+import (
+    "bufio"
+    "encoding/json"
+    "fmt"
+    "os"
+    "strings"
+)
+
+type Event struct {
+    ParentImage string `json:"parent_image"`
+    ChildImage  string `json:"child_image"`
+    CommandLine string `json:"command_line"`
+    User        string `json:"user"`
+}
+
+func name(path string) string {
+    parts := strings.Split(strings.ReplaceAll(path, "\\", "/"), "/")
+    return parts[len(parts)-1]
+}
+
+func main() {
+    file, _ := os.Open("events.jsonl")
+    defer file.Close()
+
+    office := map[string]bool{"winword.exe": true, "excel.exe": true, "powerpnt.exe": true}
+    shells := map[string]bool{"powershell.exe": true, "pwsh.exe": true}
+    scanner := bufio.NewScanner(file)
+
+    for scanner.Scan() {
+        var event Event
+        json.Unmarshal(scanner.Bytes(), &amp;event)
+
+        parent := strings.ToLower(name(event.ParentImage))
+        child := strings.ToLower(name(event.ChildImage))
+        approved := strings.EqualFold(event.User, `CORP\svc_office_automation`) &amp;&amp;
+            strings.Contains(strings.ToLower(event.CommandLine), `\programdata\contoso\officeautomation\inventory.ps1`)
+
+        if office[parent] &amp;&amp; shells[child] &amp;&amp; !approved {
+            fmt.Println(name(event.ParentImage), "-&gt;", name(event.ChildImage))
+        }
+    }
+}</code></pre></div></article>
+    <article class="card full"><h3>Analyst note</h3><p>This version stays intentionally small for Day 6. A later engineering lab can add file-open errors, JSON errors, scanner errors, tests, and CLI flags. Here, the learning goal is simply streaming one event per line and applying the same behavior.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="8">
+  <div class="page-head"><div><div class="eyebrow">Week 1 Â· Day 7</div><h2>Capstone: prove the hunt</h2></div><div class="page-no">Page 8 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>Full hunt checklist</h3><ol><li>Use the five Day 1 fixtures.</li><li>Run the tuned behavior logic.</li><li>Confirm events 1 and 2 match.</li><li>Confirm approved automation event 3 is filtered.</li><li>Confirm normal Office child events 4 and 5 do not match.</li><li>Record the false-positive notes and validation limits.</li></ol></article>
+    <article class="card"><h3>Expected proof</h3><div class="validator-grid"><div class="metric"><strong style="color:var(--green)">2</strong><span>true positives</span></div><div class="metric"><strong style="color:var(--blue)">3</strong><span>benign negatives</span></div><div class="metric"><strong style="color:var(--cyan)">5/5</strong><span>correct decisions</span></div></div><div class="code-tools"><button class="answer-btn" onclick="runValidation()">Run fixture validator</button></div><div id="validationResult" class="result">Press the button to test all five events in your browser.</div></article>
+    <article class="card"><h3>Final decision path</h3><div class="flow"><div class="node"><strong>Office â†’ PowerShell?</strong><small>No: keep quiet</small></div><div class="arrow">â†’</div><div class="node"><strong>Approved exact pair?</strong><small>Yes: filter</small></div><div class="arrow">â†’</div><div class="node"><strong>Otherwise</strong><small>Return to analyst</small></div></div></article>
+    <article class="card full"><h3>Analyst notes: false positives</h3><div class="grid"><div class="card third"><h3>Signed add-ins</h3><p>Verify signer, add-in path, publisher, affected Office app, and whether PowerShell is expected.</p></div><div class="card third"><h3>Approved macros</h3><p>Verify macro owner, document source, command line, script path, and business purpose.</p></div><div class="card third"><h3>IT automation</h3><p>Verify service account, managed device list, approved script hash or path, owner, and expiry date.</p></div></div></article>
+    <article class="card"><h3>Validation status</h3><ul class="checklist"><li>Fixture logic executed: 5/5 decisions passed</li><li>Python executed against the five-line JSONL: passed</li><li>Go not executed: Go toolchain unavailable in the validation environment</li><li>Sigma YAML parsed successfully</li></ul></article>
+    <article class="card"><h3>Honest limits</h3><ul><li>KQL was not executed in a live Microsoft Defender tenant.</li><li>CrowdStrike CQL was not executed in a live Falcon LogScale tenant.</li><li>Field names and available process events must be confirmed in your environment.</li><li>No YARA was created because this week uses process telemetry only.</li></ul></article>
+    <article class="card full"><h3>Week 1 complete</h3><p>You now have a small portfolio-ready chain: labeled telemetry â†’ behavior query â†’ cross-platform translation â†’ portable Sigma rule â†’ Python/Go replay â†’ evidence that 2 malicious examples match and 3 benign examples stay quiet.</p><div class="callout">Completion target: explain the detection and its false positives in two minutes, then reproduce the 5/5 validation result.</div></article>
+  </div>
+</section>
+
+<nav class="nav-footer" aria-label="Lab pages"><button class="nav-btn" id="prevBtn" onclick="go(current-1)">â† Previous</button><div class="dots" id="dots"></div><button class="nav-btn" id="nextBtn" onclick="go(current+1)">Next â†’</button></nav>
+<div class="status-bar">Offline-ready Â· No external libraries Â· Use â† and â†’ keys to change pages Â· Rename this file from <b>.txt</b> to <b>.html</b> before opening or hosting.</div>
+</main>
+<script>
+const events = [
+ {event_number:1,timestamp:"2026-11-10T09:14:22Z",device:"FIN-WS-014",user:"CORP\\maya",parent_image:"C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",child_image:"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",command_line:"powershell.exe -NoProfile -EncodedCommand SQBFAFgA",expected_match:true,label:"True positive",reason:"Word starts encoded PowerShell."},
+ {event_number:2,timestamp:"2026-11-10T10:02:11Z",device:"HR-LT-022",user:"CORP\\arun",parent_image:"C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE",child_image:"C:\\Program Files\\PowerShell\\7\\pwsh.exe",command_line:"pwsh.exe -WindowStyle Hidden -File C:\\Users\\arun\\AppData\\Local\\Temp\\invoice.ps1",expected_match:true,label:"True positive",reason:"Excel starts hidden PowerShell from a user temp path."},
+ {event_number:3,timestamp:"2026-11-10T11:30:00Z",device:"IT-AUTO-03",user:"CORP\\svc_office_automation",parent_image:"C:\\Program Files\\Microsoft Office\\root\\Office16\\POWERPNT.EXE",child_image:"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",command_line:"powershell.exe -File C:\\ProgramData\\Contoso\\OfficeAutomation\\inventory.ps1",expected_match:false,label:"Benign negative",reason:"Exact approved service account and script path pair."},
+ {event_number:4,timestamp:"2026-11-10T12:05:46Z",device:"MKT-WS-008",user:"CORP\\neha",parent_image:"C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",child_image:"C:\\Windows\\System32\\splwow64.exe",command_line:"splwow64.exe",expected_match:false,label:"Benign negative",reason:"Word starts a normal print helper, not PowerShell."},
+ {event_number:5,timestamp:"2026-11-10T13:18:09Z",device:"OPS-LT-019",user:"CORP\\vikram",parent_image:"C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE",child_image:"C:\\Program Files\\Microsoft Office\\root\\Office16\\msoia.exe",command_line:"msoia.exe -Embedding",expected_match:false,label:"Benign negative",reason:"Excel starts an Office component, not PowerShell."}
+];
+const base = p => p.replaceAll('\\','/').split('/').pop().toLowerCase();
+function detect(e){const office=['winword.exe','excel.exe','powerpnt.exe'];const shell=['powershell.exe','pwsh.exe'];const approved=e.user.toLowerCase()==='corp\\svc_office_automation'&&e.command_line.toLowerCase().includes('\\programdata\\contoso\\officeautomation\\inventory.ps1');return office.includes(base(e.parent_image))&&shell.includes(base(e.child_image))&&!approved}
+let current=1;
+function go(n){current=Math.min(8,Math.max(1,n));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',+p.dataset.page===current));document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i+1===current));document.getElementById('progress').style.width=(current/8*100)+'%';document.getElementById('prevBtn').disabled=current===1;document.getElementById('nextBtn').disabled=current===8;window.scrollTo({top:0,behavior:'smooth'});localStorage.setItem('week1Page',current)}
+function toggle(id){const el=document.getElementById(id);el.classList.toggle('open')}
+function copyFrom(id,btn){navigator.clipboard.writeText(document.getElementById(id).innerText).then(()=>{const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=old,1000)})}
+function renderEvents(){document.getElementById('eventsTable').innerHTML=events.map(e=>`<tr><td><b>${e.event_number}</b></td><td>${e.timestamp.replace('T','<br>')}</td><td>${e.device}<br><span style="color:var(--muted)">${e.user}</span></td><td>${base(e.parent_image)}</td><td>${base(e.child_image)}</td><td><span class="tag ${e.expected_match?'tp':'tn'}">${e.expected_match?'TP':'TN'}</span></td><td>${e.reason}</td></tr>`).join('');document.getElementById('eventPicker').innerHTML=events.map((e,i)=>`<button class="small-btn" aria-pressed="${i===0}" onclick="showEvent(${i},this)">Event ${e.event_number}</button>`).join('');document.getElementById('rawJsonCode').textContent=events.map(e=>JSON.stringify(e)).join('\n');showEvent(0,document.querySelector('#eventPicker button'))}
+function showEvent(i,btn){document.querySelectorAll('#eventPicker button').forEach(b=>b.setAttribute('aria-pressed','false'));if(btn)btn.setAttribute('aria-pressed','true');const e=events[i];document.getElementById('eventDetail').innerHTML=`<div class="detail-grid"><div class="detail-item"><small>Parent</small><b>${base(e.parent_image)}</b></div><div class="detail-item"><small>Child</small><b>${base(e.child_image)}</b></div><div class="detail-item"><small>Expected</small><b style="color:${e.expected_match?'var(--green)':'var(--blue)'}">${e.label}</b></div></div><p><b>Command:</b> <code>${e.command_line}</code></p><p>${e.reason}</p>`}
+function runValidation(){const rows=events.map(e=>({n:e.event_number,pass:detect(e)===e.expected_match}));const passed=rows.filter(r=>r.pass).length;const tp=events.filter(e=>detect(e)&&e.expected_match).length;const tn=events.filter(e=>!detect(e)&&!e.expected_match).length;const el=document.getElementById('validationResult');el.className='result '+(passed===events.length?'pass':'fail');el.innerHTML=`<b>${passed}/5 decisions passed</b><br>${tp} true positives matched Â· ${tn} benign negatives stayed quiet`}
+document.getElementById('dots').innerHTML=Array.from({length:8},(_,i)=>`<button class="dot" onclick="go(${i+1})" aria-label="Page ${i+1}">${i+1}</button>`).join('');
+document.getElementById('themeBtn').onclick=()=>{const light=document.documentElement.dataset.theme==='light';document.documentElement.dataset.theme=light?'dark':'light';document.getElementById('themeBtn').textContent=light?'Light':'Dark';localStorage.setItem('week1Theme',light?'dark':'light')};
+let large=false;document.getElementById('textBtn').onclick=()=>{large=!large;document.body.style.fontSize=large?'18px':'16px';document.getElementById('textBtn').textContent=large?'Aâˆ’':'A+'};
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(current+1);if(e.key==='ArrowLeft')go(current-1)});
+if(localStorage.getItem('week1Theme')==='light'){document.documentElement.dataset.theme='light';document.getElementById('themeBtn').textContent='Dark'}
+renderEvents();go(+(localStorage.getItem('week1Page')||1));
+</script>
+</body>
+</html>
