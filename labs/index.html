@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Detection Engineering Labs - Weekly Roadmap</title>
+<style>
+:root{--bg:#08111f;--panel:#101d31;--panel2:#152641;--text:#eef5ff;--muted:#aebed5;--line:#29415f;--cyan:#4fd1c5;--blue:#61a9ff;--amber:#ffcc66;--red:#ff7d8d;--green:#6ee7a8;--shadow:0 18px 46px rgba(0,0,0,.24)}
+[data-theme="light"]{--bg:#eef4fb;--panel:#fff;--panel2:#f4f8fd;--text:#10213b;--muted:#586b84;--line:#cfdaea;--cyan:#087f78;--blue:#1768c4;--amber:#9b6500;--red:#ba2940;--green:#087d48;--shadow:0 16px 40px rgba(26,52,90,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(97,169,255,.12),transparent 28%),var(--bg);color:var(--text);font:16px/1.55 Inter,Segoe UI,Arial,sans-serif;min-height:100vh}
+button,a{font:inherit}
+.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1180px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:12px}
+.brand{font-weight:800;letter-spacing:.2px}.brand span{color:var(--cyan)}.grow{flex:1}
+.icon-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer}
+.icon-btn:hover{border-color:var(--cyan)}
+.shell{max-width:1180px;margin:auto;padding:18px}
+.hero{padding:32px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(79,209,197,.10),rgba(97,169,255,.06)),var(--panel);box-shadow:var(--shadow)}
+.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);font-weight:800}
+.hero h1{font-size:clamp(2rem,5vw,3.8rem);line-height:1.05;margin:.35rem 0 1rem;max-width:850px}
+.hero p{max-width:800px;color:var(--muted);font-size:1.05rem;margin:0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
+.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}
+.stat strong{display:block;font-size:1.8rem;color:var(--cyan)}.stat span{color:var(--muted);font-size:.88rem}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 18px}
+.filter{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:999px;padding:7px 14px;cursor:pointer;font-size:.9rem}
+.filter[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan);font-weight:700}
+.ladder{display:flex;align-items:center;gap:0;margin:6px 0 22px;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.ladder div{flex:1;padding:10px 12px;text-align:center;font-size:.82rem;font-weight:700;background:var(--panel2);border-right:1px solid var(--line)}
+.ladder div:last-child{border-right:0}
+.ladder small{display:block;color:var(--muted);font-weight:400}
+.level-head{display:flex;align-items:baseline;gap:12px;margin:28px 0 12px}
+.level-head h2{margin:0;font-size:1.5rem}.level-head span{color:var(--muted);font-size:.9rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.week{display:flex;flex-direction:column;gap:8px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:var(--shadow);text-decoration:none;color:inherit;min-height:190px}
+a.week:hover{border-color:var(--cyan);transform:translateY(-2px)}
+.week .no{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--cyan);font-weight:800}
+.week h3{margin:0;font-size:1.1rem;line-height:1.25}
+.week p{margin:0;color:var(--muted);font-size:.9rem;flex:1}
+.week .meta{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:3px 9px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);font-size:.76rem;color:var(--muted)}
+.status{font-size:.78rem;font-weight:800;padding:3px 9px;border-radius:999px;align-self:flex-start}
+.status.live{color:var(--green);background:rgba(110,231,168,.12)}
+.status.soon{color:var(--amber);background:rgba(255,204,102,.12)}
+.week.locked{opacity:.62;border-style:dashed;box-shadow:none;cursor:default}
+.lvl-starter{--lv:var(--green)}.lvl-inter{--lv:var(--blue)}.lvl-adv{--lv:var(--amber)}
+.week{border-top:3px solid var(--lv)}
+.foot{margin:30px 0 10px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.88rem}
+.foot code{color:var(--cyan)}
+@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.hero{padding:22px}.ladder{flex-direction:column}.ladder div{border-right:0;border-bottom:1px solid var(--line);width:100%}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><div class="brand">Detection Lab <span>Hub</span></div><div class="grow"></div><button class="icon-btn" id="themeBtn">Light</button></div></header>
+<main class="shell">
+  <section class="hero">
+    <div class="eyebrow">Six-month detection engineering plan</div>
+    <h1>Weekly labs: from first process event to advanced hunts</h1>
+    <p>One small, validated detection exercise per week. Start at Week 1 and work upward. Each lab ships labeled telemetry, hunt queries, a Sigma rule, Python/Go replay code and validation evidence.</p>
+  </section>
+
+  <div class="stats">
+    <div class="stat"><strong id="sTotal">26</strong><span>weekly labs planned</span></div>
+    <div class="stat"><strong id="sLive">1</strong><span>labs available now</span></div>
+    <div class="stat"><strong id="sSoon">25</strong><span>coming soon</span></div>
+    <div class="stat"><strong>3</strong><span>levels: Starter to Advanced</span></div>
+  </div>
+
+  <div class="ladder" aria-label="Difficulty path">
+    <div style="color:var(--green)">Starter<small>Weeks 1-8</small></div>
+    <div style="color:var(--blue)">Intermediate<small>Weeks 9-17</small></div>
+    <div style="color:var(--amber)">Advanced<small>Weeks 18-26</small></div>
+  </div>
+
+  <div class="toolbar" id="filters">
+    <button class="filter" data-f="all" aria-pressed="true">All</button>
+    <button class="filter" data-f="starter" aria-pressed="false">Starter</button>
+    <button class="filter" data-f="inter" aria-pressed="false">Intermediate</button>
+    <button class="filter" data-f="adv" aria-pressed="false">Advanced</button>
+    <button class="filter" data-f="live" aria-pressed="false">Available only</button>
+  </div>
+
+  <div id="levels"></div>
+
+  <div class="foot">
+    <b>Adding a new week:</b> save the lab as its own HTML file, then edit the <code>WEEKS</code> list in this file's script. Set <code>file</code> to the filename, add a <code>title</code>, <code>summary</code> and <code>tags</code>, and change <code>live</code> to <code>true</code>. The card, counts and filters update automatically.
+  </div>
+</main>
+
+<script>
+/* ===== EDIT HERE =====
+   To publish a new week: fill in title/summary/tags, set file, set live:true.
+   Level bands are set by LEVELS below. */
+const LEVELS=[
+  {key:'starter',name:'Starter',from:1,to:8,cls:'lvl-starter',note:'Single-behavior, process-only labs'},
+  {key:'inter',name:'Intermediate',from:9,to:17,cls:'lvl-inter',note:'Multi-event correlation and tuning'},
+  {key:'adv',name:'Advanced',from:18,to:26,cls:'lvl-adv',note:'Chained behaviors and detection-as-code'}
+];
+const WEEKS={
+  1:{live:true,file:'week1.html',title:'Office application spawns PowerShell',
+     summary:'Read five process events, then build and validate one hunt in KQL, CrowdStrike CQL, Sigma, Python and Go.',
+     tags:['Process creation','T1204.002','T1059.001','7 days']}
+  /* 2:{live:true,file:'week2.html',title:'...',summary:'...',tags:['...']}, */
+};
+const TOTAL=26;
+/* ===================== */
+
+const levelOf=n=>LEVELS.find(l=>n>=l.from&&n<=l.to);
+let filter='all';
+
+function card(n){
+  const w=WEEKS[n],lv=levelOf(n),live=w&&w.live;
+  const tag=live?'a':'div';
+  const href=live?` href="${w.file}"`:'';
+  const tags=(w&&w.tags||[]).map(t=>`<span class="chip">${t}</span>`).join('');
+  return `<${tag} class="week ${lv.cls}${live?'':' locked'}"${href}>
+    <div class="no">Week ${n} &middot; ${lv.name}</div>
+    <h3>${live?w.title:'To be announced'}</h3>
+    <p>${live?w.summary:'This lab will be added in a future update.'}</p>
+    <div class="meta">${tags}</div>
+    <span class="status ${live?'live':'soon'}">${live?'Open lab \u2192':'Coming soon'}</span>
+  </${tag}>`;
+}
+
+function render(){
+  const root=document.getElementById('levels');
+  let html='';
+  LEVELS.forEach(l=>{
+    if(['starter','inter','adv'].includes(filter)&&filter!==l.key)return;
+    let items='';
+    for(let n=l.from;n<=l.to&&n<=TOTAL;n++){
+      const live=WEEKS[n]&&WEEKS[n].live;
+      if(filter==='live'&&!live)continue;
+      items+=card(n);
+    }
+    if(!items)return;
+    html+=`<div class="level-head"><h2>${l.name}</h2><span>Weeks ${l.from}-${l.to} &middot; ${l.note}</span></div><div class="grid">${items}</div>`;
+  });
+  root.innerHTML=html||'<p style="color:var(--muted)">No labs match this filter yet.</p>';
+  const live=Object.values(WEEKS).filter(w=>w.live).length;
+  document.getElementById('sTotal').textContent=TOTAL;
+  document.getElementById('sLive').textContent=live;
+  document.getElementById('sSoon').textContent=TOTAL-live;
+}
+
+document.getElementById('filters').addEventListener('click',e=>{
+  const b=e.target.closest('.filter');if(!b)return;
+  filter=b.dataset.f;
+  document.querySelectorAll('.filter').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  render();
+});
+document.getElementById('themeBtn').onclick=()=>{
+  const light=document.documentElement.dataset.theme==='light';
+  document.documentElement.dataset.theme=light?'dark':'light';
+  document.getElementById('themeBtn').textContent=light?'Light':'Dark';
+  try{localStorage.setItem('hubTheme',light?'dark':'light')}catch(e){}
+};
+try{if(localStorage.getItem('hubTheme')==='light'){document.documentElement.dataset.theme='light';document.getElementById('themeBtn').textContent='Dark'}}catch(e){}
+render();
+</script>
+</body>
+</html>
