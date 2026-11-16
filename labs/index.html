@@ -56,27 +56,27 @@ a.week:hover{border-color:var(--cyan);transform:translateY(-2px)}
 <main class="shell">
   <section class="hero">
     <div class="eyebrow">Six-month detection engineering plan</div>
-    <h1>Weekly labs: from first process event to advanced hunts</h1>
-    <p>One small, validated detection exercise per week. Start at Week 1 and work upward. Each lab ships labeled telemetry, hunt queries, a Sigma rule, Python/Go replay code and validation evidence.</p>
+    <h1>Weekly labs: from first process event to cloud and container hunts</h1>
+    <p>One small, validated detection exercise per week. Week 1 is open now; the other labs unlock week by week. Each lab ships labeled telemetry, hunt queries, a Sigma rule, Python/Go replay code and validation evidence.</p>
   </section>
 
   <div class="stats">
     <div class="stat"><strong id="sTotal">26</strong><span>weekly labs planned</span></div>
     <div class="stat"><strong id="sLive">1</strong><span>labs available now</span></div>
     <div class="stat"><strong id="sSoon">25</strong><span>coming soon</span></div>
-    <div class="stat"><strong>3</strong><span>levels: Starter to Advanced</span></div>
+    <div class="stat"><strong>3</strong><span>levels: Easy, Medium, Advanced</span></div>
   </div>
 
   <div class="ladder" aria-label="Difficulty path">
-    <div style="color:var(--green)">Starter<small>Weeks 1-8</small></div>
-    <div style="color:var(--blue)">Intermediate<small>Weeks 9-17</small></div>
-    <div style="color:var(--amber)">Advanced<small>Weeks 18-26</small></div>
+    <div style="color:var(--green)">Easy<small>Weeks 1-13</small></div>
+    <div style="color:var(--blue)">Medium<small>Weeks 14-22</small></div>
+    <div style="color:var(--amber)">Advanced<small>Weeks 23-26</small></div>
   </div>
 
   <div class="toolbar" id="filters">
     <button class="filter" data-f="all" aria-pressed="true">All</button>
-    <button class="filter" data-f="starter" aria-pressed="false">Starter</button>
-    <button class="filter" data-f="inter" aria-pressed="false">Intermediate</button>
+    <button class="filter" data-f="easy" aria-pressed="false">Easy</button>
+    <button class="filter" data-f="medium" aria-pressed="false">Medium</button>
     <button class="filter" data-f="adv" aria-pressed="false">Advanced</button>
     <button class="filter" data-f="live" aria-pressed="false">Available only</button>
   </div>
@@ -84,24 +84,46 @@ a.week:hover{border-color:var(--cyan);transform:translateY(-2px)}
   <div id="levels"></div>
 
   <div class="foot">
-    <b>Adding a new week:</b> save the lab as its own HTML file, then edit the <code>WEEKS</code> list in this file's script. Set <code>file</code> to the filename, add a <code>title</code>, <code>summary</code> and <code>tags</code>, and change <code>live</code> to <code>true</code>. The card, counts and filters update automatically.
+    <b>Adding a new week:</b> save the lab as its own HTML file, then edit the <code>WEEKS</code> list in this file's script. Set <code>file</code> to the filename, and change <code>live</code> to <code>true</code>. Titles, goals and ATT&amp;CK IDs are already filled in. The card, counts and filters update automatically.
   </div>
 </main>
 
 <script>
 /* ===== EDIT HERE =====
-   To publish a new week: fill in title/summary/tags, set file, set live:true.
+   To publish a new week: set file:'weekN.html' and live:true on its entry.
    Level bands are set by LEVELS below. */
 const LEVELS=[
-  {key:'starter',name:'Starter',from:1,to:8,cls:'lvl-starter',note:'Single-behavior, process-only labs'},
-  {key:'inter',name:'Intermediate',from:9,to:17,cls:'lvl-inter',note:'Multi-event correlation and tuning'},
-  {key:'adv',name:'Advanced',from:18,to:26,cls:'lvl-adv',note:'Chained behaviors and detection-as-code'}
+  {key:'easy',name:'Easy',from:1,to:13,cls:'lvl-starter',note:'Starter, Beginner and Beginner+ labs: endpoint, identity, persistence and credential access'},
+  {key:'medium',name:'Medium',from:14,to:22,cls:'lvl-inter',note:'Intermediate labs: network, lateral movement and Linux'},
+  {key:'adv',name:'Advanced',from:23,to:26,cls:'lvl-adv',note:'Portfolio labs: cloud, Kubernetes and the integrated capstone'}
 ];
 const WEEKS={
-  1:{live:true,file:'week1.html',title:'Office application spawns PowerShell',
-     summary:'Read five process events, then build and validate one hunt in KQL, CrowdStrike CQL, Sigma, Python and Go.',
-     tags:['Process creation','T1204.002','T1059.001','7 days']}
-  /* 2:{live:true,file:'week2.html',title:'...',summary:'...',tags:['...']}, */
+  1:{live:true,file:'week1.html',title:"Office application spawns PowerShell",month:"Month 1 · Endpoint Foundations",domain:"Windows Endpoint",summary:"Detect Word, Excel, or PowerPoint starting PowerShell while keeping normal Office activity quiet.",attack:"T1204.002, T1059.001"},
+  2:{live:false,title:"Encoded PowerShell execution",month:"Month 1 · Endpoint Foundations",domain:"Windows Endpoint",summary:"Find PowerShell using encoded-command flags without matching ordinary scripts.",attack:"T1059.001, T1027"},
+  3:{live:false,title:"Script interpreter downloads a file",month:"Month 1 · Endpoint Foundations",domain:"Windows Endpoint",summary:"Detect PowerShell, certutil, curl, or bitsadmin retrieving a file to a user-writable directory.",attack:"T1105, T1059.001"},
+  4:{live:false,title:"Executable launched from Downloads or Temp",month:"Month 1 · Endpoint Foundations",domain:"Windows Endpoint",summary:"Find a newly created executable launched from Downloads, Temp, or an extracted archive directory.",attack:"T1204.002, T1036"},
+  5:{live:false,title:"Password spray across many accounts",month:"Month 2 · Identity & Access",domain:"Identity & Access",summary:"Find one source generating failures across many usernames in a short window.",attack:"T1110.003"},
+  6:{live:false,title:"Repeated failures followed by successful logon",month:"Month 2 · Identity & Access",domain:"Identity & Access",summary:"Identify a success for the same account and source shortly after repeated failures.",attack:"T1110, T1078"},
+  7:{live:false,title:"New user added to local Administrators",month:"Month 2 · Identity & Access",domain:"Identity & Access",summary:"Detect creation of a local account and addition to a privileged local group.",attack:"T1136.001, T1098"},
+  8:{live:false,title:"RDP logon from a new source",month:"Month 2 · Identity & Access",domain:"Identity & Access",summary:"Find successful remote interactive logons from a source not seen for the user or device baseline.",attack:"T1021.001, T1078"},
+  9:{live:false,title:"Scheduled task starts a user-writable binary",month:"Month 3 · Persistence & Credential",domain:"Persistence & Credential",summary:"Detect task creation or execution pointing to Temp, AppData, Downloads, or a script interpreter.",attack:"T1053.005"},
+  10:{live:false,title:"Registry Run key persistence",month:"Month 3 · Persistence & Credential",domain:"Persistence & Credential",summary:"Detect a new autorun value whose command points to a script interpreter or user-writable path.",attack:"T1547.001"},
+  11:{live:false,title:"New service from a user-writable path",month:"Month 3 · Persistence & Credential",domain:"Persistence & Credential",summary:"Detect service installation where the image path is in Temp, AppData, ProgramData, or a share.",attack:"T1543.003"},
+  12:{live:false,title:"WMI launches PowerShell or cmd",month:"Month 3 · Persistence & Credential",domain:"Persistence & Credential",summary:"Detect WMI provider activity spawning a command shell or PowerShell with suspicious arguments.",attack:"T1047, T1059"},
+  13:{live:false,title:"Unexpected process accesses LSASS",month:"Month 3 · Persistence & Credential",domain:"Persistence & Credential",summary:"Find nonstandard processes opening LSASS with risky access rights while suppressing approved security tools.",attack:"T1003.001"},
+  14:{live:false,title:"Script process queries a rare domain",month:"Month 4 · Network & Lateral Movement",domain:"Network & Lateral",summary:"Find DNS queries from PowerShell or other script hosts to domains absent from a small baseline.",attack:"T1071.004, T1059"},
+  15:{live:false,title:"Periodic outbound connection beaconing",month:"Month 4 · Network & Lateral Movement",domain:"Network & Lateral",summary:"Identify one process contacting the same destination at roughly regular intervals.",attack:"T1071.001"},
+  16:{live:false,title:"SMB admin-share access from a workstation",month:"Month 4 · Network & Lateral Movement",domain:"Network & Lateral",summary:"Detect workstation-to-workstation access to ADMIN$ or C$ followed by file or service activity.",attack:"T1021.002"},
+  17:{live:false,title:"PsExec-like remote service execution",month:"Month 4 · Network & Lateral Movement",domain:"Network & Lateral",summary:"Detect a remote service created after admin-share or service-control activity.",attack:"T1569.002, T1021.002"},
+  18:{live:false,title:"Executable launched from removable media",month:"Month 5 · Linux Foundations",domain:"Linux, Cloud & Containers",summary:"Find a process whose image or parent originates from a mounted removable drive.",attack:"T1091, T1204.002"},
+  19:{live:false,title:"Web server process spawns a shell",month:"Month 5 · Linux Foundations",domain:"Linux, Cloud & Containers",summary:"Detect nginx, apache, httpd, php-fpm, or a Java app server starting sh, bash, or a scripting tool.",attack:"T1505.003, T1059.004"},
+  20:{live:false,title:"curl or wget downloads, chmods, then executes a file",month:"Month 5 · Linux Foundations",domain:"Linux, Cloud & Containers",summary:"Correlate a simple Linux download-to-execution chain.",attack:"T1105, T1222.002, T1059.004"},
+  21:{live:false,title:"New sudo-capable Linux user",month:"Month 5 · Linux Foundations",domain:"Linux, Cloud & Containers",summary:"Detect account creation followed by sudoers or privileged-group membership.",attack:"T1136.001, T1098"},
+  22:{live:false,title:"SSH failures followed by success",month:"Month 5 · Linux Foundations",domain:"Linux, Cloud & Containers",summary:"Identify a successful SSH login after a burst of failures from the same source.",attack:"T1110, T1021.004"},
+  23:{live:false,title:"New AWS access key created and used quickly",month:"Month 6 · Cloud, Containers & Synthesis",domain:"Linux, Cloud & Containers",summary:"Detect access-key creation followed by API use from a new source shortly afterward.",attack:"T1098.001, T1078.004"},
+  24:{live:false,title:"AWS IAM policy grants new administrative privilege",month:"Month 6 · Cloud, Containers & Synthesis",domain:"Linux, Cloud & Containers",summary:"Detect attachment or creation of a policy that materially increases privilege.",attack:"T1098, T1548"},
+  25:{live:false,title:"Kubernetes exec into a pod followed by a shell",month:"Month 6 · Cloud, Containers & Synthesis",domain:"Linux, Cloud & Containers",summary:"Detect interactive exec activity that launches sh/bash in a workload.",attack:"T1609.004, T1059.004"},
+  26:{live:false,title:"Phishing document → PowerShell download → scheduled task → beacon",month:"Month 6 · Cloud, Containers & Synthesis",domain:"Integrated Capstone",summary:"Combine earlier simple signals into one explainable multi-stage hunt and validation package.",attack:"T1204.002, T1059.001, T1105, T1053.005, T1071.001"},
 };
 const TOTAL=26;
 /* ===================== */
@@ -110,14 +132,14 @@ const levelOf=n=>LEVELS.find(l=>n>=l.from&&n<=l.to);
 let filter='all';
 
 function card(n){
-  const w=WEEKS[n],lv=levelOf(n),live=w&&w.live;
+  const w=WEEKS[n],lv=levelOf(n),live=w.live;
   const tag=live?'a':'div';
   const href=live?` href="${w.file}"`:'';
-  const tags=(w&&w.tags||[]).map(t=>`<span class="chip">${t}</span>`).join('');
+  const tags=[w.domain].concat(w.attack.split(', ')).map(t=>`<span class="chip">${t}</span>`).join('');
   return `<${tag} class="week ${lv.cls}${live?'':' locked'}"${href}>
-    <div class="no">Week ${n} &middot; ${lv.name}</div>
-    <h3>${live?w.title:'To be announced'}</h3>
-    <p>${live?w.summary:'This lab will be added in a future update.'}</p>
+    <div class="no">Week ${n} &middot; ${lv.name} &middot; ${w.month.split(' · ')[0]}</div>
+    <h3>${w.title}</h3>
+    <p>${w.summary}</p>
     <div class="meta">${tags}</div>
     <span class="status ${live?'live':'soon'}">${live?'Open lab \u2192':'Coming soon'}</span>
   </${tag}>`;
@@ -127,7 +149,7 @@ function render(){
   const root=document.getElementById('levels');
   let html='';
   LEVELS.forEach(l=>{
-    if(['starter','inter','adv'].includes(filter)&&filter!==l.key)return;
+    if(['easy','medium','adv'].includes(filter)&&filter!==l.key)return;
     let items='';
     for(let n=l.from;n<=l.to&&n<=TOTAL;n++){
       const live=WEEKS[n]&&WEEKS[n].live;
