@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 23 Lab - New AWS Access Key Created and Used Quickly</title>
+<style>
+:root{--bg:#08111f;--panel:#101d31;--panel2:#152641;--text:#eef5ff;--muted:#aebed5;--line:#29415f;--cyan:#4fd1c5;--blue:#61a9ff;--amber:#ffcc66;--red:#ff7d8d;--green:#6ee7a8;--shadow:0 18px 46px rgba(0,0,0,.24)}
+[data-theme="light"]{--bg:#eef4fb;--panel:#fff;--panel2:#f4f8fd;--text:#10213b;--muted:#586b84;--line:#cfdaea;--cyan:#087f78;--blue:#1768c4;--amber:#9b6500;--red:#ba2940;--green:#087d48;--shadow:0 16px 40px rgba(26,52,90,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(97,169,255,.12),transparent 28%),var(--bg);color:var(--text);font:16px/1.55 Inter,Segoe UI,Arial,sans-serif;min-height:100vh}button,a{font:inherit}.shell{max-width:1180px;margin:auto;padding:18px}.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.topbar-inner{max-width:1180px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:12px}.brand{font-weight:800;letter-spacing:.2px}.brand span{color:var(--cyan)}.grow{flex:1}.icon-btn,.nav-btn,.answer-btn,.small-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer;transition:.15s}.icon-btn:hover,.nav-btn:hover,.answer-btn:hover,.small-btn:hover{border-color:var(--cyan);transform:translateY(-1px)}button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}.progress{height:4px;background:var(--line)}.progress>div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .25s}
+.hero{padding:32px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(79,209,197,.10),rgba(97,169,255,.06)),var(--panel);box-shadow:var(--shadow)}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);font-weight:800}.hero h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.02;margin:.35rem 0 1rem;max-width:930px}.hero p{max-width:850px;color:var(--muted);font-size:1.08rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.chip{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);font-size:.86rem}.chip.good{color:var(--green)}.chip.warn{color:var(--amber)}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.stat strong{display:block;font-size:1.8rem;color:var(--cyan)}.stat span{color:var(--muted);font-size:.88rem}
+.page{display:none;animation:fade .22s ease}.page.active{display:block}@keyframes fade{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:22px 0}.page-head h2{font-size:clamp(1.8rem,4vw,3rem);margin:.2rem 0}.page-no{color:var(--muted);font-weight:700}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{grid-column:span 6;padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}.card h3{margin-top:0}.card p,.card li{color:var(--muted)}.callout{border-left:4px solid var(--cyan);padding:12px 16px;background:var(--panel2);border-radius:0 12px 12px 0}.warning{border-left-color:var(--amber)}.danger{border-left-color:var(--red)}.week-map{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-top:18px}.day-tile{padding:14px 10px;border:1px solid var(--line);color:var(--text);border-radius:14px;background:var(--panel2);cursor:pointer;min-height:110px;text-align:left}.day-tile:hover{border-color:var(--cyan)}.day-tile b{display:block;color:var(--cyan);margin-bottom:6px}.day-tile span{font-size:.82rem;color:var(--muted)}
+.flow{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;padding:22px}.node{min-width:185px;max-width:270px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);text-align:center}.node strong{display:block}.node small{color:var(--muted)}.arrow{font-size:2rem;color:var(--cyan)}.attack{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:15px}.attack-card{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.attack-card b{font-size:1.2rem;color:var(--amber)}.attack-link{color:var(--blue);text-decoration:none}.attack-link:hover{text-decoration:underline}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:920px;background:var(--panel2)}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);background:var(--panel)}td{font-size:.9rem}.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.76rem;font-weight:800}.tp{color:var(--green);background:rgba(110,231,168,.12)}.tn{color:var(--blue);background:rgba(97,169,255,.12)}pre{margin:0;padding:18px;overflow:auto;background:#050a12;color:#dce9fa;border-radius:14px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}.code-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.answer{display:none;margin-top:10px}.answer.open{display:block}.raw{max-height:430px}.field-map{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field-map div{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}.field-map code{color:var(--cyan)}
+.event-picker{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.event-picker button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}.event-detail{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.detail-item{padding:10px;border-radius:10px;background:var(--panel)}.detail-item small{display:block;color:var(--muted)}.checklist{list-style:none;padding:0}.checklist li{padding:10px 0;border-bottom:1px solid var(--line)}.checklist li:before{content:'✓';color:var(--green);font-weight:900;margin-right:9px}.validator-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{padding:16px;border:1px solid var(--line);border-radius:14px;text-align:center;background:var(--panel2)}.metric strong{display:block;font-size:2rem}.result{margin-top:12px;padding:12px;border-radius:12px;background:var(--panel2);min-height:48px}.result.pass{border:1px solid var(--green);color:var(--green)}.result.fail{border:1px solid var(--red);color:var(--red)}.nav-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:24px 0 8px}.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.dot{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--muted);cursor:pointer}.dot.active{background:var(--cyan);color:#03111b;border-color:var(--cyan);font-weight:900}.status-bar{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.88rem}
+@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.week-map{grid-template-columns:repeat(2,1fr)}.card,.card.third{grid-column:1/-1}.attack{grid-template-columns:1fr}.attack .arrow{transform:rotate(90deg);text-align:center}.detail-grid,.validator-grid{grid-template-columns:1fr}.topbar .brand{font-size:.9rem}.topbar-inner{gap:7px}.icon-btn{padding:8px}.hero{padding:22px}}@media(max-width:520px){.shell{padding:12px}.stats{grid-template-columns:1fr}.week-map{grid-template-columns:1fr}.page-head{align-items:start;flex-direction:column}.nav-footer .nav-btn{font-size:.84rem;padding:8px}.dots{display:none}}@media print{.topbar,.nav-footer,.code-tools{display:none}.page{display:block!important;break-after:page}.shell{max-width:none}.card,.hero{box-shadow:none}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><a href="index.html" class="icon-btn" style="text-decoration:none" title="Back to all labs">← All labs</a><div class="brand">Detection Lab <span>W23</span></div><div class="grow"></div><button class="icon-btn" id="textBtn" title="Increase text size" aria-label="Increase text size">A+</button><button class="icon-btn" id="themeBtn" title="Switch theme">Light</button></div><div class="progress"><div id="progress"></div></div></header>
+<main class="shell">
+<section class="page active" data-page="1">
+  <div class="hero">
+    <div class="eyebrow">Month 6 - Cloud, Containers &amp; Synthesis · Week 23 · Portfolio</div>
+    <h1>New AWS access key created and used quickly</h1>
+    <p>A cloud-audit learning lab. Correlate an IAM access-key creation with the same key's first API call from a different source IP within 15 minutes, then remove only approved role and workflow pairs.</p>
+    <div class="chips"><span class="chip">Linux, Cloud &amp; Containers</span><span class="chip">AWS CloudTrail</span><span class="chip">T1098.001</span><span class="chip">T1078.004</span><span class="chip good">2 true-positive cases</span><span class="chip">6 benign cases</span><span class="chip warn">No YARA - cloud audit only</span></div>
+  </div>
+  <div class="stats"><div class="stat"><strong>15m</strong><span>creation-to-use window</span></div><div class="stat"><strong>15</strong><span>CloudTrail fixtures</span></div><div class="stat"><strong>8</strong><span>labeled cases</span></div><div class="stat"><strong>7</strong><span>labs in this week</span></div></div>
+  <div class="grid">
+    <article class="card full"><h3>How this learning plan works</h3><p>Week 23 turns one cloud behavior into portfolio evidence. Begin with readable CloudTrail events, build the same correlation in KQL and CrowdStrike CQL, express an enriched-event version in Sigma, replay the raw JSONL in Python and Go, and finish with a compact analyst result. The code stays small enough to explain in an interview.</p>
+      <div class="week-map">
+        <button class="day-tile" onclick="go(2)"><b>Day 1</b><span>Read CloudTrail TP/TN fixtures</span></button>
+        <button class="day-tile" onclick="go(3)"><b>Day 2</b><span>Build and tune the KQL correlation</span></button>
+        <button class="day-tile" onclick="go(4)"><b>Day 3</b><span>Translate to CrowdStrike CQL</span></button>
+        <button class="day-tile" onclick="go(5)"><b>Day 4</b><span>Write the Sigma selection/filter rule</span></button>
+        <button class="day-tile" onclick="go(6)"><b>Day 5</b><span>Join creation and use with Python</span></button>
+        <button class="day-tile" onclick="go(7)"><b>Day 6</b><span>Build per-key timelines with Go</span></button>
+        <button class="day-tile" onclick="go(8)"><b>Day 7</b><span>Validate and present the hunt</span></button>
+      </div>
+    </article>
+    <article class="card"><h3>Week goal</h3><p>Find <b>CreateAccessKey</b>, extract the returned key ID, join later API activity on that key, require a different source IP and a delta of 0–900 seconds, then exclude only named role/workflow pairs.</p><div class="callout">Success means the two attack cases match and all six benign cases stay quiet.</div></article>
+    <article class="card"><h3>What you will keep</h3><ul class="checklist"><li>Fifteen labeled CloudTrail JSONL fixtures</li><li>Tuned KQL and CrowdStrike CQL</li><li>Portable Sigma selection/filter rule</li><li>Small Python join and Go timeline builder</li><li>Executed fixture evidence and honest live-platform limits</li></ul></article>
+  </div>
+</section>
+
+<section class="page" data-page="2">
+  <div class="page-head"><div><div class="eyebrow">Week 23 · Day 1</div><h2>Understand the CloudTrail sequence</h2></div><div class="page-no">Page 2 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>What should be done</h3><ol><li>Find each <code>CreateAccessKey</code> event.</li><li>Read the new ID from <code>responseElements.accessKey.accessKeyId</code>.</li><li>Find the first later event whose <code>userIdentity.accessKeyId</code> is the same.</li><li>Calculate the seconds between creation and first use.</li><li>Require a different source IP, then check the role/workflow allowlist.</li></ol></article>
+    <article class="card full"><h3>Visual event path</h3><div class="flow"><div class="node"><small>1 · Key created</small><strong>CreateAccessKey</strong><small>creator + returned accessKeyId</small></div><div class="arrow">→</div><div class="node"><small>2 · Same key used</small><strong>First API call</strong><small>new sourceIPAddress</small></div><div class="arrow">→</div><div class="node"><small>3 · Decision</small><strong>Alert or allow</strong><small>delta + role/workflow context</small></div></div></article>
+    <article class="card full"><h3>Eight labeled cases</h3><div class="table-wrap"><table><thead><tr><th>Case</th><th>Creator</th><th>Access key</th><th>Creation → first use</th><th>Sources</th><th>Expected</th><th>Reason</th></tr></thead><tbody id="casesTable"></tbody></table></div></article>
+    <article class="card"><h3>Explore one event</h3><div class="event-picker" id="eventPicker"></div><div class="event-detail" id="eventDetail"></div></article>
+    <article class="card"><h3>Raw TP/TN JSONL</h3><p>Save these lines as <code>events.jsonl</code>. Each line is one CloudTrail event with a small <code>lab</code> label used only by the validator.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('rawJson')">Show JSONL answer</button><button class="small-btn" onclick="copyFrom('rawJsonCode',this)">Copy JSONL</button></div><div class="answer" id="rawJson"><pre class="raw"><code id="rawJsonCode"></code></pre></div></article>
+    <article class="card full"><h3>MITRE ATT&amp;CK - visual map</h3><div class="attack"><div class="attack-card"><b>T1098.001</b><h4>Account Manipulation: Additional Cloud Credentials</h4><p>An extra cloud credential can provide continued access. The creation event is the first half of this lab's behavior.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1098/001/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div><div class="arrow">→</div><div class="attack-card"><b>T1078.004</b><h4>Valid Accounts: Cloud Accounts</h4><p>The newly created key can be used as a valid cloud credential. The first API call is the second half of the behavior.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1078/004/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div></div></article>
+  </div>
+</section>
+
+<section class="page" data-page="3">
+  <div class="page-head"><div><div class="eyebrow">Week 23 · Day 2</div><h2>KQL behavior query + tuning</h2></div><div class="page-no">Page 3 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><ol><li>Make a creation table with key, creator, source, role, and workflow.</li><li>Make a use table with the earliest successful API call per key.</li><li>Join on <code>AccessKeyId</code>.</li><li>Keep 0–15 minute deltas and changed sources.</li><li>Filter only approved role/workflow pairs.</li></ol></article>
+    <article class="card"><h3>Tuning guardrails</h3><p>Role alone is too broad. This lab requires both the expected creator role and expected workflow name. Keep an owner, ticket, expiry, and known runner range with every production allowlist entry.</p><div class="callout warning">Do not allowlist all access-key rotation or all administrator activity.</div></article>
+    <article class="card full"><h3>KQL answer</h3><p>Validation place: Microsoft Sentinel Logs after confirming the AWS CloudTrail connector's table and column names.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('kqlAnswer')">Show KQL answer</button><button class="small-btn" onclick="copyFrom('kqlCode',this)">Copy KQL</button></div><div class="answer" id="kqlAnswer"><pre><code id="kqlCode">let Window = 15m;
+let ApprovedPairs = datatable(CreatorRole:string, Workflow:string)
+[
+  "IAM-Onboarding", "approved-user-onboarding",
+  "CiCdKeyRotator", "cicd-key-rotation",
+  "BreakGlassKeyManager", "emergency-access"
+];
+let Creates = AWSCloudTrail
+| where EventName == "CreateAccessKey" and isempty(ErrorCode)
+| extend AccessKeyId = tostring(ResponseElements.accessKey.accessKeyId),
+         Creator = coalesce(tostring(UserIdentity.userName), tostring(UserIdentity.arn)),
+         CreatorRole = tostring(UserIdentity.sessionContext.sessionIssuer.userName),
+         Workflow = tostring(parse_json(RequestParameters).workflow)
+| project CreatedTime=TimeGenerated, AccessKeyId, Creator,
+          CreateSourceIP=SourceIpAddress, CreatorRole, Workflow;
+let FirstUses = AWSCloudTrail
+| where EventName != "CreateAccessKey" and isempty(ErrorCode)
+| extend AccessKeyId = tostring(UserIdentity.accessKeyId)
+| where isnotempty(AccessKeyId)
+| summarize arg_min(TimeGenerated, EventName, SourceIpAddress) by AccessKeyId
+| project AccessKeyId, FirstUse=TimeGenerated,
+          FirstUseEvent=EventName, FirstUseSourceIP=SourceIpAddress;
+Creates
+| join kind=inner FirstUses on AccessKeyId
+| extend DeltaSeconds = datetime_diff("second", FirstUse, CreatedTime)
+| where DeltaSeconds between (0 .. tolong(Window / 1s))
+| where CreateSourceIP != FirstUseSourceIP
+| join kind=leftanti ApprovedPairs on CreatorRole, Workflow
+| project Creator, AccessKeyId, CreatedTime, FirstUse, FirstUseEvent,
+          CreateSourceIP, FirstUseSourceIP, DeltaSeconds, CreatorRole, Workflow
+| order by DeltaSeconds asc</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning and false positives</h3><p><b>Approved user onboarding</b> may create a key and test it from a separate onboarding host. <b>CI/CD key rotation</b> often creates a credential in one control-plane job and tests it from another runner. <b>Emergency access workflows</b> may move between hardened systems. Keep these cases only when the role/workflow pair, owner, ticket, source ranges, and time window all agree.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="4">
+  <div class="page-head"><div><div class="eyebrow">Week 23 · Day 3</div><h2>CrowdStrike CQL translation</h2></div><div class="page-no">Page 4 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Normalize creation and use events to the same <code>accessKeyId</code>, group by key, collect a short sorted timeline, and calculate the creation-to-first-use delta. The query below assumes parsed AWS CloudTrail fields.</p><div class="callout">CQL here means CrowdStrike Falcon LogScale query language.</div></article>
+    <article class="card"><h3>Small field map</h3><div class="field-map"><div>CloudTrail<br><code>eventTime</code></div><div>CQL<br><code>@timestamp</code></div><div>CloudTrail<br><code>eventName</code></div><div>CQL<br><code>eventName</code></div><div>Creation key<br><code>responseElements.accessKey.accessKeyId</code></div><div>Use key<br><code>userIdentity.accessKeyId</code></div><div>CloudTrail<br><code>sourceIPAddress</code></div><div>CQL<br><code>sourceIPAddress</code></div><div>Session issuer<br><code>...sessionIssuer.userName</code></div><div>CQL<br><code>creatorRole</code></div></div></article>
+    <article class="card full"><h3>CrowdStrike CQL answer</h3><p>Validation place: Falcon LogScale or Next-Gen SIEM Search after confirming the parser and exact field paths with one known CloudTrail event.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('cqlAnswer')">Show CrowdStrike CQL answer</button><button class="small-btn" onclick="copyFrom('cqlCode',this)">Copy CQL</button></div><div class="answer" id="cqlAnswer"><pre><code id="cqlCode">#event.dataset="aws.cloudtrail"
+| case {
+    eventName="CreateAccessKey"
+      | accessKeyId := responseElements.accessKey.accessKeyId
+      | phase := "create"
+      | creator := coalesce([userIdentity.userName, userIdentity.arn])
+      | creatorRole := userIdentity.sessionContext.sessionIssuer.userName
+      | workflow := requestParameters.workflow;
+    userIdentity.accessKeyId=*
+      | accessKeyId := userIdentity.accessKeyId
+      | phase := "use";
+  }
+| accessKeyId=*
+| groupBy([accessKeyId], function=[
+    collect([@timestamp, phase, eventName, sourceIPAddress,
+             creator, creatorRole, workflow], limit=50)
+  ], limit=max)
+| sort(@timestamp, order=asc)
+| createTime := array:first("@timestamp", where=[phase="create"])
+| firstUseTime := array:first("@timestamp", where=[phase="use"])
+| createSource := array:first(sourceIPAddress, where=[phase="create"])
+| firstUseSource := array:first(sourceIPAddress, where=[phase="use"])
+| creator := array:first(creator, where=[phase="create"])
+| creatorRole := array:first(creatorRole, where=[phase="create"])
+| workflow := array:first(workflow, where=[phase="create"])
+| deltaSeconds := (firstUseTime-createTime)/1000
+| test(deltaSeconds&gt;=0 and deltaSeconds&lt;=900)
+| test(createSource!=firstUseSource)
+| not((creatorRole="IAM-Onboarding" and workflow="approved-user-onboarding")
+   or (creatorRole="CiCdKeyRotator" and workflow="cicd-key-rotation")
+   or (creatorRole="BreakGlassKeyManager" and workflow="emergency-access"))
+| table([creator, accessKeyId, createTime, firstUseTime,
+         createSource, firstUseSource, deltaSeconds,
+         creatorRole, workflow])</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning and false positives</h3><p>The same three expected workflows can resemble the alert: approved onboarding, CI/CD rotation, and emergency access. Field names, array functions, and parser output vary by Falcon tenant, so first test the field map on known events. A broad role-only exclusion would hide unrelated key creation by a compromised session.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="5">
+  <div class="page-head"><div><div class="eyebrow">Week 23 · Day 4</div><h2>Sigma selection + filters</h2></div><div class="page-no">Page 5 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Standard Sigma rules inspect one event, so this rule targets a correlation record produced by the KQL/Python join. The enrichment must provide <code>key_age_seconds</code>, <code>source_is_new</code>, creator role, and workflow. The rule intentionally has no <code>id</code> or <code>status</code>.</p></article>
+    <article class="card"><h3>Read the condition</h3><div class="flow"><div class="node"><strong>New key</strong><small>age ≤ 900 seconds</small></div><div class="arrow">+</div><div class="node"><strong>New source</strong><small>source_is_new = true</small></div><div class="arrow">−</div><div class="node"><strong>Approved pairs</strong><small>role + workflow together</small></div></div></article>
+    <article class="card full"><h3>Sigma answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('sigmaAnswer')">Show Sigma answer</button><button class="small-btn" onclick="copyFrom('sigmaCode',this)">Copy Sigma</button></div><div class="answer" id="sigmaAnswer"><pre><code id="sigmaCode">title: New AWS Access Key Used Quickly From a New Source
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    correlation_type: access_key_creation_first_use
+    key_age_seconds|lte: 900
+    source_is_new: true
+  filter_onboarding:
+    creator_role: IAM-Onboarding
+    workflow: approved-user-onboarding
+  filter_cicd_rotation:
+    creator_role: CiCdKeyRotator
+    workflow: cicd-key-rotation
+  filter_emergency_access:
+    creator_role: BreakGlassKeyManager
+    workflow: emergency-access
+  condition: selection and not 1 of filter_*
+falsepositives:
+  - Approved user onboarding from a separate enrollment host
+  - CI/CD key rotation tested from a known runner
+  - Emergency access workflows moving between hardened systems
+level: high</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning and false positives</h3><p>A Sigma hit means a new credential crossed sources quickly; it is not proof of compromise. Confirm who requested the key, the target IAM user, CloudTrail session identity, source ownership, first API action, change ticket, and later activity. The false positives are approved onboarding, CI/CD rotation, and emergency access—but only with matching governance evidence.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="6">
+  <div class="page-head"><div><div class="eyebrow">Week 23 · Day 5</div><h2>Simple Python correlation</h2></div><div class="page-no">Page 6 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Save the Day 1 lines as <code>events.jsonl</code>. The script remembers each new key, then evaluates the first later event that uses that key. It prints creator, key, API, source, and time delta for non-allowlisted matches.</p></article>
+    <article class="card"><h3>Easy reading plan</h3><ol><li>Read one JSON object per line.</li><li>Store <code>CreateAccessKey</code> by returned key ID.</li><li>On first use, compare time and source.</li><li>Skip exact role/workflow pairs.</li><li>Print the two expected alerts.</li></ol></article>
+    <article class="card full"><h3>Python answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('pythonAnswer')">Show Python answer</button><button class="small-btn" onclick="copyFrom('pythonCode',this)">Copy Python</button></div><div class="answer" id="pythonAnswer"><pre><code id="pythonCode">import json
+from datetime import datetime
+
+WINDOW_SECONDS = 15 * 60
+APPROVED = {
+    ("IAM-Onboarding", "approved-user-onboarding"),
+    ("CiCdKeyRotator", "cicd-key-rotation"),
+    ("BreakGlassKeyManager", "emergency-access"),
+}
+
+
+def time_of(event):
+    return datetime.fromisoformat(event["eventTime"].replace("Z", "+00:00"))
+
+
+creates = {}
+first_use_seen = set()
+
+with open("events.jsonl", encoding="utf-8") as file:
+    for line in file:
+        event = json.loads(line)
+
+        if event["eventName"] == "CreateAccessKey":
+            key = event["responseElements"]["accessKey"]["accessKeyId"]
+            creates[key] = event
+            continue
+
+        key = event.get("userIdentity", {}).get("accessKeyId")
+        if not key or key not in creates or key in first_use_seen:
+            continue
+
+        first_use_seen.add(key)
+        created = creates[key]
+        delta = int((time_of(event) - time_of(created)).total_seconds())
+        role = created["lab"].get("creatorRole", "")
+        workflow = created["lab"].get("workflow", "")
+        approved = (role, workflow) in APPROVED
+        new_source = event["sourceIPAddress"] != created["sourceIPAddress"]
+
+        if 0 &lt;= delta &lt;= WINDOW_SECONDS and new_source and not approved:
+            creator = created["userIdentity"].get("userName", created["userIdentity"]["arn"])
+            print(f"{creator} | {key} | {event['eventName']} | "
+                  f"{event['sourceIPAddress']} | {delta}s")</code></pre></div></article>
+    <article class="card full"><h3>Run and expected output</h3><pre><code>python3 solution.py
+alice | AKIA7EXAMPLETP001 | ListBuckets | 203.0.113.77 | 180s
+arn:aws:sts::111122223333:assumed-role/SecurityAdmin/maya | AKIA7EXAMPLETP002 | GetCallerIdentity | 198.51.100.88 | 360s</code></pre></article>
+  </div>
+</section>
+
+<section class="page" data-page="7">
+  <div class="page-head"><div><div class="eyebrow">Week 23 · Day 6</div><h2>Go per-key timeline builder</h2></div><div class="page-no">Page 7 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Stream the same JSONL with <code>bufio.Scanner</code>. Normalize the creation and use key paths, append a small timeline entry to each key, then sort and print the timeline after the file is read.</p></article>
+    <article class="card"><h3>Run and expected shape</h3><pre><code>go run main.go
+AKIA7EXAMPLETP001
+  09:00:00 | CREATE | CreateAccessKey | 198.51.100.24
+  09:03:00 | USE    | ListBuckets     | 203.0.113.77
+...</code></pre></article>
+    <article class="card full"><h3>Go answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('goAnswer')">Show Go answer</button><button class="small-btn" onclick="copyFrom('goCode',this)">Copy Go</button></div><div class="answer" id="goAnswer"><pre><code id="goCode">package main
+
+import (
+    "bufio"
+    "encoding/json"
+    "fmt"
+    "os"
+    "sort"
+    "time"
+)
+
+type Event struct {
+    EventTime       string `json:"eventTime"`
+    EventName       string `json:"eventName"`
+    SourceIPAddress string `json:"sourceIPAddress"`
+    UserIdentity struct {
+        AccessKeyID string `json:"accessKeyId"`
+    } `json:"userIdentity"`
+    ResponseElements struct {
+        AccessKey struct {
+            AccessKeyID string `json:"accessKeyId"`
+        } `json:"accessKey"`
+    } `json:"responseElements"`
+}
+
+type Step struct {
+    When   time.Time
+    Phase  string
+    Name   string
+    Source string
+}
+
+func main() {
+    file, err := os.Open("events.jsonl")
+    if err != nil {
+        fmt.Println("open:", err)
+        return
+    }
+    defer file.Close()
+
+    timelines := map[string][]Step{}
+    scanner := bufio.NewScanner(file)
+
+    for scanner.Scan() {
+        var event Event
+        if json.Unmarshal(scanner.Bytes(), &amp;event) != nil {
+            continue
+        }
+
+        key := event.UserIdentity.AccessKeyID
+        phase := "USE"
+        if event.EventName == "CreateAccessKey" {
+            key = event.ResponseElements.AccessKey.AccessKeyID
+            phase = "CREATE"
+        }
+        if key == "" {
+            continue
+        }
+
+        when, err := time.Parse(time.RFC3339, event.EventTime)
+        if err != nil {
+            continue
+        }
+        timelines[key] = append(timelines[key], Step{
+            When: when, Phase: phase, Name: event.EventName,
+            Source: event.SourceIPAddress,
+        })
+    }
+
+    keys := make([]string, 0, len(timelines))
+    for key := range timelines {
+        keys = append(keys, key)
+    }
+    sort.Strings(keys)
+
+    for _, key := range keys {
+        steps := timelines[key]
+        sort.Slice(steps, func(i, j int) bool {
+            return steps[i].When.Before(steps[j].When)
+        })
+        fmt.Println(key)
+        for _, step := range steps {
+            fmt.Printf("  %s | %-6s | %-18s | %s\n",
+                step.When.Format("15:04:05"), step.Phase,
+                step.Name, step.Source)
+        }
+    }
+}</code></pre></div></article>
+    <article class="card full"><h3>Analyst note</h3><p>The Go program intentionally builds timelines instead of deciding alerts. It makes ordering errors, multiple uses, and missing creations visible. Day 7 applies the 15-minute, new-source, and allowlist decisions.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="8">
+  <div class="page-head"><div><div class="eyebrow">Week 23 · Day 7</div><h2>Capstone: prove and present the hunt</h2></div><div class="page-no">Page 8 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>Full hunt checklist</h3><ol><li>Load all fifteen fixtures and group them into eight cases.</li><li>Join creation to the first use on access key ID.</li><li>Require a 0–900 second delta and different source IPs.</li><li>Apply the three exact role/workflow allowlist pairs.</li><li>Confirm both true-positive cases match.</li><li>Confirm all six benign cases remain quiet.</li><li>Show creator, key, first use, source, delta, role, workflow, and decision.</li></ol></article>
+    <article class="card"><h3>Expected proof</h3><div class="validator-grid"><div class="metric"><strong style="color:var(--green)">2</strong><span>true positives</span></div><div class="metric"><strong style="color:var(--blue)">6</strong><span>benign cases</span></div><div class="metric"><strong style="color:var(--cyan)">8/8</strong><span>correct decisions</span></div></div><div class="code-tools"><button class="answer-btn" onclick="runValidation()">Run fixture validator</button></div><div id="validationResult" class="result">Press the button to test all eight cases in your browser.</div></article>
+    <article class="card"><h3>Detection result preview</h3><div class="table-wrap"><table style="min-width:660px"><thead><tr><th>Creator</th><th>Key</th><th>First use / source</th><th>Delta</th><th>Decision</th></tr></thead><tbody id="resultsTable"></tbody></table></div></article>
+    <article class="card full"><h3>Role/workflow allowlists</h3><div class="grid"><div class="card third"><h3>User onboarding</h3><p><code>IAM-Onboarding</code> + <code>approved-user-onboarding</code>. Verify enrollment ticket, owner, target user, and source ranges.</p></div><div class="card third"><h3>CI/CD rotation</h3><p><code>CiCdKeyRotator</code> + <code>cicd-key-rotation</code>. Verify pipeline, secret destination, runner identity, and expiry.</p></div><div class="card third"><h3>Emergency access</h3><p><code>BreakGlassKeyManager</code> + <code>emergency-access</code>. Verify incident, approver, vault checkout, and credential removal.</p></div></div></article>
+    <article class="card full"><h3>Analyst reasoning and false positives</h3><p>The alert becomes stronger when the first API call is reconnaissance or identity discovery, the source is unfamiliar to the account, no change record exists, and the key continues to perform sensitive actions. Approved onboarding, CI/CD rotation, and emergency access can produce the same timing pattern; suppress them only when both role and workflow match and external governance evidence is present.</p></article>
+    <article class="card"><h3>Validation status</h3><ul class="checklist"><li>Fixture correlation executed locally: 8/8 cases passed</li><li>Python executed against the fifteen-line JSONL: passed, 2 alerts</li><li>Go not executed: Go toolchain unavailable in the validation environment</li><li>Sigma YAML parsed successfully</li><li>HTML script syntax checked successfully</li></ul></article>
+    <article class="card"><h3>Honest limits</h3><ul><li>KQL was not executed in a live Microsoft Sentinel workspace.</li><li>CrowdStrike CQL was not executed in a live Falcon tenant.</li><li>Connector and parser field paths must be confirmed in the target environment.</li><li>The Sigma rule expects upstream correlation fields.</li><li>No YARA was created because this lab uses cloud audit telemetry only.</li></ul></article>
+    <article class="card full"><h3>Week 23 complete</h3><p>You now have a portfolio-ready chain: labeled CloudTrail → creation/use correlation → tuned cross-platform queries → portable enriched-event rule → Python replay → Go timelines → honest validation evidence.</p><div class="callout">Interview target: explain why key ID, first use, changed source, short delta, and narrow role/workflow pairs are each necessary.</div></article>
+  </div>
+</section>
+
+<nav class="nav-footer" aria-label="Lab pages"><button class="nav-btn" id="prevBtn" onclick="go(current-1)">← Previous</button><div class="dots" id="dots"></div><button class="nav-btn" id="nextBtn" onclick="go(current+1)">Next →</button></nav>
+<div class="status-bar">Offline-ready · No external libraries · Use ← and → keys to change pages</div>
+</main>
+<script>
+const events = [
+ {eventTime:"2026-11-10T09:00:00Z",eventName:"CreateAccessKey",eventSource:"iam.amazonaws.com",sourceIPAddress:"198.51.100.24",userIdentity:{type:"IAMUser",userName:"alice",arn:"arn:aws:iam::111122223333:user/alice"},requestParameters:{userName:"alice",workflow:"manual"},responseElements:{accessKey:{accessKeyId:"AKIA7EXAMPLETP001",status:"Active"}},lab:{caseId:"TP-1",expected:true,creatorRole:"IAM-Admin",workflow:"manual",reason:"New key used from a different source after 180 seconds."}},
+ {eventTime:"2026-11-10T09:03:00Z",eventName:"ListBuckets",eventSource:"s3.amazonaws.com",sourceIPAddress:"203.0.113.77",userIdentity:{type:"IAMUser",userName:"alice",arn:"arn:aws:iam::111122223333:user/alice",accessKeyId:"AKIA7EXAMPLETP001"},requestParameters:{},responseElements:null,lab:{caseId:"TP-1",expected:true}},
+ {eventTime:"2026-11-10T10:00:00Z",eventName:"CreateAccessKey",eventSource:"iam.amazonaws.com",sourceIPAddress:"192.0.2.44",userIdentity:{type:"AssumedRole",arn:"arn:aws:sts::111122223333:assumed-role/SecurityAdmin/maya"},requestParameters:{userName:"bob",workflow:"manual"},responseElements:{accessKey:{accessKeyId:"AKIA7EXAMPLETP002",status:"Active"}},lab:{caseId:"TP-2",expected:true,creatorRole:"SecurityAdmin",workflow:"manual",reason:"New key used from a different source after 360 seconds."}},
+ {eventTime:"2026-11-10T10:06:00Z",eventName:"GetCallerIdentity",eventSource:"sts.amazonaws.com",sourceIPAddress:"198.51.100.88",userIdentity:{type:"IAMUser",userName:"bob",arn:"arn:aws:iam::111122223333:user/bob",accessKeyId:"AKIA7EXAMPLETP002"},requestParameters:{},responseElements:{account:"111122223333"},lab:{caseId:"TP-2",expected:true}},
+ {eventTime:"2026-11-10T11:00:00Z",eventName:"CreateAccessKey",eventSource:"iam.amazonaws.com",sourceIPAddress:"192.0.2.20",userIdentity:{type:"AssumedRole",arn:"arn:aws:sts::111122223333:assumed-role/IAM-Onboarding/job-51"},requestParameters:{userName:"carol",workflow:"approved-user-onboarding"},responseElements:{accessKey:{accessKeyId:"AKIA7EXAMPLETN001",status:"Active"}},lab:{caseId:"TN-1",expected:false,creatorRole:"IAM-Onboarding",workflow:"approved-user-onboarding",reason:"Approved onboarding role and workflow pair."}},
+ {eventTime:"2026-11-10T11:04:00Z",eventName:"GetUser",eventSource:"iam.amazonaws.com",sourceIPAddress:"192.0.2.21",userIdentity:{type:"IAMUser",userName:"carol",arn:"arn:aws:iam::111122223333:user/carol",accessKeyId:"AKIA7EXAMPLETN001"},requestParameters:{},responseElements:{},lab:{caseId:"TN-1",expected:false}},
+ {eventTime:"2026-11-10T12:00:00Z",eventName:"CreateAccessKey",eventSource:"iam.amazonaws.com",sourceIPAddress:"192.0.2.30",userIdentity:{type:"AssumedRole",arn:"arn:aws:sts::111122223333:assumed-role/CiCdKeyRotator/pipeline-884"},requestParameters:{userName:"deploy-bot",workflow:"cicd-key-rotation"},responseElements:{accessKey:{accessKeyId:"AKIA7EXAMPLETN002",status:"Active"}},lab:{caseId:"TN-2",expected:false,creatorRole:"CiCdKeyRotator",workflow:"cicd-key-rotation",reason:"Approved CI/CD rotation role and workflow pair."}},
+ {eventTime:"2026-11-10T12:01:00Z",eventName:"GetCallerIdentity",eventSource:"sts.amazonaws.com",sourceIPAddress:"192.0.2.31",userIdentity:{type:"IAMUser",userName:"deploy-bot",arn:"arn:aws:iam::111122223333:user/deploy-bot",accessKeyId:"AKIA7EXAMPLETN002"},requestParameters:{},responseElements:{},lab:{caseId:"TN-2",expected:false}},
+ {eventTime:"2026-11-10T13:00:00Z",eventName:"CreateAccessKey",eventSource:"iam.amazonaws.com",sourceIPAddress:"198.51.100.5",userIdentity:{type:"AssumedRole",arn:"arn:aws:sts::111122223333:assumed-role/BreakGlassKeyManager/incident-77"},requestParameters:{userName:"responder",workflow:"emergency-access"},responseElements:{accessKey:{accessKeyId:"AKIA7EXAMPLETN003",status:"Active"}},lab:{caseId:"TN-3",expected:false,creatorRole:"BreakGlassKeyManager",workflow:"emergency-access",reason:"Approved emergency role and workflow pair."}},
+ {eventTime:"2026-11-10T13:02:00Z",eventName:"ListRoles",eventSource:"iam.amazonaws.com",sourceIPAddress:"198.51.100.6",userIdentity:{type:"IAMUser",userName:"responder",arn:"arn:aws:iam::111122223333:user/responder",accessKeyId:"AKIA7EXAMPLETN003"},requestParameters:{},responseElements:{},lab:{caseId:"TN-3",expected:false}},
+ {eventTime:"2026-11-10T14:00:00Z",eventName:"CreateAccessKey",eventSource:"iam.amazonaws.com",sourceIPAddress:"203.0.113.10",userIdentity:{type:"IAMUser",userName:"dana",arn:"arn:aws:iam::111122223333:user/dana"},requestParameters:{userName:"dana",workflow:"manual"},responseElements:{accessKey:{accessKeyId:"AKIA7EXAMPLETN004",status:"Active"}},lab:{caseId:"TN-4",expected:false,creatorRole:"IAM-Admin",workflow:"manual",reason:"First use is 45 minutes later, outside the window."}},
+ {eventTime:"2026-11-10T14:45:00Z",eventName:"ListBuckets",eventSource:"s3.amazonaws.com",sourceIPAddress:"203.0.113.11",userIdentity:{type:"IAMUser",userName:"dana",arn:"arn:aws:iam::111122223333:user/dana",accessKeyId:"AKIA7EXAMPLETN004"},requestParameters:{},responseElements:{},lab:{caseId:"TN-4",expected:false}},
+ {eventTime:"2026-11-10T15:00:00Z",eventName:"CreateAccessKey",eventSource:"iam.amazonaws.com",sourceIPAddress:"198.51.100.40",userIdentity:{type:"IAMUser",userName:"erin",arn:"arn:aws:iam::111122223333:user/erin"},requestParameters:{userName:"erin",workflow:"manual"},responseElements:{accessKey:{accessKeyId:"AKIA7EXAMPLETN005",status:"Active"}},lab:{caseId:"TN-5",expected:false,creatorRole:"IAM-Admin",workflow:"manual",reason:"No API use exists for this key in the fixtures."}},
+ {eventTime:"2026-11-10T16:00:00Z",eventName:"CreateAccessKey",eventSource:"iam.amazonaws.com",sourceIPAddress:"203.0.113.50",userIdentity:{type:"IAMUser",userName:"frank",arn:"arn:aws:iam::111122223333:user/frank"},requestParameters:{userName:"frank",workflow:"manual"},responseElements:{accessKey:{accessKeyId:"AKIA7EXAMPLETN006",status:"Active"}},lab:{caseId:"TN-6",expected:false,creatorRole:"IAM-Admin",workflow:"manual",reason:"First use comes from the same source IP."}},
+ {eventTime:"2026-11-10T16:05:00Z",eventName:"GetAccountSummary",eventSource:"iam.amazonaws.com",sourceIPAddress:"203.0.113.50",userIdentity:{type:"IAMUser",userName:"frank",arn:"arn:aws:iam::111122223333:user/frank",accessKeyId:"AKIA7EXAMPLETN006"},requestParameters:{},responseElements:{},lab:{caseId:"TN-6",expected:false}}
+];
+const approvedPairs=new Set(["IAM-Onboarding|approved-user-onboarding","CiCdKeyRotator|cicd-key-rotation","BreakGlassKeyManager|emergency-access"]);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function keyOf(e){return e.eventName==='CreateAccessKey'?e.responseElements?.accessKey?.accessKeyId:e.userIdentity?.accessKeyId}
+function creatorOf(e){return e.userIdentity?.userName||e.userIdentity?.arn||'unknown'}
+function analyze(){const creates=new Map(),uses=new Map();for(const e of events){const key=keyOf(e);if(!key)continue;if(e.eventName==='CreateAccessKey')creates.set(key,e);else if(!uses.has(key))uses.set(key,e)}return [...creates.entries()].map(([key,c])=>{const u=uses.get(key);const delta=u?Math.round((Date.parse(u.eventTime)-Date.parse(c.eventTime))/1000):null;const pair=`${c.lab.creatorRole}|${c.lab.workflow}`;const detected=!!u&&delta>=0&&delta<=900&&c.sourceIPAddress!==u.sourceIPAddress&&!approvedPairs.has(pair);return{caseId:c.lab.caseId,creator:creatorOf(c),key,created:c.eventTime,createSource:c.sourceIPAddress,firstUse:u?.eventName||'—',firstUseTime:u?.eventTime||'—',firstUseSource:u?.sourceIPAddress||'—',delta,role:c.lab.creatorRole,workflow:c.lab.workflow,expected:c.lab.expected,detected,reason:c.lab.reason}})}
+let current=1;
+function go(n){current=Math.min(8,Math.max(1,n));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',+p.dataset.page===current));document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i+1===current));document.getElementById('progress').style.width=(current/8*100)+'%';document.getElementById('prevBtn').disabled=current===1;document.getElementById('nextBtn').disabled=current===8;window.scrollTo({top:0,behavior:'smooth'});localStorage.setItem('week23Page',current)}
+function toggle(id){const el=document.getElementById(id);el.classList.toggle('open');const button=document.querySelector(`[onclick="toggle('${id}')"]`);if(button)button.textContent=(el.classList.contains('open')?'Hide ':'Show ')+button.textContent.replace(/^(Show|Hide) /,'')}
+function copyFrom(id,btn){const text=document.getElementById(id).innerText;const done=()=>{const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=old,1000)};if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done)}else{const area=document.createElement('textarea');area.value=text;document.body.appendChild(area);area.select();document.execCommand('copy');area.remove();done()}}
+function renderCases(){const rows=analyze();document.getElementById('casesTable').innerHTML=rows.map(r=>`<tr><td><b>${esc(r.caseId)}</b></td><td>${esc(r.creator)}<br><small>${esc(r.role)} · ${esc(r.workflow)}</small></td><td><code>${esc(r.key)}</code></td><td>${esc(r.created)}<br><span style="color:var(--cyan)">→</span> ${esc(r.firstUseTime)} ${r.delta===null?'':`(${r.delta}s)`}</td><td>${esc(r.createSource)}<br><span style="color:var(--cyan)">→</span> ${esc(r.firstUseSource)}</td><td><span class="tag ${r.expected?'tp':'tn'}">${r.expected?'TP':'TN'}</span></td><td>${esc(r.reason)}</td></tr>`).join('');document.getElementById('resultsTable').innerHTML=rows.map(r=>`<tr><td>${esc(r.creator)}</td><td><code>${esc(r.key)}</code></td><td>${esc(r.firstUse)}<br>${esc(r.firstUseSource)}</td><td>${r.delta===null?'—':r.delta+'s'}</td><td><span class="tag ${r.detected?'tp':'tn'}">${r.detected?'ALERT':'QUIET'}</span></td></tr>`).join('')}
+function renderEvents(){document.getElementById('eventPicker').innerHTML=events.map((e,i)=>`<button class="small-btn" aria-pressed="${i===0}" onclick="showEvent(${i},this)">${esc(e.lab.caseId)} · ${i+1}</button>`).join('');document.getElementById('rawJsonCode').textContent=events.map(e=>JSON.stringify(e)).join('\n');showEvent(0,document.querySelector('#eventPicker button'))}
+function showEvent(i,btn){document.querySelectorAll('#eventPicker button').forEach(b=>b.setAttribute('aria-pressed','false'));if(btn)btn.setAttribute('aria-pressed','true');const e=events[i],key=keyOf(e)||'—';document.getElementById('eventDetail').innerHTML=`<div class="detail-grid"><div class="detail-item"><small>Event</small><b>${esc(e.eventName)}</b></div><div class="detail-item"><small>Access key</small><b>${esc(key)}</b></div><div class="detail-item"><small>Expected case</small><b style="color:${e.lab.expected?'var(--green)':'var(--blue)'}">${e.lab.expected?'True positive':'Benign negative'}</b></div></div><p><b>Time:</b> ${esc(e.eventTime)}<br><b>Source:</b> <code>${esc(e.sourceIPAddress)}</code></p><p>${esc(e.lab.reason||'Paired event for this case.')}</p>`}
+function runValidation(){const rows=analyze(),passed=rows.filter(r=>r.detected===r.expected).length,tp=rows.filter(r=>r.detected&&r.expected).length,tn=rows.filter(r=>!r.detected&&!r.expected).length,el=document.getElementById('validationResult');el.className='result '+(passed===rows.length?'pass':'fail');el.innerHTML=`<b>${passed}/${rows.length} decisions passed</b><br>${tp} true positives matched · ${tn} benign cases stayed quiet`}
+document.getElementById('dots').innerHTML=Array.from({length:8},(_,i)=>`<button class="dot" onclick="go(${i+1})" aria-label="Page ${i+1}">${i+1}</button>`).join('');
+document.getElementById('themeBtn').onclick=()=>{const light=document.documentElement.dataset.theme==='light';document.documentElement.dataset.theme=light?'dark':'light';document.getElementById('themeBtn').textContent=light?'Light':'Dark';localStorage.setItem('week23Theme',light?'dark':'light')};
+let large=localStorage.getItem('week23Text')==='large';function setText(){document.body.style.fontSize=large?'18px':'16px';document.getElementById('textBtn').textContent=large?'A−':'A+'}document.getElementById('textBtn').onclick=()=>{large=!large;localStorage.setItem('week23Text',large?'large':'normal');setText()};
+document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key==='ArrowRight')go(current+1);if(e.key==='ArrowLeft')go(current-1)});
+if(localStorage.getItem('week23Theme')==='light'){document.documentElement.dataset.theme='light';document.getElementById('themeBtn').textContent='Dark'}
+setText();renderCases();renderEvents();go(+(localStorage.getItem('week23Page')||1));
+</script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 4 Lab - Executable Launched from Downloads or Temp</title>
+<style>
+:root{--bg:#08111f;--panel:#101d31;--panel2:#152641;--text:#eef5ff;--muted:#aebed5;--line:#29415f;--cyan:#4fd1c5;--blue:#61a9ff;--amber:#ffcc66;--red:#ff7d8d;--green:#6ee7a8;--shadow:0 18px 46px rgba(0,0,0,.24);font-size:100%}
+[data-theme="light"]{--bg:#eef4fb;--panel:#fff;--panel2:#f4f8fd;--text:#10213b;--muted:#586b84;--line:#cfdaea;--cyan:#087f78;--blue:#1768c4;--amber:#9b6500;--red:#ba2940;--green:#087d48;--shadow:0 16px 40px rgba(26,52,90,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(97,169,255,.12),transparent 28%),var(--bg);color:var(--text);font:1rem/1.55 Inter,Segoe UI,Arial,sans-serif;min-height:100vh}button,a{font:inherit}.shell{max-width:1180px;margin:auto;padding:18px}.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.topbar-inner{max-width:1180px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:10px}.brand{font-weight:800;letter-spacing:.2px}.brand span{color:var(--cyan)}.grow{flex:1}.icon-btn,.nav-btn,.answer-btn,.small-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer;transition:.15s}.icon-btn:hover,.nav-btn:hover,.answer-btn:hover,.small-btn:hover{border-color:var(--cyan);transform:translateY(-1px)}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--amber);outline-offset:2px}.progress{height:4px;background:var(--line)}.progress>div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .25s}
+.hero{padding:32px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(79,209,197,.10),rgba(97,169,255,.06)),var(--panel);box-shadow:var(--shadow)}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);font-weight:800}.hero h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.02;margin:.35rem 0 1rem;max-width:900px}.hero p{max-width:850px;color:var(--muted);font-size:1.08rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.chip{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);font-size:.86rem}.chip.good{color:var(--green)}.chip.warn{color:var(--amber)}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.stat strong{display:block;font-size:1.8rem;color:var(--cyan)}.stat span{color:var(--muted);font-size:.88rem}
+.page{display:none;animation:fade .22s ease}.page.active{display:block}@keyframes fade{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:22px 0}.page-head h2{font-size:clamp(1.8rem,4vw,3rem);margin:.2rem 0}.page-no{color:var(--muted);font-weight:700}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{grid-column:span 6;padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}.card h3{margin-top:0}.card p,.card li{color:var(--muted)}.callout{border-left:4px solid var(--cyan);padding:12px 16px;background:var(--panel2);border-radius:0 12px 12px 0}.warning{border-left-color:var(--amber)}.danger{border-left-color:var(--red)}
+.week-map{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-top:18px}.day-tile{padding:14px 10px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);color:var(--text);cursor:pointer;min-height:118px}.day-tile:hover{border-color:var(--cyan)}.day-tile b{display:block;color:var(--cyan);margin-bottom:6px}.day-tile span{font-size:.82rem;color:var(--muted)}.flow{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;padding:22px}.node{min-width:190px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);text-align:center}.node strong{display:block;word-break:break-word}.node small{color:var(--muted)}.arrow{font-size:2rem;color:var(--cyan)}
+.attack{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;gap:15px}.attack-card{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.attack-card b{font-size:1.2rem;color:var(--amber)}.attack-link{color:var(--blue);text-decoration:none}.attack-link:hover{text-decoration:underline}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:980px;background:var(--panel2)}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);background:var(--panel)}td{font-size:.9rem}.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.76rem;font-weight:800}.tp{color:var(--green);background:rgba(110,231,168,.12)}.tn{color:var(--blue);background:rgba(97,169,255,.12)}
+pre{margin:0;padding:18px;overflow:auto;background:#050a12;color:#dce9fa;border-radius:14px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}.code-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.answer{display:none;margin-top:10px}.answer.open{display:block}.raw{max-height:430px}.field-map{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field-map div{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}.field-map code{color:var(--cyan)}.event-picker{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.event-picker button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}.event-detail{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.detail-item{padding:10px;border-radius:10px;background:var(--panel)}.detail-item small{display:block;color:var(--muted)}details{border:1px solid var(--line);border-radius:12px;background:var(--panel2);padding:10px 12px}summary{cursor:pointer;color:var(--cyan);font-weight:700}.mini-json{margin-top:8px;max-width:520px;max-height:240px}.checklist{list-style:none;padding:0}.checklist li{padding:10px 0;border-bottom:1px solid var(--line)}.checklist li:before{content:'✓';color:var(--green);font-weight:900;margin-right:9px}.validator-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{padding:16px;border:1px solid var(--line);border-radius:14px;text-align:center;background:var(--panel2)}.metric strong{display:block;font-size:1.7rem}.result{margin-top:12px;padding:12px;border-radius:12px;background:var(--panel2);min-height:48px}.result.pass{border:1px solid var(--green);color:var(--green)}.result.fail{border:1px solid var(--red);color:var(--red)}.status-table{min-width:720px}.status-pass{color:var(--green);font-weight:800}.status-review{color:var(--amber);font-weight:800}.pack{display:flex;flex-wrap:wrap;gap:8px}.nav-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:24px 0 8px}.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.dot{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--muted);cursor:pointer}.dot.active{background:var(--cyan);color:#03111b;border-color:var(--cyan);font-weight:900}.status-bar{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.88rem}
+@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.week-map{grid-template-columns:repeat(2,1fr)}.card,.card.third{grid-column:1/-1}.attack{grid-template-columns:1fr}.attack>.arrow{transform:rotate(90deg);text-align:center}.detail-grid,.validator-grid{grid-template-columns:1fr 1fr}.topbar .brand{font-size:.9rem}.topbar-inner{gap:7px}.icon-btn{padding:8px}.hero{padding:22px}}@media(max-width:520px){.shell{padding:12px}.stats{grid-template-columns:1fr}.week-map{grid-template-columns:1fr}.page-head{align-items:start;flex-direction:column}.detail-grid,.validator-grid{grid-template-columns:1fr}.nav-footer .nav-btn{font-size:.84rem;padding:8px}.dots{display:none}.brand{display:none}}@media print{.topbar,.nav-footer,.code-tools{display:none}.page{display:block!important;break-after:page}.shell{max-width:none}.card,.hero{box-shadow:none}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><a href="index.html" class="icon-btn" style="text-decoration:none" title="Back to all labs">← All labs</a><div class="brand">Detection Lab <span>W4</span></div><div class="grow"></div><button class="icon-btn" id="textBtn" title="Change text size" aria-label="Change text size">A+</button><button class="icon-btn" id="themeBtn" title="Switch theme">Light</button></div><div class="progress"><div id="progress"></div></div></header>
+<main class="shell">
+<section class="page active" data-page="1">
+  <div class="hero"><div class="eyebrow">Month 1 - Endpoint Foundations · Week 4 · Starter</div><h1>Executable launched from Downloads or Temp</h1><p>Follow one file from creation to execution. You will ask: was it new, did it run from a risky user-writable location or an extracted archive, and is there strong evidence to suppress a known installer?</p><div class="chips"><span class="chip">Windows endpoint</span><span class="chip">File create + process start</span><span class="chip">T1204.002</span><span class="chip">T1036</span><span class="chip good">4 true positives</span><span class="chip">4 benign negatives</span><span class="chip warn">5-minute window</span></div></div>
+  <div class="stats"><div class="stat"><strong>8</strong><span>labeled fixtures</span></div><div class="stat"><strong>2</strong><span>joined event types</span></div><div class="stat"><strong>6</strong><span>detection languages</span></div><div class="stat"><strong>7</strong><span>daily labs</span></div></div>
+  <div class="grid"><article class="card full"><h3>Your seven-day path</h3><div class="week-map"><button class="day-tile" onclick="go(2)"><b>Day 1</b><span>Read TP/TN file and process events</span></button><button class="day-tile" onclick="go(3)"><b>Day 2</b><span>Build and tune the KQL behavior</span></button><button class="day-tile" onclick="go(4)"><b>Day 3</b><span>Translate to CrowdStrike CQL</span></button><button class="day-tile" onclick="go(5)"><b>Day 4</b><span>Write a Sigma selection + filter</span></button><button class="day-tile" onclick="go(6)"><b>Day 5</b><span>Measure create-to-start time in Python</span></button><button class="day-tile" onclick="go(7)"><b>Day 6</b><span>Group paths and extensions in Go</span></button><button class="day-tile" onclick="go(8)"><b>Day 7</b><span>Correlate, suppress with evidence, validate</span></button></div></article><article class="card"><h3>Week goal</h3><p>Find a newly created executable launched from <b>Downloads</b>, <b>Temp</b>, or a directory tied to an archive. Keep path, hash, signer, prevalence, and archive parent in the analyst output.</p><div class="callout">Success: events 1–4 alert; events 5–8 stay quiet for a clear reason.</div></article><article class="card"><h3>Simple decision</h3><ol><li>Join file creation to process start by device + SHA-256.</li><li>Require execution within five minutes.</li><li>Require a target location or archive lineage.</li><li>Suppress only with strong, current installer evidence.</li></ol></article></div>
+</section>
+
+<section class="page" data-page="2">
+  <div class="page-head"><div><div class="eyebrow">Week 4 · Day 1</div><h2>Read the event pair</h2></div><div class="page-no">Page 2 / 8</div></div>
+  <div class="grid"><article class="card full"><h3>Visual process</h3><div class="flow"><div class="node"><small>File create</small><strong>Downloads\InvoiceViewer.exe</strong><small>hash + signer + prevalence</small></div><div class="arrow" aria-hidden="true">→</div><div class="node"><small>Time window</small><strong>65 seconds</strong><small>must be 0–300 seconds</small></div><div class="arrow" aria-hidden="true">→</div><div class="node"><small>Process start</small><strong>InvoiceViewer.exe</strong><small>same device + SHA-256</small></div><div class="arrow" aria-hidden="true">→</div><div class="node"><small>Decision</small><strong>Investigate</strong><small>rare, unsigned, newly created</small></div></div></article><article class="card full"><h3>Eight human-readable fixtures</h3><p>Expand JSONL in the last column when you want the exact object.</p><div class="table-wrap"><table><thead><tr><th>#</th><th>Created → started</th><th>Device / user</th><th>Executable</th><th>Signer / prevalence</th><th>Expected</th><th>Why</th><th>JSONL</th></tr></thead><tbody id="eventsTable"></tbody></table></div></article><article class="card"><h3>Explore one fixture</h3><div class="event-picker" id="eventPicker"></div><div class="event-detail" id="eventDetail"></div></article><article class="card"><h3>Sample package</h3><p>Download the exact fixture set used by Python, Go, and the browser validator.</p><div class="code-tools"><button class="small-btn" onclick="downloadText('events.jsonl',jsonlText)">Download events.jsonl</button><button class="answer-btn" onclick="toggle('rawJson')">Show all JSONL</button><button class="small-btn" onclick="copyFrom('rawJsonCode',this)">Copy JSONL</button></div><div class="answer" id="rawJson"><pre class="raw"><code id="rawJsonCode"></code></pre></div></article><article class="card full"><h3>MITRE ATT&amp;CK - visual map</h3><div class="attack"><div class="attack-card"><b>T1204.002</b><h4>User Execution: Malicious File</h4><p>A user can open a downloaded or extracted file that starts an executable. The event pair gives you the creation-to-execution trail.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1204/002/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div><div class="arrow" aria-hidden="true">→</div><div class="attack-card"><b>T1036</b><h4>Masquerading</h4><p>A file can use a familiar name such as <code>svchost.exe</code> outside the real Windows directory. Path, signer, and prevalence add context.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1036/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div></div></article></div>
+</section>
+
+<section class="page" data-page="3">
+  <div class="page-head"><div><div class="eyebrow">Week 4 · Day 2</div><h2>KQL behavior query + tuning</h2></div><div class="page-no">Page 3 / 8</div></div>
+  <div class="grid"><article class="card"><h3>What to do</h3><ol><li>Prepare file-create rows.</li><li>Join process starts on device + SHA-256.</li><li>Keep starts within five minutes.</li><li>Keep Downloads, Temp, or archive-linked paths.</li><li>Suppress only signed, common files with current evidence.</li></ol></article><article class="card"><h3>Lab schema</h3><p>The query uses two easy normalized tables: <code>EndpointFileCreate</code> and <code>EndpointProcessStart</code>. Map your product fields before production use.</p><div class="callout warning">A valid signature alone is not an allowlist. Require exact evidence with an owner and expiry.</div></article><article class="card full"><h3>KQL answer</h3><p>Live-tenant execution was not available. The fixture semantics were validated locally; field names still require mapping.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('kqlAnswer')">Show KQL answer</button><button class="small-btn" onclick="copyFrom('kqlCode',this)">Copy KQL</button></div><div class="answer" id="kqlAnswer"><pre><code id="kqlCode">let FreshWindow = 5m;
+let ApprovedInstallers = datatable(SHA256:string, Evidence:string, Expires:datetime)
+[
+  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "CAB-2026-041; owner=Workplace IT", datetime(2026-12-31),
+  "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "CHG-2026-908; owner=Endpoint Platform", datetime(2026-11-30)
+];
+let Creates = EndpointFileCreate
+| project DeviceId, SHA256, CreateTime=Timestamp, CreatedPath=FilePath,
+          SignerStatus, GlobalPrevalence, ArchiveParent;
+EndpointProcessStart
+| project DeviceId, SHA256, StartTime=Timestamp, ProcessPath, ParentProcess, User
+| join kind=innerunique Creates on DeviceId, SHA256
+| where StartTime between (CreateTime .. CreateTime + FreshWindow)
+| extend PathLower=tolower(ProcessPath)
+| where PathLower contains @"\downloads\"
+    or PathLower contains @"\temp\"
+    or isnotempty(ArchiveParent)
+| lookup kind=leftouter ApprovedInstallers on SHA256
+| extend EvidenceIsCurrent=isnotempty(Evidence) and Expires &gt; now()
+| where not(SignerStatus == "Valid"
+            and GlobalPrevalence &gt;= 1000
+            and EvidenceIsCurrent)
+| project StartTime, DeviceId, User, ProcessPath, SHA256,
+          SignerStatus, GlobalPrevalence, ArchiveParent, ParentProcess
+| order by StartTime desc</code></pre></div></article><article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> portable apps, interactive installers, developer build output copied into a user-writable path, and vendor updaters. Keep them visible until signer validity, hash or package identity, prevalence, owner, scope, and expiry are verified. Prefer a narrow hash-based exclusion over a broad path or publisher exclusion.</p></article></div>
+</section>
+
+<section class="page" data-page="4">
+  <div class="page-head"><div><div class="eyebrow">Week 4 · Day 3</div><h2>CrowdStrike CQL translation</h2></div><div class="page-no">Page 4 / 8</div></div>
+  <div class="grid"><article class="card"><h3>Translate the behavior</h3><p>Do not translate words only. Preserve the two event kinds, device + hash grouping, five-minute window, path or archive condition, and evidence-based suppression.</p><div class="callout">CQL here means CrowdStrike Falcon LogScale query language.</div></article><article class="card"><h3>Small field map</h3><div class="field-map"><div>Lab create event<br><code>EndpointFileCreate</code></div><div>CrowdStrike<br><code>FileWritten</code></div><div>Lab process event<br><code>EndpointProcessStart</code></div><div>CrowdStrike<br><code>ProcessRollup2</code></div><div>Lab device<br><code>DeviceId</code></div><div>CrowdStrike<br><code>aid</code></div><div>Lab path<br><code>FilePath / ProcessPath</code></div><div>CrowdStrike<br><code>TargetFileName / ImageFileName</code></div><div>Lab hash<br><code>SHA256</code></div><div>CrowdStrike<br><code>SHA256HashData</code></div><div>Lab parent<br><code>ParentProcess</code></div><div>CrowdStrike<br><code>ParentBaseFileName</code></div></div></article><article class="card full"><h3>CrowdStrike CQL answer</h3><p>Not run in a Falcon tenant. Confirm event names and enrichment fields in one known event before use.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('cqlAnswer')">Show CrowdStrike CQL answer</button><button class="small-btn" onclick="copyFrom('cqlCode',this)">Copy CQL</button></div><div class="answer" id="cqlAnswer"><pre><code id="cqlCode">(#event_simpleName=FileWritten OR #event_simpleName=ProcessRollup2)
+| case {
+    #event_simpleName=FileWritten
+      | event_kind := "create"
+      | event_time := @timestamp
+      | path := TargetFileName;
+    #event_simpleName=ProcessRollup2
+      | event_kind := "start"
+      | event_time := @timestamp
+      | path := ImageFileName;
+  }
+| groupBy([aid, SHA256HashData], function=[
+    collect([event_kind, event_time, path, ParentBaseFileName,
+             SignerStatus, GlobalPrevalence, ArchiveParent,
+             AllowlistEvidence], limit=20),
+    min(event_time, as=first_seen),
+    max(event_time, as=last_seen)
+  ], limit=max)
+| test(first_seen &lt; last_seen and last_seen - first_seen &lt;= 300000)
+| test(path=/\\Downloads\\|\\Temp\\/i or ArchiveParent!="")
+| evidence_current := AllowlistEvidence=/owner=.*expires=/i
+| test(not(SignerStatus="Valid" and GlobalPrevalence&gt;=1000 and evidence_current=true))
+| table([last_seen, aid, path, SHA256HashData, SignerStatus,
+         GlobalPrevalence, ArchiveParent, ParentBaseFileName])</code></pre></div></article><article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> portable utilities, approved installers, developer artifacts, and updater services. Confirm that <code>GlobalPrevalence</code>, <code>ArchiveParent</code>, and <code>AllowlistEvidence</code> exist in your Falcon data or add them through enrichment. Do not silently treat a missing field as approval.</p></article></div>
+</section>
+
+<section class="page" data-page="5">
+  <div class="page-head"><div><div class="eyebrow">Week 4 · Day 4</div><h2>Sigma selection + filter</h2></div><div class="page-no">Page 5 / 8</div></div>
+  <div class="grid"><article class="card"><h3>Why Sigma is narrower</h3><p>A standard process-creation record may not hold the earlier file-create time or enterprise prevalence. This portable rule selects the execution path and uses exact hash + company filters for two evidenced installers.</p></article><article class="card"><h3>Tuning guardrail</h3><p>Keep the evidence record outside the rule: ticket, owner, exact hash, scope, approval date, and expiry. Remove the filter when any evidence expires.</p><div class="callout warning">The rule intentionally omits both <code>id</code> and <code>status</code>.</div></article><article class="card full"><h3>Sigma answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('sigmaAnswer')">Show Sigma answer</button><button class="small-btn" onclick="copyFrom('sigmaCode',this)">Copy Sigma</button></div><div class="answer" id="sigmaAnswer"><pre><code id="sigmaCode">title: Executable Launched Soon After Creation in a User-Writable Directory
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_downloads:
+    Image|contains: '\Downloads\'
+  selection_temp:
+    Image|contains: '\Temp\'
+  selection_archive_tools:
+    ParentImage|endswith:
+      - '\7zFM.exe'
+      - '\WinRAR.exe'
+      - '\explorer.exe'
+  filter_contoso_installer:
+    Image|endswith: '\ContosoSetup.exe'
+    Company: 'Contoso Software Ltd'
+    Hashes|contains: 'SHA256=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+  filter_fabrikam_updater:
+    Image|endswith: '\VendorUpdate.exe'
+    Company: 'Fabrikam Devices'
+    Hashes|contains: 'SHA256=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+  condition: (1 of selection_*) and not 1 of filter_*
+falsepositives:
+  - Portable applications launched from Downloads
+  - Approved installers with exact signer and hash evidence
+  - Developer build output copied to a user-writable directory
+  - Vendor updaters with an owner and expiring approval
+level: medium</code></pre></div></article><article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> portable apps, setup programs saved by a browser, developer tools copied to Temp, and vendor update executables. Sigma alone does not prove the file was newly created; correlate with file events in the SIEM before escalating severity.</p></article></div>
+</section>
+
+<section class="page" data-page="6">
+  <div class="page-head"><div><div class="eyebrow">Week 4 · Day 5</div><h2>Mark fresh files with Python</h2></div><div class="page-no">Page 6 / 8</div></div>
+  <div class="grid"><article class="card"><h3>What the code does</h3><ol><li>Read one JSON object per line.</li><li>Parse the creation and start timestamps.</li><li>Subtract created from started.</li><li>Mark 0–300 seconds as <b>FRESH</b>.</li></ol><div class="callout">Run: <code>python week4_fresh.py</code></div></article><article class="card"><h3>Expected result</h3><p>Events 1–5, 7, and 8 are temporally fresh. Event 6 is stale. Location and suppression are separate decisions used by the final detector.</p><p><b>Build validation:</b> <span class="status-pass">Executed · 8 fixture lines</span></p></article><article class="card full"><h3>Python answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('pythonAnswer')">Show Python answer</button><button class="small-btn" onclick="copyFrom('pythonCode',this)">Copy Python</button></div><div class="answer" id="pythonAnswer"><pre><code id="pythonCode">import json
+from datetime import datetime
+
+WINDOW_SECONDS = 300
+
+def time_value(text):
+    return datetime.fromisoformat(text.replace("Z", "+00:00"))
+
+def is_fresh(event):
+    created = time_value(event["file_create_time"])
+    started = time_value(event["process_start_time"])
+    seconds = (started - created).total_seconds()
+    return 0 &lt;= seconds &lt;= WINDOW_SECONDS, int(seconds)
+
+with open("events.jsonl", encoding="utf-8") as source:
+    for line in source:
+        event = json.loads(line)
+        fresh, seconds = is_fresh(event)
+        mark = "FRESH" if fresh else "STALE"
+        print(f"Event {event['event_number']}: {mark} ({seconds}s) -&gt; {event['process_path']}")</code></pre></div></article><article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> a browser finishing an installer download before the user opens it, a self-extracting archive starting its setup file, a developer immediately testing a build, or a vendor updater staging in Temp. Freshness raises priority; it is not proof of maliciousness.</p></article></div>
+</section>
+
+<section class="page" data-page="7">
+  <div class="page-head"><div><div class="eyebrow">Week 4 · Day 6</div><h2>Group paths with Go</h2></div><div class="page-no">Page 7 / 8</div></div>
+  <div class="grid"><article class="card"><h3>What the code does</h3><ol><li>Read the same JSONL file.</li><li>Classify each path as Downloads, Temp, extracted archive, or other.</li><li>Read the extension.</li><li>Count each directory + extension pair.</li></ol><div class="callout">Run: <code>go run week4_group.go</code></div></article><article class="card"><h3>Why group first?</h3><p>Counts show where executions cluster. A sudden rise in Temp <code>.exe</code> launches can guide tuning or hunting even before you add more complex logic.</p><p><b>Build validation:</b> <span class="status-review">Not run — Go tool unavailable</span></p></article><article class="card full"><h3>Go answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('goAnswer')">Show Go answer</button><button class="small-btn" onclick="copyFrom('goCode',this)">Copy Go</button></div><div class="answer" id="goAnswer"><pre><code id="goCode">package main
+
+import (
+    "bufio"
+    "encoding/json"
+    "fmt"
+    "os"
+    "path/filepath"
+    "sort"
+    "strings"
+)
+
+type Event struct {
+    ProcessPath   string `json:"process_path"`
+    ArchiveParent string `json:"archive_parent"`
+}
+
+func directory(e Event) string {
+    path := strings.ToLower(e.ProcessPath)
+    if strings.Contains(path, `\downloads\`) { return "Downloads" }
+    if strings.Contains(path, `\temp\`) { return "Temp" }
+    if e.ArchiveParent != "" { return "Extracted archive" }
+    return "Other"
+}
+
+func main() {
+    file, err := os.Open("events.jsonl")
+    if err != nil { panic(err) }
+    defer file.Close()
+
+    counts := map[string]int{}
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        var e Event
+        if json.Unmarshal(scanner.Bytes(), &amp;e) != nil { continue }
+        ext := strings.ToLower(filepath.Ext(e.ProcessPath))
+        counts[directory(e)+" / "+ext]++
+    }
+    if err := scanner.Err(); err != nil { panic(err) }
+
+    keys := make([]string, 0, len(counts))
+    for key := range counts { keys = append(keys, key) }
+    sort.Strings(keys)
+    for _, key := range keys { fmt.Printf("%-25s %d\n", key, counts[key]) }
+}</code></pre></div></article><article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> portable app collections in Downloads, setup bundles unpacking to Temp, developer package tests, and fleet-wide vendor updaters. Use the grouping as a baseline, then investigate rare extensions, rare hashes, low prevalence, and unusual parent processes.</p></article></div>
+</section>
+
+<section class="page" data-page="8">
+  <div class="page-head"><div><div class="eyebrow">Week 4 · Day 7</div><h2>Correlate, suppress, and prove</h2></div><div class="page-no">Page 8 / 8</div></div>
+  <div class="grid"><article class="card"><h3>Capstone logic</h3><ol><li>Same device + SHA-256.</li><li>Create precedes start by at most five minutes.</li><li>Downloads, Temp, or archive lineage.</li><li>Suppress only when signer, prevalence, exact approval, owner, and expiry support it.</li></ol><div class="code-tools"><button class="answer-btn" onclick="runValidation()">Run fixture validator</button></div><div id="validationResult" class="result">Press the button to test all eight fixtures in this browser.</div></article><article class="card"><h3>Expected proof</h3><div class="validator-grid"><div class="metric"><strong style="color:var(--green)">4</strong><span>true positives</span></div><div class="metric"><strong style="color:var(--blue)">4</strong><span>benign negatives</span></div><div class="metric"><strong style="color:var(--cyan)">8/8</strong><span>correct decisions</span></div></div><p>The detector does not suppress a file merely because it is signed. It requires current, explicit approval evidence.</p></article><article class="card full"><h3>Tuned rule pack</h3><p>One tuned implementation is included for each language. Use the buttons to open its page; YARA stays here because it scans the harmless sample marker rather than endpoint events.</p><div class="pack"><button class="small-btn" onclick="go(3);openAnswer('kqlAnswer')">KQL · Day 2</button><button class="small-btn" onclick="go(4);openAnswer('cqlAnswer')">CrowdStrike CQL · Day 3</button><button class="small-btn" onclick="go(5);openAnswer('sigmaAnswer')">Sigma · Day 4</button><button class="small-btn" onclick="go(6);openAnswer('pythonAnswer')">Python · Day 5</button><button class="small-btn" onclick="go(7);openAnswer('goAnswer')">Go · Day 6</button><button class="small-btn" onclick="openAnswer('yaraAnswer')">YARA · Day 7</button></div></article><article class="card"><h3>Harmless sample file</h3><p>The sample is plain text, not an executable. It lets you test the YARA signature safely.</p><div class="code-tools"><button class="small-btn" onclick="downloadText('week4_harmless_marker.txt',markerText)">Download harmless marker</button><button class="answer-btn" onclick="toggle('markerAnswer')">Show marker text</button><button class="small-btn" onclick="copyFrom('markerCode',this)">Copy marker</button></div><div class="answer" id="markerAnswer"><pre><code id="markerCode">WEEK4_HARMLESS_EXECUTABLE_MARKER
+This file is safe and contains no executable code.
+</code></pre></div></article><article class="card"><h3>YARA test</h3><p>Save the rule as <code>week4_marker.yar</code>, then run <code>yara week4_marker.yar week4_harmless_marker.txt</code>.</p><p><b>Build validation:</b> <span class="status-review">Not run — YARA tool unavailable</span></p><div class="code-tools"><button class="answer-btn" onclick="toggle('yaraAnswer')">Show YARA answer</button><button class="small-btn" onclick="copyFrom('yaraCode',this)">Copy YARA</button></div><div class="answer" id="yaraAnswer"><pre><code id="yaraCode">rule Week4_Harmless_Executable_Marker
+{
+    meta:
+        description = "Finds the harmless Week 4 marker file"
+        purpose = "training only"
+    strings:
+        $marker = "WEEK4_HARMLESS_EXECUTABLE_MARKER" ascii wide
+        $note = "This file is safe and contains no executable code." ascii
+    condition:
+        filesize &lt; 10KB and all of them
+}</code></pre></div></article><article class="card full"><h3>Validation status</h3><div class="table-wrap"><table class="status-table"><thead><tr><th>Item</th><th>Status</th><th>What was checked</th></tr></thead><tbody><tr><td>Fixture detector</td><td class="status-pass">Executed · 8/8</td><td>Same logic as the browser button; 4 TP matched and 4 TN stayed quiet.</td></tr><tr><td>Python</td><td class="status-pass">Executed · 8 lines</td><td>Ran against the included JSONL; seven fresh events and one stale event.</td></tr><tr><td>Go</td><td class="status-review">Not run — tool unavailable</td><td>Code included; the local environment did not have Go installed.</td></tr><tr><td>Sigma</td><td class="status-pass">Parsed successfully</td><td>YAML structure parsed; no live backend conversion.</td></tr><tr><td>KQL</td><td class="status-review">Not live-run</td><td>Fixture semantics checked; normalized fields require tenant mapping.</td></tr><tr><td>CrowdStrike CQL</td><td class="status-review">Not live-run</td><td>Translation reviewed; Falcon event/enrichment fields require tenant confirmation.</td></tr><tr><td>YARA</td><td class="status-review">Not run — tool unavailable</td><td>Rule and harmless marker included; the local environment did not have YARA installed.</td></tr></tbody></table></div></article><article class="card full"><h3>Final analyst reasoning</h3><p><b>Likely false positives:</b> portable apps, installers, developer build output, and vendor updaters. A safe suppression should be narrow, attributable, and reversible: exact hash or package identity, valid expected signer, sufficient prevalence for your environment, documented owner, approved scope, and an expiry. If the archive parent, hash, signer, or command lineage differs, keep the alert visible.</p><div class="callout">Portfolio evidence: keep the fixtures, validation output, rule versions, field map, and tuning record together. That proves the detection works and shows why each exception exists.</div></article></div>
+</section>
+
+<nav class="nav-footer" aria-label="Lab pages"><button class="nav-btn" id="prevBtn" onclick="go(current-1)">← Previous</button><div class="dots" id="dots"></div><button class="nav-btn" id="nextBtn" onclick="go(current+1)">Next →</button></nav>
+<div class="status-bar">Keyboard: <b>←</b> previous · <b>→</b> next · <b>Home</b> introduction · <b>End</b> Day 7. Progress, theme, and text size are saved in this browser.</div>
+</main>
+<script>
+const events = [{"event_number": 1, "device": "WKSTN-041", "user": "CORP\\maya", "file_create_time": "2026-11-10T08:00:00Z", "process_start_time": "2026-11-10T08:01:05Z", "file_path": "C:\\Users\\maya\\Downloads\\InvoiceViewer.exe", "process_path": "C:\\Users\\maya\\Downloads\\InvoiceViewer.exe", "sha256": "1111111111111111111111111111111111111111111111111111111111111111", "signer": "Unknown", "signer_status": "NotSigned", "global_prevalence": 1, "archive_parent": "", "parent_process": "C:\\Windows\\explorer.exe", "allowlisted_installer": false, "allowlist_evidence": "", "expected_match": true, "label": "TP", "reason": "Unsigned, rare executable was created in Downloads and started 65 seconds later."}, {"event_number": 2, "device": "WKSTN-118", "user": "CORP\\li", "file_create_time": "2026-11-10T08:10:00Z", "process_start_time": "2026-11-10T08:11:30Z", "file_path": "C:\\Users\\li\\AppData\\Local\\Temp\\7zO3A4.tmp\\meeting_notes.exe", "process_path": "C:\\Users\\li\\AppData\\Local\\Temp\\7zO3A4.tmp\\meeting_notes.exe", "sha256": "2222222222222222222222222222222222222222222222222222222222222222", "signer": "Unknown", "signer_status": "NotSigned", "global_prevalence": 2, "archive_parent": "C:\\Users\\li\\Downloads\\meeting_notes.zip", "parent_process": "C:\\Program Files\\7-Zip\\7zFM.exe", "allowlisted_installer": false, "allowlist_evidence": "", "expected_match": true, "label": "TP", "reason": "An archive produced an unsigned executable in Temp; it ran 90 seconds after creation."}, {"event_number": 3, "device": "WKSTN-203", "user": "CORP\\ana", "file_create_time": "2026-11-10T08:20:00Z", "process_start_time": "2026-11-10T08:20:40Z", "file_path": "C:\\Users\\ana\\Documents\\Unpacked\\svchost.exe", "process_path": "C:\\Users\\ana\\Documents\\Unpacked\\svchost.exe", "sha256": "3333333333333333333333333333333333333333333333333333333333333333", "signer": "Unknown", "signer_status": "NotSigned", "global_prevalence": 3, "archive_parent": "C:\\Users\\ana\\Downloads\\tools.zip", "parent_process": "C:\\Windows\\explorer.exe", "allowlisted_installer": false, "allowlist_evidence": "", "expected_match": true, "label": "TP", "reason": "Archive lineage proves an extracted directory; the Windows-like name supports T1036 review."}, {"event_number": 4, "device": "WKSTN-077", "user": "CORP\\omar", "file_create_time": "2026-11-10T08:30:00Z", "process_start_time": "2026-11-10T08:33:00Z", "file_path": "C:\\Users\\omar\\AppData\\Local\\Temp\\SetupCache\\update.exe", "process_path": "C:\\Users\\omar\\AppData\\Local\\Temp\\SetupCache\\update.exe", "sha256": "4444444444444444444444444444444444444444444444444444444444444444", "signer": "Unknown", "signer_status": "NotSigned", "global_prevalence": 4, "archive_parent": "", "parent_process": "C:\\Windows\\explorer.exe", "allowlisted_installer": false, "allowlist_evidence": "", "expected_match": true, "label": "TP", "reason": "A rare unsigned update-named file in Temp ran three minutes after creation."}, {"event_number": 5, "device": "WKSTN-052", "user": "CORP\\sara", "file_create_time": "2026-11-10T09:00:00Z", "process_start_time": "2026-11-10T09:01:00Z", "file_path": "C:\\Users\\sara\\Downloads\\ContosoSetup.exe", "process_path": "C:\\Users\\sara\\Downloads\\ContosoSetup.exe", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "signer": "Contoso Software Ltd", "signer_status": "Valid", "global_prevalence": 80000, "archive_parent": "", "parent_process": "C:\\Windows\\explorer.exe", "allowlisted_installer": true, "allowlist_evidence": "CAB-2026-041; owner=Workplace IT; expires=2026-12-31", "expected_match": false, "label": "TN", "reason": "Known installer is signed, common, hash-allowlisted, owned, and has expiring change evidence."}, {"event_number": 6, "device": "WKSTN-099", "user": "CORP\\dev", "file_create_time": "2026-11-10T06:00:00Z", "process_start_time": "2026-11-10T09:15:00Z", "file_path": "C:\\Users\\dev\\Downloads\\PortableTool.exe", "process_path": "C:\\Users\\dev\\Downloads\\PortableTool.exe", "sha256": "6666666666666666666666666666666666666666666666666666666666666666", "signer": "Portable Tools Inc", "signer_status": "Valid", "global_prevalence": 25000, "archive_parent": "", "parent_process": "C:\\Windows\\explorer.exe", "allowlisted_installer": false, "allowlist_evidence": "", "expected_match": false, "label": "TN", "reason": "Portable app ran more than three hours after creation, outside the five-minute window."}, {"event_number": 7, "device": "DEVBOX-014", "user": "CORP\\nina", "file_create_time": "2026-11-10T09:20:00Z", "process_start_time": "2026-11-10T09:20:20Z", "file_path": "C:\\Users\\nina\\source\\repos\\demo\\bin\\Debug\\demo.exe", "process_path": "C:\\Users\\nina\\source\\repos\\demo\\bin\\Debug\\demo.exe", "sha256": "7777777777777777777777777777777777777777777777777777777777777777", "signer": "Unknown", "signer_status": "NotSigned", "global_prevalence": 1, "archive_parent": "", "parent_process": "C:\\Program Files\\Microsoft Visual Studio\\devenv.exe", "allowlisted_installer": false, "allowlist_evidence": "", "expected_match": false, "label": "TN", "reason": "Fresh developer build is outside Downloads, Temp, and any extracted-archive lineage."}, {"event_number": 8, "device": "WKSTN-161", "user": "SYSTEM", "file_create_time": "2026-11-10T09:30:00Z", "process_start_time": "2026-11-10T09:31:10Z", "file_path": "C:\\Windows\\Temp\\VendorUpdate.exe", "process_path": "C:\\Windows\\Temp\\VendorUpdate.exe", "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "signer": "Fabrikam Devices", "signer_status": "Valid", "global_prevalence": 120000, "archive_parent": "", "parent_process": "C:\\Program Files\\Fabrikam\\UpdaterService.exe", "allowlisted_installer": true, "allowlist_evidence": "CHG-2026-908; owner=Endpoint Platform; expires=2026-11-30", "expected_match": false, "label": "TN", "reason": "Vendor updater has valid signature, high prevalence, exact hash approval, owner, and expiry."}];
+const markerText = "WEEK4_HARMLESS_EXECUTABLE_MARKER\nThis file is safe and contains no executable code.\n";
+const jsonlText = events.map(e => JSON.stringify(e)).join('\n') + '\n';
+let current = Number(localStorage.getItem('week4Page') || 1);
+
+function pathName(path){return path.replaceAll('\\','/').split('/').pop()}
+function secondsBetween(e){return Math.round((Date.parse(e.process_start_time)-Date.parse(e.file_create_time))/1000)}
+function targetLocation(e){const path=e.process_path.toLowerCase();return path.includes('\\downloads\\')||path.includes('\\temp\\')||Boolean(e.archive_parent)}
+function installerLike(e){const name=pathName(e.process_path).toLowerCase();return name.includes('setup')||name.includes('install')||name.includes('update')}
+function evidencedSuppression(e){return installerLike(e)&&e.signer_status==='Valid'&&e.global_prevalence>=1000&&e.allowlisted_installer&&/owner=.*expires=/i.test(e.allowlist_evidence)}
+function detect(e){const seconds=secondsBetween(e);return seconds>=0&&seconds<=300&&targetLocation(e)&&!evidencedSuppression(e)}
+function escapeHtml(text){return String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function go(n){current=Math.min(8,Math.max(1,n));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',+p.dataset.page===current));document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i+1===current));document.getElementById('progress').style.width=(current/8*100)+'%';document.getElementById('prevBtn').disabled=current===1;document.getElementById('nextBtn').disabled=current===8;window.scrollTo({top:0,behavior:'smooth'});localStorage.setItem('week4Page',current)}
+function toggle(id){document.getElementById(id).classList.toggle('open')}
+function openAnswer(id){document.getElementById(id).classList.add('open')}
+function copyFrom(id,btn){const text=document.getElementById(id).innerText;navigator.clipboard.writeText(text).then(()=>{const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=old,1000)}).catch(()=>{const range=document.createRange();range.selectNodeContents(document.getElementById(id));const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);btn.textContent='Select + copy';})}
+function downloadText(name,text){const blob=new Blob([text],{type:'text/plain;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
+function renderEvents(){document.getElementById('eventsTable').innerHTML=events.map(e=>`<tr><td><b>${e.event_number}</b></td><td>${e.file_create_time.slice(11,19)} → ${e.process_start_time.slice(11,19)}<br><span style="color:var(--muted)">${secondsBetween(e)} seconds</span></td><td>${escapeHtml(e.device)}<br><span style="color:var(--muted)">${escapeHtml(e.user)}</span></td><td><b>${escapeHtml(pathName(e.process_path))}</b><br><span style="color:var(--muted)">${escapeHtml(e.process_path)}</span></td><td>${escapeHtml(e.signer)}<br><span style="color:var(--muted)">${e.signer_status} · prev ${e.global_prevalence}</span></td><td><span class="tag ${e.expected_match?'tp':'tn'}">${e.label}</span></td><td>${escapeHtml(e.reason)}</td><td><details><summary>Expand</summary><pre class="mini-json"><code>${escapeHtml(JSON.stringify(e))}</code></pre></details></td></tr>`).join('');document.getElementById('eventPicker').innerHTML=events.map((e,i)=>`<button class="small-btn" aria-pressed="${i===0}" onclick="showEvent(${i},this)">Event ${e.event_number}</button>`).join('');document.getElementById('rawJsonCode').textContent=jsonlText;showEvent(0,document.querySelector('#eventPicker button'))}
+function showEvent(i,btn){document.querySelectorAll('#eventPicker button').forEach(b=>b.setAttribute('aria-pressed','false'));if(btn)btn.setAttribute('aria-pressed','true');const e=events[i];const verdict=detect(e);document.getElementById('eventDetail').innerHTML=`<div class="detail-grid"><div class="detail-item"><small>Created → started</small><b>${secondsBetween(e)} seconds</b></div><div class="detail-item"><small>Location</small><b>${targetLocation(e)?'Target':'Other'}</b></div><div class="detail-item"><small>Suppression evidence</small><b>${evidencedSuppression(e)?'Complete':'No'}</b></div><div class="detail-item"><small>Detector / expected</small><b style="color:${verdict===e.expected_match?'var(--green)':'var(--red)'}">${verdict?'MATCH':'QUIET'} / ${e.label}</b></div></div><div class="flow"><div class="node"><small>File create</small><strong>${escapeHtml(pathName(e.file_path))}</strong></div><div class="arrow">→</div><div class="node"><small>${secondsBetween(e)} seconds</small><strong>${escapeHtml(e.sha256.slice(0,12))}…</strong></div><div class="arrow">→</div><div class="node"><small>Process start</small><strong>${escapeHtml(pathName(e.process_path))}</strong></div></div><p>${escapeHtml(e.reason)}</p>`}
+function runValidation(){const rows=events.map(e=>({n:e.event_number,actual:detect(e),expected:e.expected_match}));const passed=rows.filter(r=>r.actual===r.expected).length;const tp=events.filter(e=>detect(e)&&e.expected_match).length;const tn=events.filter(e=>!detect(e)&&!e.expected_match).length;const failures=rows.filter(r=>r.actual!==r.expected).map(r=>'Event '+r.n).join(', ');const el=document.getElementById('validationResult');el.className='result '+(passed===events.length?'pass':'fail');el.innerHTML=`<b>${passed}/${events.length} decisions passed</b><br>${tp} true positives matched · ${tn} benign negatives stayed quiet${failures?'<br>Review: '+failures:''}`}
+
+document.getElementById('dots').innerHTML=Array.from({length:8},(_,i)=>`<button class="dot" aria-label="Go to page ${i+1}" onclick="go(${i+1})">${i+1}</button>`).join('');
+const savedTheme=localStorage.getItem('week4Theme')||'dark';document.documentElement.dataset.theme=savedTheme;document.getElementById('themeBtn').textContent=savedTheme==='dark'?'Light':'Dark';document.getElementById('themeBtn').onclick=()=>{const next=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=next;document.getElementById('themeBtn').textContent=next==='dark'?'Light':'Dark';localStorage.setItem('week4Theme',next)};
+const sizes=[100,112.5,125];let sizeIndex=Number(localStorage.getItem('week4Text')||0);function applySize(){document.documentElement.style.fontSize=sizes[sizeIndex]+'%';document.getElementById('textBtn').textContent=['A+','A++','A'][sizeIndex];localStorage.setItem('week4Text',sizeIndex)}document.getElementById('textBtn').onclick=()=>{sizeIndex=(sizeIndex+1)%sizes.length;applySize()};
+document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key==='ArrowRight')go(current+1);if(e.key==='ArrowLeft')go(current-1);if(e.key==='Home')go(1);if(e.key==='End')go(8)});
+renderEvents();applySize();go(current);
+</script>
+</body>
+</html>

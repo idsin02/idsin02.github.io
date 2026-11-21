@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Week 18 detection engineering lab: executable launched from removable media">
+<title>Week 18 Lab - Executable Launched from Removable Media</title>
+<style>
+:root{--bg:#08111f;--panel:#101d31;--panel2:#152641;--text:#eef5ff;--muted:#aebed5;--line:#29415f;--cyan:#4fd1c5;--blue:#61a9ff;--amber:#f4bd4f;--red:#ff718b;--green:#6ee7a8;--shadow:0 18px 44px rgba(0,0,0,.24)}
+[data-theme="light"]{--bg:#eef4fb;--panel:#fff;--panel2:#f4f8fd;--text:#10213b;--muted:#586b84;--line:#cfdaea;--cyan:#087f78;--blue:#1768c4;--amber:#9b6500;--red:#ba2940;--green:#087d48;--shadow:0 16px 40px rgba(26,52,90,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(97,169,255,.13),transparent 28%),var(--bg);color:var(--text);font:16px/1.55 Inter,Segoe UI,Arial,sans-serif;min-height:100vh}button,a{font:inherit}.shell{max-width:1180px;margin:auto;padding:18px}.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.topbar-inner{max-width:1180px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:12px}.brand{font-weight:800;letter-spacing:.2px}.brand span{color:var(--cyan)}.grow{flex:1}.icon-btn,.nav-btn,.answer-btn,.small-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer;transition:.15s}.icon-btn:hover,.nav-btn:hover,.answer-btn:hover,.small-btn:hover{border-color:var(--cyan);transform:translateY(-1px)}button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}.progress{height:4px;background:var(--line)}.progress>div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .25s}
+.hero{padding:32px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(79,209,197,.10),rgba(97,169,255,.06)),var(--panel);box-shadow:var(--shadow)}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);font-weight:800}.hero h1{font-size:clamp(2rem,5vw,4rem);line-height:1.04;margin:.35rem 0 1rem;max-width:930px}.hero p{max-width:860px;color:var(--muted);font-size:1.08rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.chip{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);font-size:.86rem}.chip.good{color:var(--green)}.chip.warn{color:var(--amber)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.stat strong{display:block;font-size:1.8rem;color:var(--cyan)}.stat span{color:var(--muted);font-size:.88rem}.page{display:none;animation:fade .22s ease}.page.active{display:block}@keyframes fade{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:22px 0}.page-head h2{font-size:clamp(1.8rem,4vw,3rem);margin:.2rem 0}.page-no{color:var(--muted);font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.card{grid-column:span 6;border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:20px;box-shadow:var(--shadow)}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}.card h3{margin-top:0}.card p,.card li{color:var(--muted)}.callout{border-left:4px solid var(--cyan);background:var(--panel2);padding:12px 14px;border-radius:0 12px 12px 0;margin-top:12px}.callout.warning{border-left-color:var(--amber)}.week-map{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-top:18px}.day-tile{padding:14px 10px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);cursor:pointer;min-height:112px;color:var(--text);text-align:left}.day-tile:hover{border-color:var(--cyan)}.day-tile b{display:block;color:var(--cyan);margin-bottom:6px}.day-tile span{font-size:.82rem;color:var(--muted)}
+.flow{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;padding:22px}.node{min-width:175px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);text-align:center}.node strong{display:block}.node small{color:var(--muted)}.arrow{font-size:2rem;color:var(--cyan)}.attack{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:15px}.attack-card{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.attack-card b{font-size:1.2rem;color:var(--amber)}.attack-link{color:var(--blue);text-decoration:none}.attack-link:hover{text-decoration:underline}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:900px;background:var(--panel2)}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);background:var(--panel)}td{font-size:.9rem}.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.76rem;font-weight:800}.tp{color:var(--green);background:rgba(110,231,168,.12)}.tn{color:var(--blue);background:rgba(97,169,255,.12)}
+pre{margin:0;padding:18px;overflow:auto;background:#050a12;color:#dce9fa;border-radius:14px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}.code-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.answer{display:none;margin-top:10px}.answer.open{display:block}.raw{max-height:470px}.field-map{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field-map div{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}.field-map code,code{color:var(--cyan)}.event-picker{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.event-picker button[aria-pressed="true"]{border-color:var(--cyan);background:var(--panel2)}.event-detail{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--panel2)}.timeline{display:flex;gap:8px;align-items:stretch;overflow-x:auto;padding:8px 2px}.step{min-width:180px;padding:13px;border:1px solid var(--line);border-radius:13px;background:var(--panel)}.step b{display:block;color:var(--cyan)}.step small{color:var(--muted)}.timeline-arrow{align-self:center;color:var(--cyan);font-size:1.55rem}.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.detail-item{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}.detail-item small,.detail-item b{display:block}.detail-item small{color:var(--muted)}
+.checklist{list-style:none;padding:0}.checklist li{padding:10px 0;border-bottom:1px solid var(--line)}.checklist li:before{content:'✓';color:var(--green);font-weight:900;margin-right:9px}.validator-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{padding:16px;border:1px solid var(--line);border-radius:14px;text-align:center;background:var(--panel2)}.metric strong{display:block;font-size:2rem}.result{padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);margin-top:10px}.result.pass{border-color:var(--green)}.result.fail{border-color:var(--red)}.nav-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:24px 0 8px}.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.dot{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--muted);cursor:pointer}.dot.active{background:var(--cyan);color:#03111b;border-color:var(--cyan);font-weight:900}.status-bar{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.88rem}
+@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.week-map{grid-template-columns:repeat(2,1fr)}.card,.card.third{grid-column:1/-1}.attack{grid-template-columns:1fr}.attack>.arrow{transform:rotate(90deg);text-align:center}.detail-grid,.validator-grid{grid-template-columns:1fr}.topbar .brand{font-size:.9rem}.topbar-inner{gap:7px}.icon-btn{padding:8px}.hero{padding:22px}}
+@media(max-width:520px){.shell{padding:12px}.stats{grid-template-columns:1fr}.week-map{grid-template-columns:1fr}.page-head{align-items:start;flex-direction:column}.nav-footer .nav-btn{font-size:.84rem;padding:8px}.dots{display:none}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><a href="index.html" class="icon-btn" style="text-decoration:none" title="Back to all labs">← All labs</a><div class="brand">Detection Lab <span>W18</span></div><div class="grow"></div><button class="icon-btn" id="textBtn" title="Increase text size" aria-label="Toggle text size">A+</button><button class="icon-btn" id="themeBtn" title="Switch theme" aria-label="Toggle light or dark theme">Light</button></div><div class="progress"><div id="progress"></div></div></header>
+<main class="shell">
+<section class="page active" data-page="1">
+  <div class="hero"><div class="eyebrow">Month 5 · Linux Foundations · Week 18</div><h1>Executable launched from removable media</h1><p>Find a Linux process whose executable image or parent comes from a newly mounted removable drive. Correlate the mount, matching file, and later process instead of relying on a campaign-specific filename.</p><div class="chips"><span class="chip">Intermediate</span><span class="chip">Linux, Cloud &amp; Containers</span><span class="chip warn">T1091</span><span class="chip warn">T1204.002</span><span class="chip good">2 TP · 8 TN scenarios</span></div><div class="stats"><div class="stat"><strong>8</strong><span>guided pages</span></div><div class="stat"><strong>27</strong><span>JSONL events</span></div><div class="stat"><strong>20m</strong><span>mount-to-process window</span></div><div class="stat"><strong>4</strong><span>exact benign profiles</span></div></div></div>
+  <div class="grid" style="margin-top:14px"><article class="card full"><h3>Week goal</h3><p>Connect three facts on the same device: a removable volume is mounted, a file is observed below that mount point, and a later process starts with either its image or its parent below the same mount point.</p><div class="callout">Success means S1 and S2 match. S3–S10 must stay quiet.</div></article><article class="card"><h3>Generic behavior, not attribution</h3><p>The capstone does not search for <code>TEMP.Hex</code>, a particular USB label, or one malware family. Paths, timing, volume context, hashes, and signers are evidence; none alone proves malicious intent.</p></article><article class="card"><h3>What you will keep</h3><ul class="checklist"><li>TP/TN JSONL fixtures</li><li>Tuned KQL and CrowdStrike CQL</li><li>Sigma selection/filter rule</li><li>Simple Python correlator</li><li>Go path normalizer</li><li>Harmless YARA marker</li></ul></article><article class="card full"><h3>Seven-day map</h3><div class="week-map"><button class="day-tile" onclick="go(2)"><b>Day 1</b><span>Events, table, and fixtures</span></button><button class="day-tile" onclick="go(3)"><b>Day 2</b><span>KQL behavior + tuning</span></button><button class="day-tile" onclick="go(4)"><b>Day 3</b><span>CrowdStrike CQL + fields</span></button><button class="day-tile" onclick="go(5)"><b>Day 4</b><span>Sigma + harmless YARA</span></button><button class="day-tile" onclick="go(6)"><b>Day 5</b><span>Python mount mapping</span></button><button class="day-tile" onclick="go(7)"><b>Day 6</b><span>Go path normalization</span></button><button class="day-tile" onclick="go(8)"><b>Day 7</b><span>Capstone and validation</span></button></div></article></div>
+</section>
+
+<section class="page" data-page="2">
+  <div class="page-head"><div><div class="eyebrow">Week 18 · Day 1</div><h2>Read the removable-media chain</h2></div><div class="page-no">Page 2 / 8</div></div>
+  <div class="grid"><article class="card full"><h3>What should be done</h3><ol><li>Keep only successful mount events marked <code>removable=true</code>.</li><li>Record the exact normalized mount point and volume ID.</li><li>Find a file below that mount point.</li><li>Within 20 minutes, find a process whose image or parent is that file.</li><li>Suppress only an exact approved profile: volume + path + hash + signer.</li></ol></article><article class="card full"><h3>Visual behavior</h3><div class="flow"><div class="node"><small>Device event</small><strong>/dev/sdb1 mounted</strong><small>removable = true</small></div><div class="arrow">→</div><div class="node"><small>File event</small><strong>file below mount</strong><small>path + SHA-256 + signer</small></div><div class="arrow">→</div><div class="node"><small>Process event</small><strong>image or parent matches</strong><small>within 20 minutes</small></div><div class="arrow">→</div><div class="node"><small>Decision</small><strong>detect or exact exclusion</strong><small>preserve evidence</small></div></div></article><article class="card full"><h3>Ten labeled scenarios</h3><div class="table-wrap"><table><thead><tr><th>ID</th><th>Scenario</th><th>Mount</th><th>Process origin</th><th>Expected</th><th>Why</th></tr></thead><tbody>
+<tr><td><b>S1</b></td><td>Unsigned helper executed from USB</td><td>/media/alex/USB_BLUE</td><td>image on USB</td><td><span class="tag tp">TP</span></td><td>Mount → file → matching executable.</td></tr>
+<tr><td><b>S2</b></td><td>USB script launches curl</td><td>/run/media/maya/VENDOR_USB</td><td>parent on USB</td><td><span class="tag tp">TP</span></td><td>Parent script is the matched removable-media file.</td></tr>
+<tr><td><b>S3</b></td><td>Approved field hardware tool</td><td>/media/field/ENGKIT</td><td>image on USB</td><td><span class="tag tn">TN</span></td><td>Exact field-tool profile.</td></tr>
+<tr><td><b>S4</b></td><td>Approved OS installer</td><td>/media/installer/OS_DEPLOY</td><td>image on USB</td><td><span class="tag tn">TN</span></td><td>Exact installer profile.</td></tr>
+<tr><td><b>S5</b></td><td>Approved forensic media</td><td>/media/forensics/IR_KIT</td><td>image on USB</td><td><span class="tag tn">TN</span></td><td>Exact read-only forensic-tool profile.</td></tr>
+<tr><td><b>S6</b></td><td>Approved vendor diagnostics</td><td>/media/support/VENDOR_DIAG</td><td>parent on USB</td><td><span class="tag tn">TN</span></td><td>Exact vendor diagnostic profile.</td></tr>
+<tr><td><b>S7</b></td><td>File copied before execution</td><td>/media/alex/TRANSFER</td><td>/home/alex/Downloads</td><td><span class="tag tn">TN</span></td><td>Neither image nor parent starts below the mount.</td></tr>
+<tr><td><b>S8</b></td><td>NFS share execution</td><td>/mnt/teamshare</td><td>image on NFS</td><td><span class="tag tn">TN</span></td><td>Mounted storage is not removable.</td></tr>
+<tr><td><b>S9</b></td><td>Fixed data partition</td><td>/mnt/data</td><td>image on fixed disk</td><td><span class="tag tn">TN</span></td><td>Fixed partition is not removable.</td></tr>
+<tr><td><b>S10</b></td><td>USB file observed, never launched</td><td>/media/lee/ARCHIVE</td><td>none</td><td><span class="tag tn">TN</span></td><td>No process event.</td></tr>
+</tbody></table></div></article><article class="card full"><h3>Explore a scenario</h3><div class="event-picker" id="scenarioPicker"></div><div class="event-detail" id="scenarioDetail"></div></article><article class="card"><h3>Raw JSONL fixtures</h3><p>Save the 27 lines as <code>events.jsonl</code>. Each line is one mount, file, or process event.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('rawJson')">Show raw JSONL</button><button class="small-btn" onclick="copyFrom('rawJsonCode',this)">Copy JSONL</button><button class="small-btn" onclick="downloadFixtures()">Download JSONL</button></div><div class="answer" id="rawJson"><pre class="raw"><code id="rawJsonCode"></code></pre></div></article><article class="card"><h3>Fields to notice</h3><ul><li><code>device</code>, <code>volume_id</code>, <code>mount_point</code></li><li><code>removable</code> and <code>bus</code></li><li><code>file_path</code> and <code>sha256</code></li><li><code>executable_path</code> and <code>parent_path</code></li><li><code>signer</code>, <code>user</code>, and timestamps</li></ul></article><article class="card full"><h3>MITRE ATT&amp;CK - visual map</h3><div class="attack"><div class="attack-card"><b>T1091</b><h4>Replication Through Removable Media</h4><p>Removable media can carry files between systems. This lab observes execution from that media; it does not claim replication unless copy evidence exists.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1091/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div><div class="arrow">→</div><div class="attack-card"><b>T1204.002</b><h4>User Execution: Malicious File</h4><p>A user or helper process may start a file delivered on removable media. User intent still requires investigation.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1204/002/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div></div></article></div>
+</section>
+
+<section class="page" data-page="3">
+  <div class="page-head"><div><div class="eyebrow">Week 18 · Day 2</div><h2>KQL behavior query + tuning</h2></div><div class="page-no">Page 3 / 8</div></div>
+  <div class="grid"><article class="card"><h3>What should be done</h3><ol><li>Normalize mount, file, and process paths.</li><li>Join by device and time.</li><li>Require the file to equal the process image or parent.</li><li>Require that origin to sit below the exact mount point.</li><li>Remove only exact approved profiles.</li></ol></article><article class="card"><h3>Tuning choice</h3><p>The example uses a normalized table named <code>LinuxRemovableEvents_CL</code>. A broad rule such as “ignore signed files” is unsafe. The signer, SHA-256, volume, and origin path must all match the approved record.</p><div class="callout warning">Mount roots are data, not a hard-coded list of <code>/media</code> folders.</div></article><article class="card full"><h3>KQL answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('kqlAnswer')">Show KQL answer</button><button class="small-btn" onclick="copyFrom('kqlCode',this)">Copy KQL</button></div><div class="answer" id="kqlAnswer"><pre><code id="kqlCode">let Window = 20m;
+let Approved = datatable(VolumeId:string, OriginPath:string, SHA256:string, Signer:string)
+[
+  &quot;VOL-ENG-01&quot;, &quot;/media/field/ENGKIT/bin/hwcheck&quot;, &quot;3333333333333333333333333333333333333333333333333333333333333333&quot;, &quot;Acme Field Engineering&quot;,
+  &quot;VOL-OS-01&quot;, &quot;/media/installer/OS_DEPLOY/setup.run&quot;, &quot;4444444444444444444444444444444444444444444444444444444444444444&quot;, &quot;Contoso IT&quot;,
+  &quot;VOL-IR-01&quot;, &quot;/media/forensics/IR_KIT/bin/imager&quot;, &quot;5555555555555555555555555555555555555555555555555555555555555555&quot;, &quot;Evidence Labs&quot;,
+  &quot;VOL-VD-01&quot;, &quot;/media/support/VENDOR_DIAG/diag.sh&quot;, &quot;6666666666666666666666666666666666666666666666666666666666666666&quot;, &quot;Vendor Diagnostics Ltd&quot;
+];
+let Mounts = LinuxRemovableEvents_CL
+| where EventType == &quot;mount&quot; and Action == &quot;mount&quot; and IsRemovable == true
+| extend MountPoint = trim_end(@&quot;/+&quot;, replace_string(MountPoint, @&quot;\&quot;, &quot;/&quot;))
+| project Device, VolumeId, VolumeLabel, Bus, MountPoint, MountTime=TimeGenerated;
+let Files = LinuxRemovableEvents_CL
+| where EventType == &quot;file&quot; and Action in (&quot;create&quot;, &quot;observe&quot;)
+| extend FilePath = replace_string(FilePath, @&quot;\&quot;, &quot;/&quot;)
+| project Device, FilePath, SHA256, Signer, FileTime=TimeGenerated;
+let Processes = LinuxRemovableEvents_CL
+| where EventType == &quot;process&quot; and Action == &quot;start&quot;
+| extend ImagePath = replace_string(ExecutablePath, @&quot;\&quot;, &quot;/&quot;),
+         ParentPath = replace_string(ParentPath, @&quot;\&quot;, &quot;/&quot;)
+| project Device, User, ImagePath, ParentPath, CommandLine, ProcessTime=TimeGenerated;
+Mounts
+| join kind=inner Processes on Device
+| where ProcessTime between (MountTime .. MountTime + Window)
+| extend OriginPath = case(
+    ImagePath == MountPoint or ImagePath startswith strcat(MountPoint, &quot;/&quot;), ImagePath,
+    ParentPath == MountPoint or ParentPath startswith strcat(MountPoint, &quot;/&quot;), ParentPath,
+    &quot;&quot;)
+| where isnotempty(OriginPath)
+| join kind=inner Files on Device
+| where FileTime between (MountTime .. ProcessTime) and FilePath == OriginPath
+| join kind=leftanti Approved on VolumeId, OriginPath, SHA256, Signer
+| project ProcessTime, Device, User, VolumeId, VolumeLabel, Bus, MountPoint,
+          OriginPath, ImagePath, ParentPath, SHA256, Signer, CommandLine
+| order by ProcessTime desc</code></pre></div></article><article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> approved field tools, software installers, forensic media, and vendor diagnostics. Confirm the volume owner, business purpose, exact path, SHA-256, signer or package provenance, user, and ticket window. A signer alone is not enough, and unsigned does not automatically mean malicious.</p></article></div>
+</section>
+
+<section class="page" data-page="4">
+  <div class="page-head"><div><div class="eyebrow">Week 18 · Day 3</div><h2>CrowdStrike CQL translation</h2></div><div class="page-no">Page 4 / 8</div></div>
+  <div class="grid"><article class="card"><h3>What should be done</h3><p>Map one known Linux mount, file, and process event from your Falcon tenant before using the query. Keep mount-derived context with the process so the normalized origin can be compared with the observed file.</p><div class="callout">CQL here means CrowdStrike Falcon LogScale query language. Event names and normalized fields vary by sensor and parser version.</div></article><article class="card"><h3>Small field map</h3><div class="field-map"><div>Fixture<br><code>device</code></div><div>Falcon example<br><code>aid</code></div><div>Fixture<br><code>volume_id</code></div><div>Falcon example<br><code>VolumeSerialNumber</code></div><div>Fixture<br><code>mount_point</code></div><div>Falcon example<br><code>MountPoint</code></div><div>Fixture<br><code>file_path</code></div><div>Falcon example<br><code>TargetFileName</code></div><div>Fixture<br><code>executable_path</code></div><div>Falcon example<br><code>FilePath</code></div><div>Fixture<br><code>parent_path</code></div><div>Falcon example<br><code>ParentImageFilePath</code></div><div>Fixture<br><code>sha256</code></div><div>Falcon example<br><code>SHA256HashData</code></div></div></article><article class="card full"><h3>CrowdStrike CQL answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('cqlAnswer')">Show CrowdStrike CQL answer</button><button class="small-btn" onclick="copyFrom('cqlCode',this)">Copy CQL</button></div><div class="answer" id="cqlAnswer"><pre><code id="cqlCode">#event_simpleName=/^(LinuxMount|FileWritten|ProcessRollup2)$/
+| case {
+    #event_simpleName=LinuxMount IsRemovable=true
+      | Stage:=&quot;mount&quot; | MountHit:=1 | FileHit:=0 | ProcessHit:=0
+      | MountPointNorm:=lower(MountPoint);
+    #event_simpleName=FileWritten
+      | Stage:=&quot;file&quot; | MountHit:=0 | FileHit:=1 | ProcessHit:=0
+      | OriginPath:=lower(TargetFileName);
+    #event_simpleName=ProcessRollup2
+      | Stage:=&quot;process&quot; | MountHit:=0 | FileHit:=0 | ProcessHit:=1
+      | ImagePathNorm:=lower(FilePath) | ParentPathNorm:=lower(ParentImageFilePath);
+    * | Stage:=&quot;other&quot; | MountHit:=0 | FileHit:=0 | ProcessHit:=0;
+  }
+| not (
+    (VolumeSerialNumber=&quot;VOL-ENG-01&quot; OriginPath=&quot;/media/field/engkit/bin/hwcheck&quot; SHA256HashData=&quot;3333333333333333333333333333333333333333333333333333333333333333&quot; SignerName=&quot;Acme Field Engineering&quot;) or
+    (VolumeSerialNumber=&quot;VOL-OS-01&quot; OriginPath=&quot;/media/installer/os_deploy/setup.run&quot; SHA256HashData=&quot;4444444444444444444444444444444444444444444444444444444444444444&quot; SignerName=&quot;Contoso IT&quot;) or
+    (VolumeSerialNumber=&quot;VOL-IR-01&quot; OriginPath=&quot;/media/forensics/ir_kit/bin/imager&quot; SHA256HashData=&quot;5555555555555555555555555555555555555555555555555555555555555555&quot; SignerName=&quot;Evidence Labs&quot;) or
+    (VolumeSerialNumber=&quot;VOL-VD-01&quot; OriginPath=&quot;/media/support/vendor_diag/diag.sh&quot; SHA256HashData=&quot;6666666666666666666666666666666666666666666666666666666666666666&quot; SignerName=&quot;Vendor Diagnostics Ltd&quot;)
+  )
+| groupBy([aid, VolumeSerialNumber], function=[
+    min(@timestamp, as=FirstSeen),
+    max(@timestamp, as=LastSeen),
+    sum(MountHit, as=Mounts),
+    sum(FileHit, as=Files),
+    sum(ProcessHit, as=Processes),
+    collect([Stage, MountPointNorm, OriginPath, ImagePathNorm, ParentPathNorm, SHA256HashData, SignerName], separator=&quot; → &quot;, as=Evidence)
+  ], limit=max)
+| DurationMs:=LastSeen-FirstSeen
+| Mounts&gt;0 Files&gt;0 Processes&gt;0 DurationMs&lt;=1200000
+| sort(LastSeen, order=desc)</code></pre></div></article><article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> field utilities, removable installation media, forensic response kits, and vendor support bundles. Validate the local event schema first: some Falcon deployments need a custom mount data source or enrichment. Review collected evidence to confirm that image or parent is actually below the observed mount point before escalating.</p></article></div>
+</section>
+
+<section class="page" data-page="5">
+  <div class="page-head"><div><div class="eyebrow">Week 18 · Day 4</div><h2>Sigma selection, filters, and YARA marker</h2></div><div class="page-no">Page 5 / 8</div></div>
+  <div class="grid"><article class="card"><h3>What should be done</h3><p>Use a portable Linux process-creation rule for common removable mount roots, then apply narrow filters for the four approved profiles. The rule intentionally has no <code>id</code> and no <code>status</code>.</p></article><article class="card"><h3>Scope</h3><div class="flow"><div class="node"><strong>Linux process</strong><small>image or parent path</small></div><div class="arrow">+</div><div class="node"><strong>Removable root clue</strong><small>/media or /run/media</small></div><div class="arrow">−</div><div class="node"><strong>Exact profile</strong><small>path + hash + signer</small></div></div><div class="callout warning">Sigma supplies a portable process signal. Correlate the live mount and file events in your SIEM.</div></article><article class="card full"><h3>Sigma answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('sigmaAnswer')">Show Sigma answer</button><button class="small-btn" onclick="copyFrom('sigmaCode',this)">Copy Sigma</button></div><div class="answer" id="sigmaAnswer"><pre><code id="sigmaCode">title: Linux Process Originating From Common Removable Media Mount
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection_image:
+    Image|startswith:
+      - &#x27;/media/&#x27;
+      - &#x27;/run/media/&#x27;
+      - &#x27;/mnt/removable/&#x27;
+  selection_parent:
+    ParentImage|startswith:
+      - &#x27;/media/&#x27;
+      - &#x27;/run/media/&#x27;
+      - &#x27;/mnt/removable/&#x27;
+  filter_field_tool:
+    Image: &#x27;/media/field/ENGKIT/bin/hwcheck&#x27;
+    Hashes|contains: &#x27;SHA256=3333333333333333333333333333333333333333333333333333333333333333&#x27;
+    Signature: &#x27;Acme Field Engineering&#x27;
+  filter_installer:
+    Image: &#x27;/media/installer/OS_DEPLOY/setup.run&#x27;
+    Hashes|contains: &#x27;SHA256=4444444444444444444444444444444444444444444444444444444444444444&#x27;
+    Signature: &#x27;Contoso IT&#x27;
+  filter_forensics:
+    Image: &#x27;/media/forensics/IR_KIT/bin/imager&#x27;
+    Hashes|contains: &#x27;SHA256=5555555555555555555555555555555555555555555555555555555555555555&#x27;
+    Signature: &#x27;Evidence Labs&#x27;
+  filter_vendor_parent:
+    ParentImage: &#x27;/media/support/VENDOR_DIAG/diag.sh&#x27;
+    Hashes|contains: &#x27;SHA256=6666666666666666666666666666666666666666666666666666666666666666&#x27;
+    Signature: &#x27;Vendor Diagnostics Ltd&#x27;
+  condition: (selection_image or selection_parent) and not 1 of filter_*
+fields:
+  - Computer
+  - User
+  - Image
+  - ParentImage
+  - CommandLine
+  - Hashes
+  - Signature
+falsepositives:
+  - Approved field tools, software installers, forensic media, or vendor diagnostics
+level: medium</code></pre></div></article><article class="card full"><h3>YARA answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('yaraAnswer')">Show YARA answer</button><button class="small-btn" onclick="copyFrom('yaraCode',this)">Copy YARA</button><button class="small-btn" onclick="downloadMarker()">Download harmless marker</button></div><div class="answer" id="yaraAnswer"><pre><code id="yaraCode">rule Week18_Harmless_USB_Lab_Marker
+{
+  meta:
+    description = &quot;Matches only the harmless Week 18 removable-media lab marker&quot;
+    purpose = &quot;Detection engineering validation; not malware identification&quot;
+  strings:
+    $marker = &quot;LAB_USB_MARKER=REMOVABLE_MEDIA_EXECUTION_WEEK18&quot; ascii
+    $purpose = &quot;PURPOSE=harmless_detection_engineering_fixture&quot; ascii
+  condition:
+    filesize &lt; 4KB and all of them
+}</code></pre></div></article><article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> approved field tools, installers, forensic kits, and vendor diagnostics may execute directly from removable media. The Sigma roots are candidate paths, not proof of a removable mount. The YARA rule only proves that a harmless marker is present; it does not detect execution, maliciousness, or ATT&amp;CK behavior.</p></article></div>
+</section>
+
+<section class="page" data-page="6">
+  <div class="page-head"><div><div class="eyebrow">Week 18 · Day 5</div><h2>Simple Python mount mapper</h2></div><div class="page-no">Page 6 / 8</div></div>
+  <div class="grid"><article class="card"><h3>What should be done</h3><p>Save Day 1 as <code>events.jsonl</code>. For each removable mount, look forward 20 minutes. If a later process image or parent is below the mount, require a matching file event and then check the exact allowlist.</p></article><article class="card"><h3>Easy reading plan</h3><ol><li>Read and sort JSON lines.</li><li>Visit each removable mount.</li><li>Compare image and parent paths safely.</li><li>Confirm the file event.</li><li>Skip exact approved tuples and print matches.</li></ol></article><article class="card full"><h3>Python answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('pythonAnswer')">Show Python answer</button><button class="small-btn" onclick="copyFrom('pythonCode',this)">Copy Python</button></div><div class="answer" id="pythonAnswer"><pre><code id="pythonCode">import json
+import posixpath
+from datetime import datetime
+
+WINDOW_SECONDS = 20 * 60
+APPROVED = {
+    (&quot;VOL-ENG-01&quot;, &quot;/media/field/ENGKIT/bin/hwcheck&quot;, &quot;3&quot; * 64, &quot;Acme Field Engineering&quot;),
+    (&quot;VOL-OS-01&quot;, &quot;/media/installer/OS_DEPLOY/setup.run&quot;, &quot;4&quot; * 64, &quot;Contoso IT&quot;),
+    (&quot;VOL-IR-01&quot;, &quot;/media/forensics/IR_KIT/bin/imager&quot;, &quot;5&quot; * 64, &quot;Evidence Labs&quot;),
+    (&quot;VOL-VD-01&quot;, &quot;/media/support/VENDOR_DIAG/diag.sh&quot;, &quot;6&quot; * 64, &quot;Vendor Diagnostics Ltd&quot;),
+}
+
+def time_value(text):
+    return datetime.fromisoformat(text.replace(&quot;Z&quot;, &quot;+00:00&quot;))
+
+def clean(value):
+    value = (value or &quot;&quot;).replace(&quot;\\&quot;, &quot;/&quot;)
+    return posixpath.normpath(value) if value else &quot;&quot;
+
+def below(path, mount):
+    path, mount = clean(path), clean(mount)
+    return path == mount or path.startswith(mount.rstrip(&quot;/&quot;) + &quot;/&quot;)
+
+with open(&quot;events.jsonl&quot;, encoding=&quot;utf-8&quot;) as handle:
+    events = [json.loads(line) for line in handle if line.strip()]
+
+events.sort(key=lambda event: event[&quot;timestamp&quot;])
+mounts = [event for event in events
+          if event[&quot;event_type&quot;] == &quot;mount&quot; and event.get(&quot;removable&quot;) is True]
+
+for mount in mounts:
+    start = time_value(mount[&quot;timestamp&quot;])
+    for process in events:
+        if process[&quot;event_type&quot;] != &quot;process&quot; or process[&quot;device&quot;] != mount[&quot;device&quot;]:
+            continue
+        age = (time_value(process[&quot;timestamp&quot;]) - start).total_seconds()
+        if not 0 &lt;= age &lt;= WINDOW_SECONDS:
+            continue
+
+        image = process.get(&quot;executable_path&quot;, &quot;&quot;)
+        parent = process.get(&quot;parent_path&quot;, &quot;&quot;)
+        origin = image if below(image, mount[&quot;mount_point&quot;]) else parent if below(parent, mount[&quot;mount_point&quot;]) else &quot;&quot;
+        if not origin:
+            continue
+
+        file_event = next((event for event in events
+            if event[&quot;event_type&quot;] == &quot;file&quot;
+            and event[&quot;device&quot;] == mount[&quot;device&quot;]
+            and clean(event.get(&quot;file_path&quot;)) == clean(origin)
+            and start &lt;= time_value(event[&quot;timestamp&quot;]) &lt;= time_value(process[&quot;timestamp&quot;])), None)
+        if not file_event:
+            continue
+
+        profile = (mount[&quot;volume_id&quot;], clean(origin),
+                   file_event[&quot;sha256&quot;], file_event[&quot;signer&quot;])
+        if profile in APPROVED:
+            continue
+
+        print(f&quot;MATCH {process[&#x27;scenario_id&#x27;]}: {mount[&#x27;mount_point&#x27;]} → {clean(origin)} → {process[&#x27;executable_path&#x27;]}&quot;)</code></pre></div></article><article class="card"><h3>Run</h3><pre><code>python solution.py</code></pre></article><article class="card"><h3>Expected output</h3><pre><code>MATCH S1: /media/alex/USB_BLUE → /media/alex/USB_BLUE/tools/audit-helper → /media/alex/USB_BLUE/tools/audit-helper
+MATCH S2: /run/media/maya/VENDOR_USB → /run/media/maya/VENDOR_USB/collect.sh → /usr/bin/curl</code></pre></article><article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> exact business-approved tools that legitimately run from USB media. Production code should load reviewed allowlists from configuration, include owner and expiry, log partial allowlist matches, and handle unmount/remount plus device-clock differences.</p></article></div>
+</section>
+
+<section class="page" data-page="7">
+  <div class="page-head"><div><div class="eyebrow">Week 18 · Day 6</div><h2>Go drive and mount path normalization</h2></div><div class="page-no">Page 7 / 8</div></div>
+  <div class="grid"><article class="card"><h3>What should be done</h3><p>Normalize separators, <code>file://</code>, repeated slashes, Windows drive-letter case, and trailing mount separators. Then represent paths below a known mount as <code>&lt;removable&gt;/relative/path</code>.</p></article><article class="card"><h3>Why this matters</h3><p>The same removable path may appear as <code>/run/media/user/USB//file</code>, <code>file:///Volumes/USB/file</code>, or <code>E:\USB\file</code>. Normalize before comparing, but retain the original value for evidence.</p><div class="callout">Normalization makes equivalent paths comparable; it does not decide whether a volume is removable.</div></article><article class="card full"><h3>Go answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('goAnswer')">Show Go answer</button><button class="small-btn" onclick="copyFrom('goCode',this)">Copy Go</button></div><div class="answer" id="goAnswer"><pre><code id="goCode">package main
+
+import (
+    &quot;fmt&quot;
+    &quot;path&quot;
+    &quot;strings&quot;
+)
+
+type Record struct {
+    Mount string
+    Path  string
+}
+
+func clean(value string) string {
+    value = strings.Trim(strings.TrimSpace(value), &quot;\&quot;&quot;)
+    value = strings.TrimPrefix(value, &quot;file://&quot;)
+    value = strings.ReplaceAll(value, &quot;\\&quot;, &quot;/&quot;)
+    value = path.Clean(value)
+    if len(value) &gt;= 2 &amp;&amp; value[1] == &#x27;:&#x27; {
+        value = strings.ToLower(value[:1]) + value[1:]
+    }
+    return value
+}
+
+func removableName(mount, file string) string {
+    mount = strings.TrimSuffix(clean(mount), &quot;/&quot;)
+    file = clean(file)
+    prefix := mount + &quot;/&quot;
+    if file == mount {
+        return &quot;&lt;removable&gt;&quot;
+    }
+    if strings.HasPrefix(strings.ToLower(file), strings.ToLower(prefix)) {
+        return &quot;&lt;removable&gt;/&quot; + file[len(prefix):]
+    }
+    return file
+}
+
+func main() {
+    samples := []Record{
+        {&quot;/media/alex/USB_BLUE/&quot;, &quot;/media/alex/USB_BLUE/tools/audit-helper&quot;},
+        {&quot;/run/media/maya/VENDOR_USB&quot;, &quot;/run/media/maya/VENDOR_USB//collect.sh&quot;},
+        {&quot;E:\\&quot;, &quot;E:\\Toolkit\\diag.exe&quot;},
+        {&quot;/Volumes/IR_KIT&quot;, &quot;file:///Volumes/IR_KIT/bin/imager&quot;},
+    }
+    for _, sample := range samples {
+        fmt.Printf(&quot;%s → %s\n&quot;, sample.Path, removableName(sample.Mount, sample.Path))
+    }
+}</code></pre></div></article><article class="card"><h3>Run</h3><pre><code>go run main.go</code></pre></article><article class="card"><h3>Expected output</h3><pre><code>/media/alex/USB_BLUE/tools/audit-helper → &lt;removable&gt;/tools/audit-helper
+/run/media/maya/VENDOR_USB//collect.sh → &lt;removable&gt;/collect.sh
+E:\Toolkit\diag.exe → &lt;removable&gt;/Toolkit/diag.exe
+file:///Volumes/IR_KIT/bin/imager → &lt;removable&gt;/bin/imager</code></pre></article><article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> path normalization can group legitimate field, installer, forensic, and diagnostic media with unknown media. Use the normalized path for joins, but make the decision with mount type, volume identity, hash, signer, user, and approved-use context.</p></article></div>
+</section>
+
+<section class="page" data-page="8">
+  <div class="page-head"><div><div class="eyebrow">Week 18 · Day 7</div><h2>Capstone: mount → file → process</h2></div><div class="page-no">Page 8 / 8</div></div>
+  <div class="grid"><article class="card full"><h3>Final hunt logic</h3><div class="flow"><div class="node"><strong>1. Removable mount</strong><small>device + volume + root</small></div><div class="arrow">→</div><div class="node"><strong>2. File below root</strong><small>path + hash + signer</small></div><div class="arrow">→</div><div class="node"><strong>3. Process origin</strong><small>image or parent = file</small></div><div class="arrow">→</div><div class="node"><strong>4. Exact tuning</strong><small>approved tuple or alert</small></div></div></article><article class="card"><h3>Investigation checklist</h3><ul class="checklist"><li>Verify the mount is actually removable.</li><li>Confirm mount, file, and process timestamps.</li><li>Identify whether image or parent is the origin.</li><li>Verify hash and signer/package provenance.</li><li>Check user, shell history, child processes, and network activity.</li><li>Confirm business owner, ticket, and allowlist expiry.</li><li>Capture evidence before unmounting if policy permits.</li></ul></article><article class="card"><h3>Blind spots and limits</h3><ul><li>Execution after a copy to local disk needs a different rule.</li><li>In-memory execution may lack a stable file event.</li><li>Containers may expose host mounts under different paths.</li><li>Linux code-signing fields may be absent or enrichment-derived.</li><li>T1091 should not be claimed without replication evidence.</li><li>This behavior does not identify a specific actor or malware family.</li></ul></article><article class="card full"><h3>Fixture validator</h3><p>Run the browser detector against all ten scenarios. It requires a removable mount, a matching file, a later process within 20 minutes, image-or-parent path ancestry, and no exact approved profile.</p><div class="validator-grid"><div class="metric"><strong id="totalMetric">10</strong><span>scenarios</span></div><div class="metric"><strong id="passMetric">—</strong><span>correct decisions</span></div><div class="metric"><strong id="matchMetric">—</strong><span>alerted scenarios</span></div></div><div class="code-tools"><button class="answer-btn" onclick="runValidator()">Run fixture validator</button></div><div id="validatorResult" class="result">Validator not run yet.</div></article><article class="card full"><h3>Expected evidence</h3><div class="table-wrap"><table><thead><tr><th>Scenario</th><th>Mounted volume</th><th>Matched origin</th><th>Process image</th><th>Decision</th></tr></thead><tbody><tr><td>S1</td><td>VOL-USB-01 at /media/alex/USB_BLUE</td><td>/media/alex/USB_BLUE/tools/audit-helper</td><td>/media/alex/USB_BLUE/tools/audit-helper</td><td><span class="tag tp">Alert</span></td></tr><tr><td>S2</td><td>VOL-USB-02 at /run/media/maya/VENDOR_USB</td><td>/run/media/maya/VENDOR_USB/collect.sh</td><td>/usr/bin/curl</td><td><span class="tag tp">Alert</span></td></tr><tr><td>S3–S6</td><td>Known approved removable media</td><td>Exact approved profile</td><td>Field, installer, forensic, or vendor tool</td><td><span class="tag tn">Suppress</span></td></tr><tr><td>S7–S10</td><td>Local copy, non-removable mount, or no process</td><td>No valid removable-media process origin</td><td>Varies</td><td><span class="tag tn">No match</span></td></tr></tbody></table></div></article><article class="card full"><h3>Analyst reasoning and false positives</h3><p><b>Approved field tools:</b> require the registered volume, exact binary path, expected SHA-256, signer/provenance, assigned engineer, and valid work order. <b>Software installers:</b> confirm the deployment ticket and media owner; do not allowlist every executable on the volume. <b>Forensic media:</b> verify the response case, read-only controls, chain of custody, and tool hash. <b>Vendor diagnostics:</b> confirm the support window, vendor identity, exact script or binary, and destination systems. Any partial mismatch remains visible.</p><div class="callout warning">Do not label the event malicious from removable execution alone. Escalate with child processes, persistence, unusual network activity, user context, and file reputation.</div></article><article class="card full"><h3>Validation status</h3><div class="status-bar"><b>Fixture logic:</b> executed; 10/10 decisions passed with S1 and S2 only. <b>Python:</b> executed and returned S1 and S2. <b>Sigma:</b> YAML parsed with no <code>id</code> or <code>status</code>. <b>HTML/JavaScript:</b> structure and syntax checks passed. <b>Go:</b> not executed because the Go toolchain was unavailable. <b>YARA:</b> not executed because the YARA toolchain was unavailable. <b>KQL/CQL:</b> not run against live platforms; field mapping is required.</div></article></div>
+</section>
+
+<div class="nav-footer"><button class="nav-btn" id="prevBtn" onclick="go(current-1)">← Previous</button><div class="dots" id="dots"></div><button class="nav-btn" id="nextBtn" onclick="go(current+1)">Next →</button></div>
+</main>
+<script>
+const scenarios = [
+{id:'S1',title:'Unsigned helper executed from USB',expected:true,why:'Removable mount, matching file, and image launched from the mount.',events:[
+{scenario_id:'S1',timestamp:'2026-11-16T08:00:00Z',event_type:'mount',action:'mount',device:'linux-ws-01',volume_id:'VOL-USB-01',volume_label:'USB_BLUE',mount_point:'/media/alex/USB_BLUE',removable:true,bus:'usb'},
+{scenario_id:'S1',timestamp:'2026-11-16T08:01:10Z',event_type:'file',action:'observe',device:'linux-ws-01',file_path:'/media/alex/USB_BLUE/tools/audit-helper',sha256:'1111111111111111111111111111111111111111111111111111111111111111',signer:'unsigned'},
+{scenario_id:'S1',timestamp:'2026-11-16T08:02:00Z',event_type:'process',action:'start',device:'linux-ws-01',user:'alex',executable_path:'/media/alex/USB_BLUE/tools/audit-helper',parent_path:'/usr/bin/bash',command_line:'/media/alex/USB_BLUE/tools/audit-helper --scan'}]},
+{id:'S2',title:'USB script launches curl',expected:true,why:'The process image is local, but its parent is the observed USB script.',events:[
+{scenario_id:'S2',timestamp:'2026-11-16T08:10:00Z',event_type:'mount',action:'mount',device:'linux-ws-02',volume_id:'VOL-USB-02',volume_label:'VENDOR_USB',mount_point:'/run/media/maya/VENDOR_USB',removable:true,bus:'usb'},
+{scenario_id:'S2',timestamp:'2026-11-16T08:11:00Z',event_type:'file',action:'observe',device:'linux-ws-02',file_path:'/run/media/maya/VENDOR_USB/collect.sh',sha256:'2222222222222222222222222222222222222222222222222222222222222222',signer:'unsigned'},
+{scenario_id:'S2',timestamp:'2026-11-16T08:12:00Z',event_type:'process',action:'start',device:'linux-ws-02',user:'maya',executable_path:'/usr/bin/curl',parent_path:'/run/media/maya/VENDOR_USB/collect.sh',command_line:'curl https://example.invalid/lab'}]},
+{id:'S3',title:'Approved field hardware tool',expected:false,why:'Exact field-tool volume, path, hash, and signer profile.',events:[
+{scenario_id:'S3',timestamp:'2026-11-16T08:20:00Z',event_type:'mount',action:'mount',device:'field-laptop-01',volume_id:'VOL-ENG-01',volume_label:'ENGKIT',mount_point:'/media/field/ENGKIT',removable:true,bus:'usb'},
+{scenario_id:'S3',timestamp:'2026-11-16T08:21:00Z',event_type:'file',action:'observe',device:'field-laptop-01',file_path:'/media/field/ENGKIT/bin/hwcheck',sha256:'3333333333333333333333333333333333333333333333333333333333333333',signer:'Acme Field Engineering'},
+{scenario_id:'S3',timestamp:'2026-11-16T08:22:00Z',event_type:'process',action:'start',device:'field-laptop-01',user:'field',executable_path:'/media/field/ENGKIT/bin/hwcheck',parent_path:'/usr/bin/bash',command_line:'/media/field/ENGKIT/bin/hwcheck --inventory'}]},
+{id:'S4',title:'Approved OS installer',expected:false,why:'Exact installation-media profile.',events:[
+{scenario_id:'S4',timestamp:'2026-11-16T08:30:00Z',event_type:'mount',action:'mount',device:'build-ws-01',volume_id:'VOL-OS-01',volume_label:'OS_DEPLOY',mount_point:'/media/installer/OS_DEPLOY',removable:true,bus:'usb'},
+{scenario_id:'S4',timestamp:'2026-11-16T08:31:00Z',event_type:'file',action:'observe',device:'build-ws-01',file_path:'/media/installer/OS_DEPLOY/setup.run',sha256:'4444444444444444444444444444444444444444444444444444444444444444',signer:'Contoso IT'},
+{scenario_id:'S4',timestamp:'2026-11-16T08:32:00Z',event_type:'process',action:'start',device:'build-ws-01',user:'installer',executable_path:'/media/installer/OS_DEPLOY/setup.run',parent_path:'/usr/bin/bash',command_line:'/media/installer/OS_DEPLOY/setup.run --approved'}]},
+{id:'S5',title:'Approved forensic media',expected:false,why:'Exact forensic volume, tool, hash, and signer profile.',events:[
+{scenario_id:'S5',timestamp:'2026-11-16T08:40:00Z',event_type:'mount',action:'mount',device:'ir-ws-01',volume_id:'VOL-IR-01',volume_label:'IR_KIT',mount_point:'/media/forensics/IR_KIT',removable:true,bus:'usb',read_only:true},
+{scenario_id:'S5',timestamp:'2026-11-16T08:41:00Z',event_type:'file',action:'observe',device:'ir-ws-01',file_path:'/media/forensics/IR_KIT/bin/imager',sha256:'5555555555555555555555555555555555555555555555555555555555555555',signer:'Evidence Labs'},
+{scenario_id:'S5',timestamp:'2026-11-16T08:42:00Z',event_type:'process',action:'start',device:'ir-ws-01',user:'responder',executable_path:'/media/forensics/IR_KIT/bin/imager',parent_path:'/usr/bin/bash',command_line:'/media/forensics/IR_KIT/bin/imager --case IR-204'}]},
+{id:'S6',title:'Approved vendor diagnostics',expected:false,why:'Exact diagnostic parent-file profile.',events:[
+{scenario_id:'S6',timestamp:'2026-11-16T08:50:00Z',event_type:'mount',action:'mount',device:'support-ws-01',volume_id:'VOL-VD-01',volume_label:'VENDOR_DIAG',mount_point:'/media/support/VENDOR_DIAG',removable:true,bus:'usb'},
+{scenario_id:'S6',timestamp:'2026-11-16T08:51:00Z',event_type:'file',action:'observe',device:'support-ws-01',file_path:'/media/support/VENDOR_DIAG/diag.sh',sha256:'6666666666666666666666666666666666666666666666666666666666666666',signer:'Vendor Diagnostics Ltd'},
+{scenario_id:'S6',timestamp:'2026-11-16T08:52:00Z',event_type:'process',action:'start',device:'support-ws-01',user:'support',executable_path:'/usr/bin/python3',parent_path:'/media/support/VENDOR_DIAG/diag.sh',command_line:'python3 /opt/vendor/check.py'}]},
+{id:'S7',title:'File copied before execution',expected:false,why:'Execution occurs from local Downloads; neither image nor parent is below the USB mount.',events:[
+{scenario_id:'S7',timestamp:'2026-11-16T09:00:00Z',event_type:'mount',action:'mount',device:'linux-ws-03',volume_id:'VOL-XFER-01',volume_label:'TRANSFER',mount_point:'/media/alex/TRANSFER',removable:true,bus:'usb'},
+{scenario_id:'S7',timestamp:'2026-11-16T09:01:00Z',event_type:'file',action:'observe',device:'linux-ws-03',file_path:'/home/alex/Downloads/helper',sha256:'7777777777777777777777777777777777777777777777777777777777777777',signer:'unsigned'},
+{scenario_id:'S7',timestamp:'2026-11-16T09:02:00Z',event_type:'process',action:'start',device:'linux-ws-03',user:'alex',executable_path:'/home/alex/Downloads/helper',parent_path:'/usr/bin/bash',command_line:'/home/alex/Downloads/helper'}]},
+{id:'S8',title:'NFS share execution',expected:false,why:'The mount is a network filesystem and is not removable.',events:[
+{scenario_id:'S8',timestamp:'2026-11-16T09:10:00Z',event_type:'mount',action:'mount',device:'linux-ws-04',volume_id:'NFS-TEAM-01',volume_label:'teamshare',mount_point:'/mnt/teamshare',removable:false,bus:'nfs'},
+{scenario_id:'S8',timestamp:'2026-11-16T09:11:00Z',event_type:'process',action:'start',device:'linux-ws-04',user:'dev',executable_path:'/mnt/teamshare/tools/build-helper',parent_path:'/usr/bin/bash',command_line:'/mnt/teamshare/tools/build-helper'}]},
+{id:'S9',title:'Fixed data partition',expected:false,why:'The mounted filesystem is a fixed disk, not removable media.',events:[
+{scenario_id:'S9',timestamp:'2026-11-16T09:20:00Z',event_type:'mount',action:'mount',device:'linux-ws-05',volume_id:'FIXED-DATA-01',volume_label:'DATA',mount_point:'/mnt/data',removable:false,bus:'sata'},
+{scenario_id:'S9',timestamp:'2026-11-16T09:21:00Z',event_type:'process',action:'start',device:'linux-ws-05',user:'dataops',executable_path:'/mnt/data/bin/etl',parent_path:'/usr/bin/bash',command_line:'/mnt/data/bin/etl'}]},
+{id:'S10',title:'USB file observed, never launched',expected:false,why:'A removable file exists, but no process starts.',events:[
+{scenario_id:'S10',timestamp:'2026-11-16T09:30:00Z',event_type:'mount',action:'mount',device:'linux-ws-06',volume_id:'VOL-ARC-01',volume_label:'ARCHIVE',mount_point:'/media/lee/ARCHIVE',removable:true,bus:'usb'},
+{scenario_id:'S10',timestamp:'2026-11-16T09:31:00Z',event_type:'file',action:'observe',device:'linux-ws-06',file_path:'/media/lee/ARCHIVE/notes/readme.txt',sha256:'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',signer:'none'}]}
+];
+const approved = new Set([
+'VOL-ENG-01|/media/field/ENGKIT/bin/hwcheck|'+'3'.repeat(64)+'|Acme Field Engineering',
+'VOL-OS-01|/media/installer/OS_DEPLOY/setup.run|'+'4'.repeat(64)+'|Contoso IT',
+'VOL-IR-01|/media/forensics/IR_KIT/bin/imager|'+'5'.repeat(64)+'|Evidence Labs',
+'VOL-VD-01|/media/support/VENDOR_DIAG/diag.sh|'+'6'.repeat(64)+'|Vendor Diagnostics Ltd'
+]);
+function cleanPath(value){
+  if(!value)return '';
+  let text=String(value).replaceAll('\\','/').replace(/\/+/g,'/');
+  if(text.length>1)text=text.replace(/\/$/,'');
+  return text;
+}
+function below(path,mount){path=cleanPath(path);mount=cleanPath(mount);return path===mount||path.startsWith(mount+'/');}
+function detect(scenario){
+  const mounts=scenario.events.filter(e=>e.event_type==='mount'&&e.removable===true);
+  for(const mount of mounts){
+    const start=Date.parse(mount.timestamp);
+    for(const process of scenario.events.filter(e=>e.event_type==='process'&&e.device===mount.device)){
+      const age=Date.parse(process.timestamp)-start;
+      if(age<0||age>20*60*1000)continue;
+      const origin=below(process.executable_path,mount.mount_point)?cleanPath(process.executable_path):below(process.parent_path,mount.mount_point)?cleanPath(process.parent_path):'';
+      if(!origin)continue;
+      const file=scenario.events.find(e=>e.event_type==='file'&&e.device===mount.device&&cleanPath(e.file_path)===origin&&Date.parse(e.timestamp)>=start&&Date.parse(e.timestamp)<=Date.parse(process.timestamp));
+      if(!file)continue;
+      const key=[mount.volume_id,origin,file.sha256,file.signer].join('|');
+      if(!approved.has(key))return {match:true,origin,mount,process,file};
+    }
+  }
+  return {match:false};
+}
+let current=1;
+const pages=[...document.querySelectorAll('.page')];
+const dots=document.getElementById('dots');
+pages.forEach((_,index)=>{const button=document.createElement('button');button.className='dot';button.textContent=index+1;button.title='Page '+(index+1);button.onclick=()=>go(index+1);dots.appendChild(button)});
+function go(page){current=Math.max(1,Math.min(pages.length,page));pages.forEach((item,index)=>item.classList.toggle('active',index===current-1));[...dots.children].forEach((item,index)=>item.classList.toggle('active',index===current-1));document.getElementById('progress').style.width=(current/pages.length*100)+'%';document.getElementById('prevBtn').disabled=current===1;document.getElementById('nextBtn').disabled=current===pages.length;window.scrollTo({top:0,behavior:'smooth'});}
+function toggle(id){document.getElementById(id).classList.toggle('open');}
+async function copyFrom(id,button){const text=document.getElementById(id).textContent;try{await navigator.clipboard.writeText(text);const old=button.textContent;button.textContent='Copied ✓';setTimeout(()=>button.textContent=old,1200)}catch(error){button.textContent='Copy failed';}}
+function download(name,text,type='text/plain'){const blob=new Blob([text],{type});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(link.href),500);}
+const allEvents=scenarios.flatMap(s=>s.events);document.getElementById('rawJsonCode').textContent=allEvents.map(e=>JSON.stringify(e)).join('\n');
+function downloadFixtures(){download('week18-events.jsonl',allEvents.map(e=>JSON.stringify(e)).join('\n')+'\n','application/x-ndjson');}
+function downloadMarker(){download('week18_usb_marker.txt','LAB_USB_MARKER=REMOVABLE_MEDIA_EXECUTION_WEEK18\nPURPOSE=harmless_detection_engineering_fixture\n');}
+function renderScenario(id){const selected=scenarios.find(s=>s.id===id);[...document.querySelectorAll('#scenarioPicker button')].forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.id===id)));const decision=detect(selected);const steps=selected.events.map((event,index)=>{const label=event.event_type==='mount'?'MOUNT':event.event_type==='file'?'FILE':'PROCESS';const detail=event.mount_point||event.file_path||event.executable_path||'';return `<div class="step"><b>${label}</b><small>${event.timestamp.slice(11,19)} · ${event.device}</small><div>${escapeHtml(detail)}</div></div>${index<selected.events.length-1?'<div class="timeline-arrow">→</div>':''}`}).join('');document.getElementById('scenarioDetail').innerHTML=`<div class="detail-grid"><div class="detail-item"><small>Scenario</small><b>${selected.id} · ${escapeHtml(selected.title)}</b></div><div class="detail-item"><small>Expected</small><b>${selected.expected?'TP / alert':'TN / quiet'}</b></div><div class="detail-item"><small>Browser detector</small><b>${decision.match?'MATCH':'NO MATCH'}</b></div></div><div class="timeline">${steps}</div><div class="callout">${escapeHtml(selected.why)}</div><details><summary>Show this scenario's JSONL</summary><pre><code>${escapeHtml(selected.events.map(e=>JSON.stringify(e)).join('\n'))}</code></pre></details>`;}
+function escapeHtml(text){return String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+scenarios.forEach(s=>{const button=document.createElement('button');button.className='small-btn';button.dataset.id=s.id;button.textContent=s.id;button.onclick=()=>renderScenario(s.id);document.getElementById('scenarioPicker').appendChild(button)});renderScenario('S1');
+function runValidator(){let correct=0;const matches=[];const rows=scenarios.map(s=>{const actual=detect(s).match;if(actual===s.expected)correct++;if(actual)matches.push(s.id);return `${s.id}: expected ${s.expected?'MATCH':'NO MATCH'}, got ${actual?'MATCH':'NO MATCH'} ${actual===s.expected?'✓':'✗'}`});document.getElementById('passMetric').textContent=correct+'/'+scenarios.length;document.getElementById('matchMetric').textContent=matches.join(', ')||'none';const box=document.getElementById('validatorResult');box.className='result '+(correct===scenarios.length?'pass':'fail');box.innerHTML=`<b>${correct===scenarios.length?'PASS':'FAIL'}:</b> ${correct}/${scenarios.length} correct. Alerted: ${matches.join(', ')||'none'}.<details><summary>Decision details</summary><pre><code>${rows.join('\n')}</code></pre></details>`;}
+document.getElementById('themeBtn').onclick=()=>{const root=document.documentElement;const light=root.dataset.theme==='light';root.dataset.theme=light?'dark':'light';document.getElementById('themeBtn').textContent=light?'Light':'Dark';};let large=false;document.getElementById('textBtn').onclick=()=>{large=!large;document.body.style.fontSize=large?'18px':'16px';document.getElementById('textBtn').textContent=large?'A−':'A+';};document.addEventListener('keydown',event=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;if(event.key==='ArrowRight')go(current+1);if(event.key==='ArrowLeft')go(current-1);});go(1);
+</script>
+</body>
+</html>

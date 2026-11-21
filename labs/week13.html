@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Week 13 beginner-friendly detection engineering lab for unexpected process access to LSASS.">
+<title>Week 13 Lab - Unexpected Process Accesses LSASS</title>
+<style>
+:root{--bg:#07111f;--panel:#0f1d31;--panel2:#152640;--text:#eef6ff;--muted:#adbed5;--line:#29425f;--cyan:#4fd1c5;--blue:#61a9ff;--amber:#ffcc66;--red:#ff7d8d;--green:#6ee7a8;--shadow:0 18px 46px rgba(0,0,0,.25)}
+[data-theme="light"]{--bg:#edf4fb;--panel:#fff;--panel2:#f4f8fd;--text:#10213b;--muted:#586b84;--line:#cfdaea;--cyan:#087f78;--blue:#1768c4;--amber:#8a5b00;--red:#b8263d;--green:#087d48;--shadow:0 16px 40px rgba(26,52,90,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;background:radial-gradient(circle at 10% 0%,rgba(97,169,255,.13),transparent 28%),var(--bg);color:var(--text);font:16px/1.55 Inter,Segoe UI,Arial,sans-serif}button,a{font:inherit}.shell{max-width:1200px;margin:auto;padding:18px}.topbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.topbar-inner{max-width:1200px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:10px}.brand{font-weight:900;letter-spacing:.2px}.brand span{color:var(--cyan)}.grow{flex:1}.icon-btn,.nav-btn,.answer-btn,.small-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer;transition:.15s transform,.15s border-color}.icon-btn:hover,.nav-btn:hover,.answer-btn:hover,.small-btn:hover{border-color:var(--cyan);transform:translateY(-1px)}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid color-mix(in srgb,var(--cyan) 65%,transparent);outline-offset:2px}.progress{height:4px;background:var(--line)}.progress>div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .25s}.hero{padding:32px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(79,209,197,.11),rgba(97,169,255,.06)),var(--panel);box-shadow:var(--shadow)}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);font-weight:900}.hero h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.03;margin:.35rem 0 1rem;max-width:900px}.hero p{max-width:850px;color:var(--muted);font-size:1.08rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.chip{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);font-size:.86rem}.chip.good{color:var(--green)}.chip.warn{color:var(--amber)}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.stat strong{display:block;font-size:1.8rem;color:var(--cyan)}.stat span{color:var(--muted);font-size:.88rem}.page{display:none;animation:fade .22s ease}.page.active{display:block}@keyframes fade{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:22px 0}.page-head h2{font-size:clamp(1.8rem,4vw,3rem);margin:.2rem 0}.page-no{color:var(--muted);font-weight:800}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{grid-column:span 6;padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}.card h3{margin-top:0}.card p,.card li{color:var(--muted)}.callout{border-left:4px solid var(--cyan);padding:12px 16px;background:var(--panel2);border-radius:0 12px 12px 0}.warning{border-left-color:var(--amber)}.danger{border-left-color:var(--red)}.week-map{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-top:18px}.day-tile{padding:14px 10px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);color:var(--text);cursor:pointer;min-height:112px;text-align:left}.day-tile:hover{border-color:var(--cyan)}.day-tile b{display:block;color:var(--cyan);margin-bottom:6px}.day-tile span{font-size:.82rem;color:var(--muted)}.flow{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;padding:22px}.node{min-width:185px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);text-align:center}.node strong{display:block}.node small{color:var(--muted)}.arrow{font-size:2rem;color:var(--cyan);font-weight:900}.attack{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:15px}.attack-card{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.attack-card b{font-size:1.2rem;color:var(--amber)}.attack-link{color:var(--blue);text-decoration:none}.attack-link:hover{text-decoration:underline}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:920px;background:var(--panel2)}th,td{padding:11px 13px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);background:var(--panel)}td{font-size:.88rem}.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.75rem;font-weight:900}.tp{color:var(--green);background:rgba(110,231,168,.12)}.tn{color:var(--blue);background:rgba(97,169,255,.12)}pre{margin:0;padding:18px;overflow:auto;background:#050a12;color:#dce9fa;border-radius:14px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}.code-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.answer{display:none;margin-top:10px}.answer.open{display:block}.raw{max-height:430px}.field-map{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field-map div{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}.field-map code{color:var(--cyan)}.event-picker{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.event-picker button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}.event-detail{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.detail-item{padding:10px;border-radius:10px;background:var(--panel);min-width:0;overflow-wrap:anywhere}.detail-item small{display:block;color:var(--muted)}details{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:2px 0}summary{cursor:pointer;padding:8px 10px;color:var(--blue);font-weight:800}details pre{border-radius:0 0 9px 9px;max-width:520px}.mask-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.mask{padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel2)}.mask code{color:var(--amber);font-weight:900}.checklist{list-style:none;padding:0}.checklist li{padding:10px 0;border-bottom:1px solid var(--line)}.checklist li:before{content:'✓';color:var(--green);font-weight:900;margin-right:9px}.validator-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.metric{padding:16px;border:1px solid var(--line);border-radius:14px;text-align:center;background:var(--panel2)}.metric strong{display:block;font-size:2rem}.result{margin-top:12px;padding:12px;border-radius:12px;background:var(--panel2);min-height:48px}.result.pass{border:1px solid var(--green);color:var(--green)}.result.fail{border:1px solid var(--red);color:var(--red)}.nav-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:24px 0 8px}.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.dot{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--muted);cursor:pointer}.dot.active{background:var(--cyan);color:#03111b;border-color:var(--cyan);font-weight:900}.status-bar{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.88rem}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.week-map{grid-template-columns:repeat(2,1fr)}.card,.card.third{grid-column:1/-1}.attack{grid-template-columns:1fr}.attack>.arrow{transform:rotate(90deg);text-align:center}.detail-grid,.validator-grid,.mask-list{grid-template-columns:repeat(2,1fr)}.topbar-inner{gap:7px}.icon-btn{padding:8px}.hero{padding:22px}}
+@media(max-width:560px){.shell{padding:12px}.stats,.week-map,.detail-grid,.validator-grid,.mask-list{grid-template-columns:1fr}.page-head{align-items:start;flex-direction:column}.nav-footer .nav-btn{font-size:.82rem;padding:8px}.dots{display:none}.brand{font-size:.86rem}.topbar-inner{padding-inline:10px}}
+@media print{.topbar,.nav-footer,.code-tools{display:none}.page{display:block!important;break-after:page}.shell{max-width:none}.card,.hero{box-shadow:none}.answer{display:block}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><a href="index.html" class="icon-btn" style="text-decoration:none" title="Back to all labs">← All labs</a><div class="brand">Detection Lab <span>W13</span></div><div class="grow"></div><button class="icon-btn" id="textBtn" title="Increase text size" aria-label="Increase text size">A+</button><button class="icon-btn" id="themeBtn" title="Switch theme">Light</button></div><div class="progress" aria-hidden="true"><div id="progress"></div></div></header>
+<main class="shell">
+<section class="page active" data-page="1">
+  <div class="hero">
+    <div class="eyebrow">Month 3 - Persistence &amp; Credential · Week 13 · Beginner+</div>
+    <h1>Unexpected process accesses LSASS</h1>
+    <p>Learn to find nonstandard processes opening <b>lsass.exe</b> with risky access rights, while keeping approved EDR, AV, diagnostics, and credential-provider activity quiet.</p>
+    <div class="chips"><span class="chip">Windows endpoint</span><span class="chip">Process access</span><span class="chip">T1003.001</span><span class="chip good">5 matching fixtures</span><span class="chip">5 benign fixtures</span><span class="chip warn">Access is a signal, not proof of theft</span></div>
+  </div>
+  <div class="stats"><div class="stat"><strong>8</strong><span>interactive pages</span></div><div class="stat"><strong>10</strong><span>labeled JSONL fixtures</span></div><div class="stat"><strong>5</strong><span>risky rights decoded</span></div><div class="stat"><strong>4</strong><span>unique alerts after dedupe</span></div></div>
+  <div class="grid">
+    <article class="card full"><h3>Your seven-day path</h3><p>Each day reuses the same small telemetry set. You first understand the access event, then express the behavior in several detection formats, replay it with simple code, deduplicate repeated alerts, and finish with honest proof.</p>
+      <div class="week-map">
+        <button class="day-tile" onclick="go(2)"><b>Day 1</b><span>Read LSASS access events</span></button>
+        <button class="day-tile" onclick="go(3)"><b>Day 2</b><span>Build and tune KQL</span></button>
+        <button class="day-tile" onclick="go(4)"><b>Day 3</b><span>Translate to CrowdStrike CQL</span></button>
+        <button class="day-tile" onclick="go(5)"><b>Day 4</b><span>Write selection/filter Sigma</span></button>
+        <button class="day-tile" onclick="go(6)"><b>Day 5</b><span>Decode masks with Python</span></button>
+        <button class="day-tile" onclick="go(7)"><b>Day 6</b><span>Deduplicate with Go</span></button>
+        <button class="day-tile" onclick="go(8)"><b>Day 7</b><span>Prove and explain the hunt</span></button>
+      </div>
+    </article>
+    <article class="card"><h3>Week goal</h3><p>Alert when the target is <b>lsass.exe</b>, at least one risky process right is present, and the source does not match an approved signer + installation-path pair.</p><div class="callout">Success means events 1–5 match, events 6–10 remain quiet, and repeated event 5 is deduplicated on Day 6.</div></article>
+    <article class="card"><h3>Important safety boundary</h3><p>This is a telemetry analysis lab. Do not attempt credential dumping on a real endpoint. An access event can justify investigation, but it does not prove credentials were read or stolen.</p><div class="callout warning">YARA is intentionally omitted: use memory/file YARA only with authorized samples in a controlled lab.</div></article>
+  </div>
+</section>
+
+<section class="page" data-page="2">
+  <div class="page-head"><div><div class="eyebrow">Week 13 · Day 1</div><h2>Understand the LSASS access event</h2></div><div class="page-no">Page 2 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>What should be done</h3><ol><li>Confirm the target image is <code>lsass.exe</code>.</li><li>Convert the hexadecimal access mask into named rights.</li><li>Decide whether any named right is risky for this hunt.</li><li>Check the source signer and source path together against the approved-tool list.</li><li>Keep the event for investigation only when all three behavior tests pass.</li></ol></article>
+    <article class="card full"><h3>Visual decision path</h3><div class="flow"><div class="node"><small>Source process</small><strong>Nonstandard executable</strong><small>Image · signer · hash · device</small></div><div class="arrow">→</div><div class="node"><small>OpenProcess</small><strong>Access mask</strong><small>Decode the requested rights</small></div><div class="arrow">→</div><div class="node"><small>Target process</small><strong>lsass.exe</strong><small>Windows security authority</small></div><div class="arrow">→</div><div class="node"><small>Decision</small><strong>Alert or suppress</strong><small>Behavior + narrow allowlist</small></div></div></article>
+    <article class="card full"><h3>Access-right cheat sheet</h3><div class="mask-list"><div class="mask"><code>0x0002</code><b> PROCESS_CREATE_THREAD</b><p>Create a thread in the target.</p></div><div class="mask"><code>0x0008</code><b> PROCESS_VM_OPERATION</b><p>Operate on target memory.</p></div><div class="mask"><code>0x0010</code><b> PROCESS_VM_READ</b><p>Read target memory.</p></div><div class="mask"><code>0x0020</code><b> PROCESS_VM_WRITE</b><p>Write target memory.</p></div><div class="mask"><code>0x0040</code><b> PROCESS_DUP_HANDLE</b><p>Duplicate a target handle.</p></div><div class="mask"><code>0x1000</code><b> QUERY_LIMITED_INFORMATION</b><p>Useful context, but not risky by itself here.</p></div></div></article>
+    <article class="card full"><h3>Ten TP/TN fixtures</h3><p>The table is for humans. Expand any row's JSONL to see the exact machine-readable event.</p><div class="table-wrap"><table><thead><tr><th>#</th><th>Device / source</th><th>Target</th><th>Mask → rights</th><th>Signer</th><th>Expected</th><th>Reason / JSONL</th></tr></thead><tbody id="eventsTable"></tbody></table></div></article>
+    <article class="card"><h3>Explore one event</h3><div class="event-picker" id="eventPicker"></div><div class="event-detail" id="eventDetail"></div></article>
+    <article class="card"><h3>Complete JSONL fixture</h3><p>Save these lines as <code>events.jsonl</code> for Days 5 and 6.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('rawJson')">Show JSONL</button><button class="small-btn" onclick="copyFrom('rawJsonCode',this)">Copy JSONL</button></div><div class="answer" id="rawJson"><pre class="raw"><code id="rawJsonCode"></code></pre></div></article>
+    <article class="card full"><h3>MITRE ATT&amp;CK - visual map</h3><div class="attack"><div class="attack-card"><b>Observed behavior</b><h4>Process access to LSASS</h4><p>A source process requests rights to <code>lsass.exe</code>. The access mask shows what the process asked the operating system to allow.</p></div><div class="arrow">→</div><div class="attack-card"><b>T1003.001</b><h4>OS Credential Dumping: LSASS Memory</h4><p>The technique includes attempts to obtain credential material from LSASS memory. Process access is useful supporting telemetry, not proof that dumping succeeded.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1003/001/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div></div></article>
+  </div>
+</section>
+
+<section class="page" data-page="3">
+  <div class="page-head"><div><div class="eyebrow">Week 13 · Day 2</div><h2>KQL behavior query + tuning</h2></div><div class="page-no">Page 3 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><ol><li>Start with normalized process-access telemetry.</li><li>Keep <code>lsass.exe</code> targets.</li><li>Use a bitwise test for risky rights.</li><li>Suppress only approved signer + path pairs.</li><li>Project the source image, mask, signer, hash, and device.</li></ol></article>
+    <article class="card"><h3>Why the tuning is narrow</h3><p>A signer by itself is not enough: a legitimate utility can be copied to an unapproved location or abused. Each example suppression requires both the expected signer and the expected installation path.</p><div class="callout warning">Replace the teaching-table and field names only after checking one known event in your tenant.</div></article>
+    <article class="card full"><h3>KQL answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('kqlAnswer')">Show KQL answer</button><button class="small-btn" onclick="copyFrom('kqlCode',this)">Copy KQL</button></div><div class="answer" id="kqlAnswer"><pre><code id="kqlCode">let RiskyRights = tolong(122); // 0x007A: create-thread, VM operation/read/write, duplicate-handle
+ProcessAccessEvents
+| where TargetImage endswith @"\lsass.exe"
+| extend AccessMaskLong = tolong(AccessMask)
+| where binary_and(AccessMaskLong, RiskyRights) != 0
+| where not(
+    (Signer == "Microsoft Windows Publisher" and SourceImage startswith @"C:\Program Files\Windows Defender Advanced Threat Protection\")
+    or (Signer == "CrowdStrike, Inc." and SourceImage startswith @"C:\Program Files\CrowdStrike\")
+    or (Signer == "Microsoft Corporation" and SourceImage startswith @"C:\Program Files\Contoso\Diagnostics\")
+    or (Signer == "Contoso Identity Security" and SourceImage startswith @"C:\Program Files\Contoso\CredentialProvider\")
+)
+| project Timestamp, Device, SourceImage, TargetImage,
+          AccessMask, Signer, SHA256, SourceProcessId
+| order by Timestamp desc</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning and false positives</h3><p><b>Likely false positives:</b> EDR/AV sensors, authorized crash-dump tools, approved diagnostics, and credential providers. Confirm product owner, signer, install path, hash or version, expected devices, and allowlist expiry. A new signer, a copied binary, or the same tool running from Downloads should remain visible.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="4">
+  <div class="page-head"><div><div class="eyebrow">Week 13 · Day 3</div><h2>CrowdStrike CQL translation</h2></div><div class="page-no">Page 4 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Translate the same behavior: LSASS target, a common risky mask, and the same signer + path suppressions. The mask list below is intentionally explicit so a beginner can read it.</p><div class="callout">CQL here means CrowdStrike Falcon LogScale query language.</div></article>
+    <article class="card"><h3>Small field map</h3><div class="field-map"><div>Normalized lab<br><code>source_image</code></div><div>CrowdStrike<br><code>SourceFileName</code></div><div>Normalized lab<br><code>target_image</code></div><div>CrowdStrike<br><code>TargetFileName</code></div><div>Normalized lab<br><code>access_mask</code></div><div>CrowdStrike<br><code>GrantedAccess</code></div><div>Normalized lab<br><code>signer</code></div><div>CrowdStrike<br><code>SignerName</code></div><div>Normalized lab<br><code>device</code></div><div>CrowdStrike<br><code>ComputerName</code></div><div>Normalized lab<br><code>sha256</code></div><div>CrowdStrike<br><code>SHA256HashData</code></div></div></article>
+    <article class="card full"><h3>CrowdStrike CQL answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('cqlAnswer')">Show CrowdStrike CQL answer</button><button class="small-btn" onclick="copyFrom('cqlCode',this)">Copy CQL</button></div><div class="answer" id="cqlAnswer"><pre><code id="cqlCode">#event_simpleName=ProcessAccessed
+| TargetFileName=/\\lsass\.exe$/i
+| GrantedAccess=/^(0x0010|0x0030|0x0040|0x1010|0x1410|0x143A|0x1F0FFF)$/i
+| not(
+    (SignerName="Microsoft Windows Publisher" and SourceFileName=/^C:\\Program Files\\Windows Defender Advanced Threat Protection\\/i)
+    or (SignerName="CrowdStrike, Inc." and SourceFileName=/^C:\\Program Files\\CrowdStrike\\/i)
+    or (SignerName="Microsoft Corporation" and SourceFileName=/^C:\\Program Files\\Contoso\\Diagnostics\\/i)
+    or (SignerName="Contoso Identity Security" and SourceFileName=/^C:\\Program Files\\Contoso\\CredentialProvider\\/i)
+  )
+| table([@timestamp, ComputerName, SourceFileName, TargetFileName,
+         GrantedAccess, SignerName, SHA256HashData, SourceProcessId])</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning and false positives</h3><p><b>Likely false positives:</b> Falcon or another EDR sensor inspecting LSASS, AV inspection, approved dump collection during incident response, diagnostics, and credential-provider components. Confirm the actual event name and field map in your Falcon data. The explicit mask list is readable but should be expanded if your sensor emits additional combined values containing the same risky bits.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="5">
+  <div class="page-head"><div><div class="eyebrow">Week 13 · Day 4</div><h2>Sigma selection + approved-tool filters</h2></div><div class="page-no">Page 5 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Use one target selection, one access-mask selection, and separate narrow filters for approved security or diagnostic products. The rule intentionally has no <code>id</code> and no <code>status</code>.</p></article>
+    <article class="card"><h3>Read the condition</h3><div class="flow"><div class="node"><strong>LSASS target</strong><small>selection_target</small></div><div class="arrow">+</div><div class="node"><strong>Risky mask</strong><small>selection_access</small></div><div class="arrow">−</div><div class="node"><strong>Approved pairs</strong><small>filter_approved_*</small></div></div></article>
+    <article class="card full"><h3>Sigma answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('sigmaAnswer')">Show Sigma answer</button><button class="small-btn" onclick="copyFrom('sigmaCode',this)">Copy Sigma</button></div><div class="answer" id="sigmaAnswer"><pre><code id="sigmaCode">title: Unexpected Process Accesses LSASS With Risky Rights
+description: Detects non-approved processes opening LSASS with common risky access masks
+logsource:
+  product: windows
+  category: process_access
+detection:
+  selection_target:
+    TargetImage|endswith: '\lsass.exe'
+  selection_access:
+    GrantedAccess:
+      - '0x0010'
+      - '0x0030'
+      - '0x0040'
+      - '0x1010'
+      - '0x1410'
+      - '0x143A'
+      - '0x1F0FFF'
+  filter_approved_defender:
+    SourceImage|startswith: 'C:\Program Files\Windows Defender Advanced Threat Protection\'
+    Signer: 'Microsoft Windows Publisher'
+  filter_approved_crowdstrike:
+    SourceImage|startswith: 'C:\Program Files\CrowdStrike\'
+    Signer: 'CrowdStrike, Inc.'
+  filter_approved_diagnostics:
+    SourceImage|startswith: 'C:\Program Files\Contoso\Diagnostics\'
+    Signer: 'Microsoft Corporation'
+  filter_approved_credential_provider:
+    SourceImage|startswith: 'C:\Program Files\Contoso\CredentialProvider\'
+    Signer: 'Contoso Identity Security'
+  condition: selection_target and selection_access and not 1 of filter_approved_*
+falsepositives:
+  - EDR or AV sensors inspecting LSASS
+  - Approved crash-dump or diagnostic tools
+  - Approved credential-provider components
+level: high
+tags:
+  - attack.credential-access
+  - attack.t1003.001</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning and false positives</h3><p><b>Likely false positives:</b> EDR/AV, crash-dump tooling, approved diagnostics, and credential providers. Sigma backends commonly treat process-access fields differently, and the mask list matches common complete values rather than performing a bitwise test. Test the converted query against local telemetry before deployment.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="6">
+  <div class="page-head"><div><div class="eyebrow">Week 13 · Day 5</div><h2>Python: decode rights and apply the allowlist</h2></div><div class="page-no">Page 6 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><ol><li>Read one JSON object per line.</li><li>Turn the mask string into a number.</li><li>Convert set bits to friendly right names.</li><li>Require the LSASS target and at least one risky right.</li><li>Suppress only a matching signer + path prefix.</li></ol></article>
+    <article class="card"><h3>Expected output</h3><pre><code>1 → PROCESS_VM_READ
+2 → PROCESS_CREATE_THREAD, PROCESS_VM_OPERATION, PROCESS_VM_READ, PROCESS_VM_WRITE
+3 → PROCESS_DUP_HANDLE
+4 → PROCESS_VM_READ
+5 → PROCESS_VM_READ</code></pre></article>
+    <article class="card full"><h3>Python answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('pythonAnswer')">Show Python answer</button><button class="small-btn" onclick="copyFrom('pythonCode',this)">Copy Python</button></div><div class="answer" id="pythonAnswer"><pre><code id="pythonCode">import json
+
+RIGHTS = {
+    0x0002: "PROCESS_CREATE_THREAD",
+    0x0008: "PROCESS_VM_OPERATION",
+    0x0010: "PROCESS_VM_READ",
+    0x0020: "PROCESS_VM_WRITE",
+    0x0040: "PROCESS_DUP_HANDLE",
+}
+
+APPROVED = [
+    ("Microsoft Windows Publisher", "C:\\Program Files\\Windows Defender Advanced Threat Protection\\"),
+    ("CrowdStrike, Inc.", "C:\\Program Files\\CrowdStrike\\"),
+    ("Microsoft Corporation", "C:\\Program Files\\Contoso\\Diagnostics\\"),
+    ("Contoso Identity Security", "C:\\Program Files\\Contoso\\CredentialProvider\\"),
+]
+
+
+def is_approved(event):
+    signer = event["signer"].casefold()
+    path = event["source_image"].casefold()
+    return any(
+        signer == good_signer.casefold() and path.startswith(good_path.casefold())
+        for good_signer, good_path in APPROVED
+    )
+
+
+def right_labels(mask):
+    return [name for bit, name in RIGHTS.items() if mask &amp; bit]
+
+
+with open("events.jsonl", encoding="utf-8") as file:
+    for line in file:
+        event = json.loads(line)
+        mask = int(event["access_mask"], 0)
+        labels = right_labels(mask)
+        targets_lsass = event["target_image"].lower().endswith("\\lsass.exe")
+
+        if targets_lsass and labels and not is_approved(event):
+            print(f'{event["event_number"]} → {", ".join(labels)}')</code></pre></div></article>
+    <article class="card full"><h3>Why this stays beginner-friendly</h3><p>The program has two small helper functions. One converts numbers to names; the other checks the allowlist. It does not need classes, command-line frameworks, or third-party packages. The lab validator executed this code against all ten fixtures.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="7">
+  <div class="page-head"><div><div class="eyebrow">Week 13 · Day 6</div><h2>Go: deduplicate repeated LSASS-access alerts</h2></div><div class="page-no">Page 7 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Read the same JSONL, apply the risky-behavior and allowlist logic, then print only the first alert for each <b>device + source process image</b> pair. Events 1 and 5 are repeats, so only event 1 prints for that pair.</p></article>
+    <article class="card"><h3>Expected output</h3><pre><code>1 FIN-LT-014 → C:\Users\maya\AppData\Local\Temp\svhost.exe
+2 HR-WS-022 → C:\Users\arun\AppData\Roaming\update.exe
+3 ENG-WS-008 → C:\Windows\System32\rundll32.exe
+4 OPS-LT-019 → C:\Users\vikram\Downloads\procdump64.exe</code></pre></article>
+    <article class="card full"><h3>Go answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('goAnswer')">Show Go answer</button><button class="small-btn" onclick="copyFrom('goCode',this)">Copy Go</button></div><div class="answer" id="goAnswer"><pre><code id="goCode">package main
+
+import (
+    "bufio"
+    "encoding/json"
+    "fmt"
+    "os"
+    "strconv"
+    "strings"
+)
+
+type Event struct {
+    Number int    `json:"event_number"`
+    Device string `json:"device"`
+    Source string `json:"source_image"`
+    Target string `json:"target_image"`
+    Mask   string `json:"access_mask"`
+    Signer string `json:"signer"`
+}
+
+type Approval struct{ Signer, Path string }
+
+var approved = []Approval{
+    {"Microsoft Windows Publisher", `C:\Program Files\Windows Defender Advanced Threat Protection\`},
+    {"CrowdStrike, Inc.", `C:\Program Files\CrowdStrike\`},
+    {"Microsoft Corporation", `C:\Program Files\Contoso\Diagnostics\`},
+    {"Contoso Identity Security", `C:\Program Files\Contoso\CredentialProvider\`},
+}
+
+func isApproved(e Event) bool {
+    for _, good := range approved {
+        sameSigner := strings.EqualFold(e.Signer, good.Signer)
+        goodPath := strings.HasPrefix(strings.ToLower(e.Source), strings.ToLower(good.Path))
+        if sameSigner &amp;&amp; goodPath { return true }
+    }
+    return false
+}
+
+func main() {
+    file, _ := os.Open("events.jsonl")
+    defer file.Close()
+    seen := map[string]bool{}
+    scanner := bufio.NewScanner(file)
+
+    for scanner.Scan() {
+        var e Event
+        json.Unmarshal(scanner.Bytes(), &amp;e)
+        mask, _ := strconv.ParseUint(strings.TrimPrefix(e.Mask, "0x"), 16, 32)
+        risky := mask &amp; 0x007A != 0
+        lsass := strings.HasSuffix(strings.ToLower(e.Target), `\lsass.exe`)
+        key := strings.ToLower(e.Device + "|" + e.Source)
+
+        if lsass &amp;&amp; risky &amp;&amp; !isApproved(e) &amp;&amp; !seen[key] {
+            fmt.Println(e.Number, e.Device, "→", e.Source)
+            seen[key] = true
+        }
+    }
+}</code></pre></div></article>
+    <article class="card full"><h3>Engineering note</h3><p>For a production utility, add file-open, JSON, parse, and scanner error handling plus a time-bounded cache. This lab keeps those details out so the deduplication idea stays visible. The Go source was reviewed against the fixtures but was not executed because the validation environment did not include a Go toolchain.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="8">
+  <div class="page-head"><div><div class="eyebrow">Week 13 · Day 7</div><h2>Capstone: prove the access logic</h2></div><div class="page-no">Page 8 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>Full hunt checklist</h3><ol><li>Run the logic against all ten Day 1 fixtures.</li><li>Confirm events 1–5 have an LSASS target and risky rights.</li><li>Confirm event 5 is a repeated source process on the same device.</li><li>Confirm events 6–9 are suppressed only by matching signer + path pairs.</li><li>Confirm event 10 stays quiet because <code>0x1000</code> has no risky bit in this hunt.</li><li>Record the false positives and the limits of process-access evidence.</li></ol></article>
+    <article class="card"><h3>Expected proof</h3><div class="validator-grid"><div class="metric"><strong style="color:var(--green)">5</strong><span>matching events</span></div><div class="metric"><strong style="color:var(--blue)">5</strong><span>benign negatives</span></div><div class="metric"><strong style="color:var(--cyan)">10/10</strong><span>correct decisions</span></div><div class="metric"><strong style="color:var(--amber)">4</strong><span>unique alerts</span></div></div><div class="code-tools"><button class="answer-btn" onclick="runValidation()">Run fixture validator</button></div><div id="validationResult" class="result" aria-live="polite">Press the button to test the access rights, allowlist, and deduplication in your browser.</div></article>
+    <article class="card"><h3>Proof of approved-tool suppression</h3><div class="flow"><div class="node"><strong>Risky LSASS access?</strong><small>No → keep quiet</small></div><div class="arrow">→</div><div class="node"><strong>Signer matches?</strong><small>No → investigate</small></div><div class="arrow">→</div><div class="node"><strong>Path also matches?</strong><small>Yes → suppress and review later</small></div></div></article>
+    <article class="card full"><h3>Analyst notes: expected false positives</h3><div class="grid"><div class="card third"><h3>EDR / AV sensors</h3><p>Verify product owner, signer, install path, hash or version, service identity, affected fleet, and update cadence.</p></div><div class="card third"><h3>Crash dumps / diagnostics</h3><p>Verify ticket or incident, approved binary location, signer, operator, target device, and collection window.</p></div><div class="card third"><h3>Credential providers</h3><p>Verify registered provider, publisher, deployment path, expected logon workflow, device scope, and change record.</p></div></div></article>
+    <article class="card"><h3>Validation status</h3><ul class="checklist"><li>Fixture logic executed: 10/10 decisions passed</li><li>Python executed against the ten-line JSONL: passed</li><li>Go not executed: Go toolchain unavailable in the validation environment</li><li>Sigma YAML parsed successfully</li><li>HTML and JavaScript structure checked</li></ul></article>
+    <article class="card"><h3>Honest limits</h3><ul><li>KQL was not executed in a live Microsoft security tenant.</li><li>CrowdStrike CQL was not executed in a live Falcon LogScale tenant.</li><li>Process-access schemas and mask formatting vary by sensor.</li><li>Sigma mask matching is enumerative; KQL/Python/Go use bitwise logic.</li><li>Access alone does not prove memory was read or credentials were stolen.</li></ul></article>
+    <article class="card full"><h3>Week 13 complete</h3><p>You now have a portfolio-ready chain: human-readable and JSONL telemetry → rights-aware query → vendor translation → portable Sigma → Python mask decoder → Go deduplication → validation evidence and defensible analyst limits.</p><div class="callout danger"><b>Correct conclusion:</b> “A non-approved process requested risky access to LSASS; investigate the source, command lineage, user, hash, and nearby activity.” Do not write “credential theft confirmed” from process access alone.</div></article>
+  </div>
+</section>
+
+<nav class="nav-footer" aria-label="Lab pages"><button class="nav-btn" id="prevBtn" onclick="go(current-1)">← Previous</button><div class="dots" id="dots"></div><button class="nav-btn" id="nextBtn" onclick="go(current+1)">Next →</button></nav>
+<div class="status-bar">Offline-ready · No external libraries · Use ← and → keys to change pages · Filename remains week12 task.txt; lesson is Week 13</div>
+</main>
+<script>
+const events = [
+ {event_number:1,timestamp:"2026-11-12T09:14:22Z",device:"FIN-LT-014",source_process_id:4820,source_image:"C:\\Users\\maya\\AppData\\Local\\Temp\\svhost.exe",target_image:"C:\\Windows\\System32\\lsass.exe",access_mask:"0x1010",signer:"Unsigned",sha256:"8b92e0e94adf418443b9774d227c70f5784a0e206dff16f98aac350e6086ea41",expected_match:true,label:"True positive",reason:"Unsigned Temp binary asks for VM_READ against LSASS."},
+ {event_number:2,timestamp:"2026-11-12T09:26:08Z",device:"HR-WS-022",source_process_id:7316,source_image:"C:\\Users\\arun\\AppData\\Roaming\\update.exe",target_image:"C:\\Windows\\System32\\lsass.exe",access_mask:"0x143A",signer:"Unknown",sha256:"694f08e8d9bd29ba735a21f75b5df0fa3e0c53cc42aa5716b74d6958f9da8d62",expected_match:true,label:"True positive",reason:"User-writable binary requests create-thread and VM operation/read/write rights."},
+ {event_number:3,timestamp:"2026-11-12T09:41:54Z",device:"ENG-WS-008",source_process_id:3904,source_image:"C:\\Windows\\System32\\rundll32.exe",target_image:"C:\\Windows\\System32\\lsass.exe",access_mask:"0x0040",signer:"Microsoft Windows",sha256:"a1c9b2d2e58d2c263e7862d5ccf79bb26755d4670eeaace7d5f9aaa9ee6fb1e5",expected_match:true,label:"True positive",reason:"Signed Windows utility is not in an approved pair and requests DUP_HANDLE."},
+ {event_number:4,timestamp:"2026-11-12T10:03:17Z",device:"OPS-LT-019",source_process_id:6508,source_image:"C:\\Users\\vikram\\Downloads\\procdump64.exe",target_image:"C:\\Windows\\System32\\lsass.exe",access_mask:"0x1410",signer:"Microsoft Corporation",sha256:"11ead938fde60e251efe0d6a7f2219a3bbb68f6f1173c7b320c2f1d1f73cbe2d",expected_match:true,label:"True positive",reason:"Microsoft-signed dump tool runs from Downloads, not the approved diagnostics path."},
+ {event_number:5,timestamp:"2026-11-12T10:04:22Z",device:"FIN-LT-014",source_process_id:4820,source_image:"C:\\Users\\maya\\AppData\\Local\\Temp\\svhost.exe",target_image:"C:\\Windows\\System32\\lsass.exe",access_mask:"0x1010",signer:"Unsigned",sha256:"8b92e0e94adf418443b9774d227c70f5784a0e206dff16f98aac350e6086ea41",expected_match:true,label:"True positive",reason:"Repeated event from the same device and source image; Day 6 deduplicates it."},
+ {event_number:6,timestamp:"2026-11-12T10:20:00Z",device:"SEC-WS-003",source_process_id:1180,source_image:"C:\\Program Files\\Windows Defender Advanced Threat Protection\\MsSense.exe",target_image:"C:\\Windows\\System32\\lsass.exe",access_mask:"0x1410",signer:"Microsoft Windows Publisher",sha256:"53c497745119457ee78ab76d2c2b9003a672ce44deca1d59df14648dc1d65d39",expected_match:false,label:"Benign negative",reason:"Approved Defender signer and installation path pair."},
+ {event_number:7,timestamp:"2026-11-12T10:27:36Z",device:"SEC-WS-004",source_process_id:1308,source_image:"C:\\Program Files\\CrowdStrike\\CSFalconService.exe",target_image:"C:\\Windows\\System32\\lsass.exe",access_mask:"0x1010",signer:"CrowdStrike, Inc.",sha256:"cd1170d01c10f5ad652d5107dd1c73f7991b61e00d721c24c716aeb7969909f3",expected_match:false,label:"Benign negative",reason:"Approved EDR signer and installation path pair."},
+ {event_number:8,timestamp:"2026-11-12T10:36:12Z",device:"IR-WS-006",source_process_id:5900,source_image:"C:\\Program Files\\Contoso\\Diagnostics\\procdump64.exe",target_image:"C:\\Windows\\System32\\lsass.exe",access_mask:"0x1F0FFF",signer:"Microsoft Corporation",sha256:"11ead938fde60e251efe0d6a7f2219a3bbb68f6f1173c7b320c2f1d1f73cbe2d",expected_match:false,label:"Benign negative",reason:"Approved diagnostic signer and managed path pair."},
+ {event_number:9,timestamp:"2026-11-12T10:45:49Z",device:"AUTH-WS-002",source_process_id:2484,source_image:"C:\\Program Files\\Contoso\\CredentialProvider\\CredProviderHost.exe",target_image:"C:\\Windows\\System32\\lsass.exe",access_mask:"0x1010",signer:"Contoso Identity Security",sha256:"79a2be4b70ac55070285fa162b4463b0d32939f7e4a46f0fe7857f66a8f95bf0",expected_match:false,label:"Benign negative",reason:"Approved credential-provider signer and installation path pair."},
+ {event_number:10,timestamp:"2026-11-12T11:02:03Z",device:"ADMIN-WS-009",source_process_id:4200,source_image:"C:\\Windows\\System32\\Taskmgr.exe",target_image:"C:\\Windows\\System32\\lsass.exe",access_mask:"0x1000",signer:"Microsoft Windows",sha256:"e54514a0b2a1f6a2dfa73a11d264953aa6c1ab3f563922c2a98f4a0ec224ce1c",expected_match:false,label:"Benign negative",reason:"QUERY_LIMITED_INFORMATION only; no risky bit for this hunt."}
+];
+const rights = [
+ {bit:0x0002,name:'PROCESS_CREATE_THREAD'},
+ {bit:0x0008,name:'PROCESS_VM_OPERATION'},
+ {bit:0x0010,name:'PROCESS_VM_READ'},
+ {bit:0x0020,name:'PROCESS_VM_WRITE'},
+ {bit:0x0040,name:'PROCESS_DUP_HANDLE'},
+ {bit:0x0400,name:'PROCESS_QUERY_INFORMATION'},
+ {bit:0x1000,name:'PROCESS_QUERY_LIMITED_INFORMATION'}
+];
+const riskyMask=0x007A;
+const approved=[
+ {signer:'Microsoft Windows Publisher',path:'C:\\Program Files\\Windows Defender Advanced Threat Protection\\'},
+ {signer:'CrowdStrike, Inc.',path:'C:\\Program Files\\CrowdStrike\\'},
+ {signer:'Microsoft Corporation',path:'C:\\Program Files\\Contoso\\Diagnostics\\'},
+ {signer:'Contoso Identity Security',path:'C:\\Program Files\\Contoso\\CredentialProvider\\'}
+];
+const base=p=>p.replaceAll('\\','/').split('/').pop();
+const labels=mask=>rights.filter(r=>(mask&r.bit)!==0).map(r=>r.name);
+const allowed=e=>approved.some(a=>e.signer.toLowerCase()===a.signer.toLowerCase()&&e.source_image.toLowerCase().startsWith(a.path.toLowerCase()));
+function detect(e){const mask=parseInt(e.access_mask,16);return base(e.target_image).toLowerCase()==='lsass.exe'&&(mask&riskyMask)!==0&&!allowed(e)}
+let current=1;
+function go(n){current=Math.min(8,Math.max(1,n));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',+p.dataset.page===current));document.querySelectorAll('.dot').forEach((d,i)=>{d.classList.toggle('active',i+1===current);d.setAttribute('aria-current',i+1===current?'page':'false')});document.getElementById('progress').style.width=(current/8*100)+'%';document.getElementById('prevBtn').disabled=current===1;document.getElementById('nextBtn').disabled=current===8;window.scrollTo({top:0,behavior:'smooth'});localStorage.setItem('week13Page',current)}
+function toggle(id){document.getElementById(id).classList.toggle('open')}
+async function copyFrom(id,btn){const text=document.getElementById(id).textContent;try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text)}else{const area=document.createElement('textarea');area.value=text;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();document.execCommand('copy');area.remove()}const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=old,1000)}catch(error){btn.textContent='Select and copy';setTimeout(()=>btn.textContent='Copy',1500)}}
+function safe(text){return String(text).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
+function eventJson(e){return JSON.stringify(e)}
+function renderEvents(){document.getElementById('eventsTable').innerHTML=events.map(e=>{const mask=parseInt(e.access_mask,16);const names=labels(mask);return `<tr><td><b>${e.event_number}</b><br><small>${safe(e.timestamp.slice(11,19))}</small></td><td>${safe(e.device)}<br><span class="mono">${safe(base(e.source_image))}</span></td><td class="mono">${safe(base(e.target_image))}</td><td><b>${safe(e.access_mask)}</b><br><small>${safe(names.join(', ')||'No tracked right')}</small></td><td>${safe(e.signer)}</td><td><span class="tag ${e.expected_match?'tp':'tn'}">${e.expected_match?'TP':'TN'}</span></td><td>${safe(e.reason)}<details><summary>Expand JSONL</summary><pre><code>${safe(eventJson(e))}</code></pre></details></td></tr>`}).join('');document.getElementById('eventPicker').innerHTML=events.map((e,i)=>`<button class="small-btn" aria-pressed="${i===0}" onclick="showEvent(${i},this)">Event ${e.event_number}</button>`).join('');document.getElementById('rawJsonCode').textContent=events.map(eventJson).join('\n');showEvent(0,document.querySelector('#eventPicker button'))}
+function showEvent(i,btn){document.querySelectorAll('#eventPicker button').forEach(b=>b.setAttribute('aria-pressed','false'));if(btn)btn.setAttribute('aria-pressed','true');const e=events[i],mask=parseInt(e.access_mask,16),names=labels(mask);document.getElementById('eventDetail').innerHTML=`<div class="detail-grid"><div class="detail-item"><small>Source</small><b>${safe(base(e.source_image))}</b></div><div class="detail-item"><small>Target</small><b>${safe(base(e.target_image))}</b></div><div class="detail-item"><small>Rights</small><b>${safe(names.join(', ')||'None tracked')}</b></div><div class="detail-item"><small>Expected</small><b style="color:${e.expected_match?'var(--green)':'var(--blue)'}">${safe(e.label)}</b></div></div><p><b>Signer:</b> ${safe(e.signer)}</p><p><b>SHA-256:</b> <span class="mono">${safe(e.sha256)}</span></p><p>${safe(e.reason)}</p>`}
+function runValidation(){const rows=events.map(e=>({n:e.event_number,actual:detect(e),pass:detect(e)===e.expected_match}));const passed=rows.filter(r=>r.pass).length;const tp=events.filter(e=>detect(e)&&e.expected_match).length;const tn=events.filter(e=>!detect(e)&&!e.expected_match).length;const unique=new Set(events.filter(detect).map(e=>(e.device+'|'+e.source_image).toLowerCase())).size;const el=document.getElementById('validationResult');el.className='result '+(passed===events.length&&unique===4?'pass':'fail');el.innerHTML=`<b>${passed}/${events.length} decisions passed</b><br>${tp} matching events · ${tn} benign negatives quiet · ${unique} unique device + process alerts`}
+document.getElementById('dots').innerHTML=Array.from({length:8},(_,i)=>`<button class="dot" onclick="go(${i+1})" aria-label="Page ${i+1}">${i+1}</button>`).join('');
+document.getElementById('themeBtn').onclick=()=>{const light=document.documentElement.dataset.theme==='light';document.documentElement.dataset.theme=light?'dark':'light';document.getElementById('themeBtn').textContent=light?'Light':'Dark';localStorage.setItem('week13Theme',light?'dark':'light')};
+const sizes=['16px','18px','20px'];let sizeIndex=0;document.getElementById('textBtn').onclick=()=>{sizeIndex=(sizeIndex+1)%sizes.length;document.body.style.fontSize=sizes[sizeIndex];document.getElementById('textBtn').textContent=sizeIndex===0?'A+':sizeIndex===1?'A++':'A↺'};
+document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key==='ArrowRight')go(current+1);if(e.key==='ArrowLeft')go(current-1)});
+if(localStorage.getItem('week13Theme')==='light'){document.documentElement.dataset.theme='light';document.getElementById('themeBtn').textContent='Dark'}
+renderEvents();go(+(localStorage.getItem('week13Page')||1));
+</script>
+</body>
+</html>

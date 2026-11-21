@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 8 Lab - RDP Logon from a New Source</title>
+<style>
+:root{--bg:#08111f;--panel:#101d31;--panel2:#152641;--text:#eef5ff;--muted:#aebed5;--line:#29415f;--cyan:#4fd1c5;--blue:#61a9ff;--amber:#ffcc66;--red:#ff7d8d;--green:#6ee7a8;--shadow:0 18px 46px rgba(0,0,0,.24)}
+[data-theme="light"]{--bg:#eef4fb;--panel:#fff;--panel2:#f4f8fd;--text:#10213b;--muted:#586b84;--line:#cfdaea;--cyan:#087f78;--blue:#1768c4;--amber:#9b6500;--red:#ba2940;--green:#087d48;--shadow:0 16px 40px rgba(26,52,90,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(97,169,255,.12),transparent 28%),var(--bg);color:var(--text);font:16px/1.55 Inter,Segoe UI,Arial,sans-serif;min-height:100vh}
+button,a{font:inherit}.shell{max-width:1180px;margin:auto;padding:18px}.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.topbar-inner{max-width:1180px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:12px}.brand{font-weight:800;letter-spacing:.2px}.brand span{color:var(--cyan)}.grow{flex:1}.icon-btn,.nav-btn,.answer-btn,.small-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer;transition:.18s}.icon-btn:hover,.nav-btn:hover,.answer-btn:hover,.small-btn:hover{border-color:var(--cyan);transform:translateY(-1px)}button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}.progress{height:4px;background:var(--line)}.progress>div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .25s}
+.hero{padding:32px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(79,209,197,.10),rgba(97,169,255,.06)),var(--panel);box-shadow:var(--shadow)}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);font-weight:800}.hero h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.02;margin:.35rem 0 1rem;max-width:900px}.hero p{max-width:850px;color:var(--muted);font-size:1.08rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.chip{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);font-size:.86rem}.chip.good{color:var(--green)}.chip.warn{color:var(--amber)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.stat strong{display:block;font-size:1.8rem;color:var(--cyan)}.stat span{color:var(--muted);font-size:.88rem}
+.page{display:none;animation:fade .22s ease}.page.active{display:block}@keyframes fade{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:22px 0}.page-head h2{font-size:clamp(1.8rem,4vw,3rem);margin:.2rem 0}.page-no{color:var(--muted);font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{grid-column:span 6;padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}.card h3{margin-top:0}.card p,.card li{color:var(--muted)}.callout{border-left:4px solid var(--cyan);padding:12px 16px;background:var(--panel2);border-radius:0 12px 12px 0}.warning{border-left-color:var(--amber)}.danger{border-left-color:var(--red)}
+.week-map{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-top:18px}.day-tile{padding:14px 10px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);cursor:pointer;min-height:110px;color:var(--text);text-align:left}.day-tile:hover{border-color:var(--cyan)}.day-tile b{display:block;color:var(--cyan);margin-bottom:6px}.day-tile span{font-size:.82rem;color:var(--muted)}
+.flow{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;padding:22px}.node{min-width:185px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);text-align:center}.node strong{display:block;overflow-wrap:anywhere}.node small{color:var(--muted)}.arrow{font-size:2rem;color:var(--cyan)}
+.attack{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:15px}.attack-card{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.attack-card b{font-size:1.2rem;color:var(--amber)}.attack-link{color:var(--blue);text-decoration:none}.attack-link:hover{text-decoration:underline}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:860px;background:var(--panel2)}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);background:var(--panel)}td{font-size:.9rem}.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.76rem;font-weight:800}.tp{color:var(--green);background:rgba(110,231,168,.12)}.tn{color:var(--blue);background:rgba(97,169,255,.12)}
+pre{margin:0;padding:18px;overflow:auto;background:#050a12;color:#dce9fa;border-radius:14px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}.code-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.answer{display:none;margin-top:10px}.answer.open{display:block}.raw{max-height:430px}.field-map{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field-map div{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}.field-map code{color:var(--cyan)}
+.event-picker{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.event-picker button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}.event-detail{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.detail-item{padding:10px;border-radius:10px;background:var(--panel);overflow-wrap:anywhere}.detail-item small{display:block;color:var(--muted)}
+.checklist{list-style:none;padding:0}.checklist li{padding:10px 0;border-bottom:1px solid var(--line)}.checklist li:before{content:'✓';color:var(--green);font-weight:900;margin-right:9px}.validator-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{padding:16px;border:1px solid var(--line);border-radius:14px;text-align:center;background:var(--panel2)}.metric strong{display:block;font-size:2rem}.result{margin-top:12px;padding:12px;border-radius:12px;background:var(--panel2);min-height:48px}.result.pass{border:1px solid var(--green);color:var(--green)}.result.fail{border:1px solid var(--red);color:var(--red)}
+.nav-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:24px 0 8px}.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.dot{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--muted);cursor:pointer}.dot.active{background:var(--cyan);color:#03111b;border-color:var(--cyan);font-weight:900}.status-bar{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.88rem}.status-ok{color:var(--green)}.status-honest{color:var(--amber)}
+@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.week-map{grid-template-columns:repeat(2,1fr)}.card,.card.third{grid-column:1/-1}.attack{grid-template-columns:1fr}.attack .arrow{transform:rotate(90deg);text-align:center}.detail-grid,.validator-grid{grid-template-columns:1fr}.topbar .brand{font-size:.9rem}.topbar-inner{gap:7px}.icon-btn{padding:8px}.hero{padding:22px}}
+@media(max-width:520px){.shell{padding:12px}.stats{grid-template-columns:1fr}.week-map{grid-template-columns:1fr}.page-head{align-items:start;flex-direction:column}.nav-footer .nav-btn{font-size:.84rem;padding:8px}.dots{display:none}.brand{display:none}}
+@media print{.topbar,.nav-footer,.code-tools{display:none}.page{display:block!important;break-after:page}.shell{max-width:none}.card,.hero{box-shadow:none}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><a href="index.html" class="icon-btn" style="text-decoration:none" title="Back to all labs">← All labs</a><div class="brand">Detection Lab <span>W8</span></div><div class="grow"></div><button class="icon-btn" id="textBtn" title="Increase text size">A+</button><button class="icon-btn" id="themeBtn" title="Switch theme">Light</button></div><div class="progress"><div id="progress"></div></div></header>
+<main class="shell">
+<section class="page active" data-page="1">
+  <div class="hero">
+    <div class="eyebrow">Month 2 - Identity &amp; Access · Week 8 · Beginner</div>
+    <h1>RDP logon from a new source</h1>
+    <p>Learn to find a successful Remote Desktop logon when the source has not appeared in the recent baseline for either the user or the target device. Then keep approved support, jump-server, VPN, and disaster-recovery activity quiet.</p>
+    <div class="chips"><span class="chip">Identity &amp; Access</span><span class="chip">Windows logon</span><span class="chip">Logon Type 10</span><span class="chip">T1021.001</span><span class="chip">T1078</span><span class="chip good">2 true positives</span><span class="chip">6 benign negatives</span><span class="chip warn">No YARA - logon telemetry only</span></div>
+  </div>
+  <div class="stats"><div class="stat"><strong>8</strong><span>fixture events</span></div><div class="stat"><strong>30d</strong><span>example baseline</span></div><div class="stat"><strong>2</strong><span>expected alerts</span></div><div class="stat"><strong>4</strong><span>exception families</span></div></div>
+  <div class="card full">
+    <h3>The small detection idea</h3>
+    <div class="flow"><div class="node"><small>1 · Filter</small><strong>Successful RDP</strong><span>Logon Type 10</span></div><div class="arrow">→</div><div class="node"><small>2 · Compare</small><strong>User + source</strong><span>and device + source</span></div><div class="arrow">→</div><div class="node"><small>3 · Tune</small><strong>Approved exceptions</strong><span>exact, owned, expiring</span></div><div class="arrow">→</div><div class="node"><small>4 · Alert</small><strong>New for both</strong><span>investigate, do not convict</span></div></div>
+    <div class="callout"><b>Easy rule:</b> alert only when the logon succeeded, used RemoteInteractive (type 10), the source is new for both the account and target device, and no approved exception applies.</div>
+  </div>
+  <div class="card full">
+    <h3>Visual MITRE ATT&amp;CK map</h3>
+    <div class="attack"><div class="attack-card"><b>T1021.001</b><h3>Remote Services: RDP</h3><p>RDP is the remote service being used to reach the target.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1021/001/" target="_blank" rel="noreferrer">Open MITRE technique ↗</a></div><div class="arrow">→</div><div class="attack-card"><b>T1078</b><h3>Valid Accounts</h3><p>A successful logon may use a legitimate or compromised account.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1078/" target="_blank" rel="noreferrer">Open MITRE technique ↗</a></div></div>
+  </div>
+  <div class="card full"><h3>Your seven-day path</h3><div class="week-map"><button class="day-tile" onclick="go(2)"><b>Day 1</b><span>Read events and fixtures</span></button><button class="day-tile" onclick="go(3)"><b>Day 2</b><span>Write KQL and tune it</span></button><button class="day-tile" onclick="go(4)"><b>Day 3</b><span>Translate to Falcon CQL</span></button><button class="day-tile" onclick="go(5)"><b>Day 4</b><span>Build the Sigma candidate</span></button><button class="day-tile" onclick="go(6)"><b>Day 5</b><span>Baseline with Python</span></button><button class="day-tile" onclick="go(7)"><b>Day 6</b><span>Compare with Go maps</span></button><button class="day-tile" onclick="go(8)"><b>Day 7</b><span>Validate the tuned hunt</span></button></div></div>
+</section>
+
+<section class="page" data-page="2">
+  <div class="page-head"><div><div class="eyebrow">Day 1 · Telemetry</div><h2>Read the RDP story</h2></div><div class="page-no">Page 2 / 8</div></div>
+  <div class="grid">
+    <div class="card full"><h3>Fields that matter</h3><div class="flow"><div class="node"><small>Source</small><strong>source_ip</strong><span>source_device</span></div><div class="arrow">→</div><div class="node"><small>Identity</small><strong>user</strong><span>successful sign-in</span></div><div class="arrow">→</div><div class="node"><small>Destination</small><strong>target_device</strong><span>logon_type = 10</span></div></div></div>
+    <div class="card full"><h3>Human-readable TP/TN fixture table</h3><p>TP means the tuned hunt should alert. TN means it should remain quiet.</p><div class="table-wrap"><table><thead><tr><th>ID</th><th>Time</th><th>User</th><th>Source</th><th>Target</th><th>Logon</th><th>Expected</th><th>Why</th></tr></thead><tbody id="eventsTable"></tbody></table></div></div>
+    <div class="card full"><h3>Visual event explorer</h3><div class="event-picker" id="eventPicker"></div><div class="event-detail" id="eventDetail"></div></div>
+    <div class="card full"><h3>Expandable JSONL</h3><p>These eight lines are the complete current-event fixture. Download or copy them for the coding days.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('rawJson')">Show JSONL</button><button class="small-btn" onclick="copyFrom('rawJsonCode',this)">Copy JSONL</button><button class="small-btn" onclick="downloadText('week8_events.jsonl',document.getElementById('rawJsonCode').innerText)">Download JSONL</button></div><div class="answer" id="rawJson"><pre class="raw" id="rawJsonCode"></pre></div></div>
+  </div>
+</section>
+
+<section class="page" data-page="3">
+  <div class="page-head"><div><div class="eyebrow">Day 2 · KQL</div><h2>Build the behavior query</h2></div><div class="page-no">Page 3 / 8</div></div>
+  <div class="grid">
+    <div class="card"><h3>Think in three sets</h3><ol><li><b>Baseline:</b> successful type-10 logons from the previous 30 days.</li><li><b>Current:</b> successful type-10 logons from the last day.</li><li><b>Result:</b> sources missing from both the user's and device's baseline.</li></ol></div>
+    <div class="card"><h3>Tuning before alerting</h3><ul><li>Use exact source IPs for jump servers and support systems.</li><li>Use a reviewed CIDR only for a controlled VPN egress range.</li><li>Give disaster-recovery exceptions an owner and expiry.</li><li>Keep “new source” as evidence, not proof of compromise.</li></ul></div>
+    <div class="card full"><h3>KQL answer</h3><p>The query uses Windows SecurityEvent 4624 and compares the current IP with separate user and device source sets.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('kqlAnswer')">Show KQL answer</button><button class="small-btn" onclick="copyFrom('kqlCode',this)">Copy KQL</button></div><div class="answer" id="kqlAnswer"><pre id="kqlCode">let CurrentStart = ago(1d);
+let BaselineStart = ago(30d);
+let RdpSuccess = SecurityEvent
+| where EventID == 4624 and LogonType == 10
+| where isnotempty(IpAddress) and IpAddress !in ("-", "127.0.0.1", "::1")
+| project TimeGenerated, Account, Computer, IpAddress;
+let UserBaseline = RdpSuccess
+| where TimeGenerated between (BaselineStart .. CurrentStart)
+| summarize UserSources = make_set(IpAddress, 1024) by Account;
+let DeviceBaseline = RdpSuccess
+| where TimeGenerated between (BaselineStart .. CurrentStart)
+| summarize DeviceSources = make_set(IpAddress, 1024) by Computer;
+RdpSuccess
+| where TimeGenerated > CurrentStart
+| join kind=leftouter UserBaseline on Account
+| join kind=leftouter DeviceBaseline on Computer
+| extend NewForUser = coalesce(set_has_element(UserSources, IpAddress), false) == false
+| extend NewForDevice = coalesce(set_has_element(DeviceSources, IpAddress), false) == false
+| extend ApprovedException =
+    IpAddress in ("10.20.4.15", "10.20.9.20", "10.99.0.10")
+    or ipv4_is_in_range(IpAddress, "10.70.0.0/16")
+| where NewForUser and NewForDevice and not(ApprovedException)
+| project TimeGenerated, Account, Computer, IpAddress, NewForUser, NewForDevice
+| order by TimeGenerated desc</pre></div></div>
+    <div class="card full"><div class="callout warning"><b>Validation status:</b> syntax and behavior still require a live Microsoft Sentinel or Azure Data Explorer table with your real field mappings. The fixture logic is validated separately on Day 7.</div></div>
+  </div>
+</section>
+
+<section class="page" data-page="4">
+  <div class="page-head"><div><div class="eyebrow">Day 3 · CrowdStrike CQL</div><h2>Translate the same behavior</h2></div><div class="page-no">Page 4 / 8</div></div>
+  <div class="grid">
+    <div class="card"><h3>Translation pattern</h3><p>Keep the behavior stable even when product field names differ:</p><div class="flow"><div class="node"><strong>Successful RDP</strong></div><div class="arrow">→</div><div class="node"><strong>Two lookups</strong></div><div class="arrow">→</div><div class="node"><strong>Exceptions</strong></div></div></div>
+    <div class="card"><h3>Field map</h3><div class="field-map"><div><code>SecurityEvent.Account</code><br>→ <code>UserName</code></div><div><code>SecurityEvent.Computer</code><br>→ <code>ComputerName</code></div><div><code>SecurityEvent.IpAddress</code><br>→ <code>RemoteAddressIP4</code></div><div><code>SecurityEvent.LogonType</code><br>→ <code>LogonType_decimal</code></div><div><code>4624</code><br>→ <code>UserLogon</code></div><div><code>TimeGenerated</code><br>→ <code>@timestamp</code></div></div></div>
+    <div class="card full"><h3>CrowdStrike CQL answer</h3><p>The two CSV lookups should contain the approved historical user/source and device/source pairs created by your scheduled baseline job.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('cqlAnswer')">Show CrowdStrike CQL answer</button><button class="small-btn" onclick="copyFrom('cqlCode',this)">Copy CrowdStrike CQL</button></div><div class="answer" id="cqlAnswer"><pre id="cqlCode">#event_simpleName=UserLogon
+| LogonType_decimal=10
+| Success=true
+| rename(field=UserName, as=user)
+| rename(field=ComputerName, as=target_device)
+| rename(field=RemoteAddressIP4, as=source_ip)
+| match(file="known_rdp_user_sources.csv", field=[user, source_ip], column=[user, source_ip], include=[known_user_source], strict=false)
+| match(file="known_rdp_device_sources.csv", field=[target_device, source_ip], column=[target_device, source_ip], include=[known_device_source], strict=false)
+| default(value="false", field=[known_user_source, known_device_source])
+| known_user_source="false" and known_device_source="false"
+| source_ip!=in(values=["10.20.4.15", "10.20.9.20", "10.99.0.10"])
+| not cidr(source_ip, subnet=["10.70.0.0/16"])
+| table([@timestamp, user, target_device, source_ip, SourceHostName])</pre></div></div>
+    <div class="card full"><div class="callout warning"><b>Validation status:</b> requires Falcon LogScale with tenant-specific event names, fields, and lookup files. Treat this as a translation exercise and verify against your Falcon schema before deployment.</div></div>
+  </div>
+</section>
+
+<section class="page" data-page="5">
+  <div class="page-head"><div><div class="eyebrow">Day 4 · Sigma</div><h2>Create a portable candidate rule</h2></div><div class="page-no">Page 5 / 8</div></div>
+  <div class="grid">
+    <div class="card"><h3>What Sigma can do</h3><p>Generate successful Windows RDP logon candidates and remove static approved sources. This is useful across SIEM back ends.</p></div>
+    <div class="card"><h3>What remains downstream</h3><p>The 30-day “new for user and device” baseline is stateful. Perform that comparison in the SIEM, a scheduled lookup, or the Python/Go tooling in the next two days.</p></div>
+    <div class="card full"><h3>Sigma answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('sigmaAnswer')">Show Sigma answer</button><button class="small-btn" onclick="copyFrom('sigmaCode',this)">Copy Sigma</button></div><div class="answer" id="sigmaAnswer"><pre id="sigmaCode">title: Successful RDP Logon Candidate from Non-Approved Source
+logsource:
+  product: windows
+  service: security
+detection:
+  selection_rdp:
+    EventID: 4624
+    LogonType: 10
+    IpAddress|exists: true
+  filter_missing_or_local:
+    IpAddress:
+      - '-'
+      - '127.0.0.1'
+      - '::1'
+  filter_approved_exact:
+    IpAddress:
+      - '10.20.4.15'
+      - '10.20.9.20'
+      - '10.99.0.10'
+  filter_approved_vpn:
+    IpAddress|cidr: '10.70.0.0/16'
+  condition: selection_rdp and not 1 of filter_*
+fields:
+  - SubjectUserName
+  - TargetUserName
+  - WorkstationName
+  - IpAddress
+  - LogonType
+falsepositives:
+  - Approved help-desk support sessions
+  - Managed jump servers
+  - VPN address-pool changes
+  - Disaster-recovery exercises
+level: medium
+tags:
+  - attack.lateral_movement
+  - attack.t1021.001
+  - attack.t1078</pre></div></div>
+    <div class="card full"><div class="callout"><b>Structural validation:</b> YAML parsed successfully and the rule contains neither <code>id</code> nor <code>status</code>. A Sigma back-end conversion was not run here; field support must be checked in your chosen back end.</div></div>
+  </div>
+</section>
+
+<section class="page" data-page="6">
+  <div class="page-head"><div><div class="eyebrow">Day 5 · Python</div><h2>Build a tiny CSV baseline</h2></div><div class="page-no">Page 6 / 8</div></div>
+  <div class="grid">
+    <div class="card full"><h3>Baseline CSV</h3><p>Each row records a known user/source pair or a known target-device/source pair. Blank columns are intentional.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('csvAnswer')">Show baseline CSV</button><button class="small-btn" onclick="copyFrom('csvCode',this)">Copy CSV</button><button class="small-btn" onclick="downloadText('week8_baseline.csv',document.getElementById('csvCode').innerText)">Download CSV</button></div><div class="answer" id="csvAnswer"><pre id="csvCode">kind,user,target_device,source_ip,source_device
+user,CONTOSO\alice,,10.10.5.44,ALICE-LT
+device,,WS-FIN-07,10.10.5.44,ALICE-LT
+user,CONTOSO\alice,,10.20.4.15,JUMP-01
+device,,WS-FIN-07,10.20.4.15,JUMP-01
+user,CONTOSO\bob,,10.10.8.31,BOB-LT
+device,,WS-HR-02,10.10.8.31,BOB-LT
+user,CONTOSO\carol,,10.70.4.21,VPN-GW-01
+device,,WS-ENG-12,10.70.4.21,VPN-GW-01</pre></div></div>
+    <div class="card full"><h3>Python answer</h3><p>Save the downloaded CSV and JSONL beside this script. The code uses two sets and prints only new, non-exempt RDP events.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('pythonAnswer')">Show Python answer</button><button class="small-btn" onclick="copyFrom('pythonCode',this)">Copy Python</button></div><div class="answer" id="pythonAnswer"><pre id="pythonCode">import csv
+import ipaddress
+import json
+
+known_user_sources = set()
+known_device_sources = set()
+
+with open("week8_baseline.csv", newline="", encoding="utf-8") as handle:
+    for row in csv.DictReader(handle):
+        if row["kind"] == "user":
+            known_user_sources.add((row["user"].lower(), row["source_ip"]))
+        if row["kind"] == "device":
+            known_device_sources.add((row["target_device"].lower(), row["source_ip"]))
+
+approved_devices = {"jump-01", "helpdesk-02", "dr-jump-01"}
+approved_vpn = ipaddress.ip_network("10.70.0.0/16")
+
+def approved_exception(event):
+    source_device = event["source_device"].lower()
+    source_ip = ipaddress.ip_address(event["source_ip"])
+    return (
+        event.get("approved_support", False)
+        or source_device in approved_devices
+        or source_ip in approved_vpn
+    )
+
+def is_new_rdp(event):
+    if not event["success"] or event["logon_type"] != 10:
+        return False
+    user_pair = (event["user"].lower(), event["source_ip"])
+    device_pair = (event["target_device"].lower(), event["source_ip"])
+    new_for_user = user_pair not in known_user_sources
+    new_for_device = device_pair not in known_device_sources
+    return new_for_user and new_for_device and not approved_exception(event)
+
+with open("week8_events.jsonl", encoding="utf-8") as handle:
+    for line in handle:
+        event = json.loads(line)
+        if is_new_rdp(event):
+            print(event["id"], event["user"], "→", event["target_device"])</pre></div></div>
+    <div class="card full"><div class="callout"><b>Executed result:</b> the script printed exactly <code>R1</code> and <code>R2</code>. All six benign fixtures stayed quiet.</div></div>
+  </div>
+</section>
+
+<section class="page" data-page="7">
+  <div class="page-head"><div><div class="eyebrow">Day 6 · Go</div><h2>Compare against a local allowlist map</h2></div><div class="page-no">Page 7 / 8</div></div>
+  <div class="grid">
+    <div class="card"><h3>Why a map?</h3><p>A Go map gives a fast yes/no check. Join the account or target device with the source IP to make a simple key.</p></div>
+    <div class="card"><h3>Beginner goal</h3><p>Focus on the comparison, not file parsing. The sample keeps four current events in code: two alerts and two approved exceptions.</p></div>
+    <div class="card full"><h3>Go answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('goAnswer')">Show Go answer</button><button class="small-btn" onclick="copyFrom('goCode',this)">Copy Go</button></div><div class="answer" id="goAnswer"><pre id="goCode">package main
+
+import (
+    "fmt"
+    "strings"
+)
+
+type Event struct {
+    ID, User, Target, SourceIP, SourceDevice string
+    LogonType int
+    Success, ApprovedSupport bool
+}
+
+func key(left, sourceIP string) string {
+    return strings.ToLower(left) + "|" + sourceIP
+}
+
+func main() {
+    knownUser := map[string]bool{
+        key(`CONTOSO\alice`, "10.10.5.44"): true,
+        key(`CONTOSO\alice`, "10.20.4.15"): true,
+    }
+    knownDevice := map[string]bool{
+        key("WS-FIN-07", "10.10.5.44"): true,
+        key("WS-FIN-07", "10.20.4.15"): true,
+    }
+    approvedDevice := map[string]bool{
+        "jump-01": true, "helpdesk-02": true, "dr-jump-01": true,
+    }
+    events := []Event{
+        {"R1", `CONTOSO\alice`, "WS-FIN-07", "203.0.113.24", "UNKNOWN", 10, true, false},
+        {"R2", `CONTOSO\bob`, "WS-HR-02", "198.51.100.77", "LAPTOP-441", 10, true, false},
+        {"R3", `CONTOSO\alice`, "WS-FIN-07", "10.20.4.15", "JUMP-01", 10, true, false},
+        {"R4", `CONTOSO\dave`, "WS-MKT-03", "10.20.9.20", "HELPDESK-02", 10, true, true},
+    }
+    for _, event := range events {
+        newUser := !knownUser[key(event.User, event.SourceIP)]
+        newDevice := !knownDevice[key(event.Target, event.SourceIP)]
+        excepted := event.ApprovedSupport || approvedDevice[strings.ToLower(event.SourceDevice)]
+        if event.Success && event.LogonType == 10 && newUser && newDevice && !excepted {
+            fmt.Println(event.ID, event.User, "→", event.Target)
+        }
+    }
+}</pre></div></div>
+    <div class="card full"><div class="callout warning"><b>Validation status:</b> Go was not executed because this build environment did not contain a Go toolchain. Review and run it locally with <code>go run main.go</code>; expected IDs are <code>R1</code> and <code>R2</code>.</div></div>
+  </div>
+</section>
+
+<section class="page" data-page="8">
+  <div class="page-head"><div><div class="eyebrow">Day 7 · Capstone</div><h2>Detect the new source, keep exceptions</h2></div><div class="page-no">Page 8 / 8</div></div>
+  <div class="grid">
+    <div class="card"><h3>Analyst reasoning</h3><ul><li><b>Help-desk support:</b> require a ticket, named support system, owner, and short expiry.</li><li><b>Jump servers:</b> allow exact managed sources, not broad internal ranges.</li><li><b>VPN changes:</b> update the approved egress range only after network-owner confirmation.</li><li><b>Disaster recovery:</b> tie exceptions to planned exercises and remove them afterward.</li></ul></div>
+    <div class="card"><h3>Investigate an alert</h3><ol><li>Confirm the source IP/device and whether it is expected for the user.</li><li>Check the target's sensitivity and the account's privilege.</li><li>Review nearby authentication failures, VPN activity, and other remote logons.</li><li>Contact the user or system owner through an approved channel.</li><li>Escalate only after context supports compromise.</li></ol></div>
+    <div class="card full"><h3>Interactive fixture validator</h3><p>This runs the same successful-RDP, two-baseline, and exception logic in your browser.</p><div class="validator-grid"><div class="metric"><strong id="metricCases">8</strong><span>fixture cases</span></div><div class="metric"><strong id="metricExpected">2</strong><span>expected alerts</span></div><div class="metric"><strong id="metricExceptions">4</strong><span>exception families</span></div></div><div class="code-tools"><button class="answer-btn" onclick="runValidation()">Run fixture validator</button></div><div id="validationResult" class="result">Select “Run fixture validator.”</div></div>
+    <div class="card full"><h3>Validation ledger</h3><div class="table-wrap"><table><thead><tr><th>Component</th><th>Status</th><th>What was checked</th></tr></thead><tbody><tr><td>Fixture logic</td><td class="status-ok">Executed</td><td>8/8 decisions; exactly R1 and R2 alerted</td></tr><tr><td>Python</td><td class="status-ok">Executed</td><td>Read CSV + JSONL; printed R1 and R2</td></tr><tr><td>Sigma</td><td class="status-ok">Executed</td><td>YAML parsed; no id or status keys</td></tr><tr><td>HTML + JavaScript</td><td class="status-ok">Executed</td><td>Document structure and JavaScript syntax checked</td></tr><tr><td>Go</td><td class="status-honest">Not executed</td><td>Go toolchain unavailable; expected output documented</td></tr><tr><td>KQL + CQL</td><td class="status-honest">Live platform required</td><td>Tenant schema, lookup, and operator support must be verified</td></tr></tbody></table></div></div>
+    <div class="card full"><h3>Completion checklist</h3><ul class="checklist"><li>I can explain why Logon Type 10 matters.</li><li>I can compare a source with both user and device history.</li><li>I can separate static exceptions from a behavior baseline.</li><li>I documented help-desk, jump-server, VPN, and disaster-recovery false positives.</li><li>I treat a new source as a lead for investigation, not automatic proof.</li><li>I did not use YARA because this lab contains logon telemetry only.</li></ul></div>
+  </div>
+</section>
+
+<div class="nav-footer"><button class="nav-btn" id="prevBtn" onclick="go(current-1)">← Previous</button><div class="dots" id="dots"></div><button class="nav-btn" id="nextBtn" onclick="go(current+1)">Next →</button></div>
+<div class="status-bar">Keyboard: <b>←</b> previous page · <b>→</b> next page · Theme and current page are saved locally. Rename this file from <code>.txt</code> to <code>.html</code> to open or host it.</div>
+</main>
+<script>
+const events=[
+ {id:'R1',timestamp:'2026-11-14T09:05:00Z',user:'CONTOSO\\alice',target_device:'WS-FIN-07',source_ip:'203.0.113.24',source_device:'UNKNOWN',logon_type:10,success:true,approved_support:false,expected_match:true,label:'TP',reason:'Successful RDP; source is new for both Alice and WS-FIN-07.'},
+ {id:'R2',timestamp:'2026-11-14T09:18:00Z',user:'CONTOSO\\bob',target_device:'WS-HR-02',source_ip:'198.51.100.77',source_device:'LAPTOP-441',logon_type:10,success:true,approved_support:false,expected_match:true,label:'TP',reason:'Successful RDP; source is new for both Bob and WS-HR-02.'},
+ {id:'R3',timestamp:'2026-11-14T09:25:00Z',user:'CONTOSO\\alice',target_device:'WS-FIN-07',source_ip:'10.20.4.15',source_device:'JUMP-01',logon_type:10,success:true,approved_support:false,expected_match:false,label:'TN',reason:'Known user/source and device/source pair from the managed jump server.'},
+ {id:'R4',timestamp:'2026-11-14T09:40:00Z',user:'CONTOSO\\dave',target_device:'WS-MKT-03',source_ip:'10.20.9.20',source_device:'HELPDESK-02',logon_type:10,success:true,approved_support:true,expected_match:false,label:'TN',reason:'Approved help-desk session; exact support exception applies.'},
+ {id:'R5',timestamp:'2026-11-14T10:02:00Z',user:'CONTOSO\\carol',target_device:'WS-ENG-12',source_ip:'10.70.12.88',source_device:'VPN-GW-01',logon_type:10,success:true,approved_support:false,expected_match:false,label:'TN',reason:'Source changed inside the reviewed corporate VPN egress range.'},
+ {id:'R6',timestamp:'2026-11-14T10:15:00Z',user:'CONTOSO\\svc_dr',target_device:'SQL-DR-01',source_ip:'10.99.0.10',source_device:'DR-JUMP-01',logon_type:10,success:true,approved_support:false,expected_match:false,label:'TN',reason:'Approved disaster-recovery jump source.'},
+ {id:'R7',timestamp:'2026-11-14T10:33:00Z',user:'CONTOSO\\erin',target_device:'WS-LEGAL-02',source_ip:'192.0.2.55',source_device:'UNKNOWN',logon_type:10,success:false,approved_support:false,expected_match:false,label:'TN',reason:'New source, but the logon failed; this hunt only detects successes.'},
+ {id:'R8',timestamp:'2026-11-14T10:45:00Z',user:'CONTOSO\\frank',target_device:'WS-OPS-04',source_ip:'192.0.2.88',source_device:'WS-OPS-04',logon_type:2,success:true,approved_support:false,expected_match:false,label:'TN',reason:'Successful local interactive logon, not RDP Logon Type 10.'}
+];
+const knownUserSources=new Set(['contoso\\alice|10.10.5.44','contoso\\alice|10.20.4.15','contoso\\bob|10.10.8.31','contoso\\carol|10.70.4.21']);
+const knownDeviceSources=new Set(['ws-fin-07|10.10.5.44','ws-fin-07|10.20.4.15','ws-hr-02|10.10.8.31','ws-eng-12|10.70.4.21']);
+const approvedDevices=new Set(['jump-01','helpdesk-02','dr-jump-01']);
+const key=(left,ip)=>left.toLowerCase()+'|'+ip;
+function inVpnRange(ip){const parts=ip.split('.').map(Number);return parts.length===4&&parts[0]===10&&parts[1]===70}
+function approvedException(e){return e.approved_support||approvedDevices.has(e.source_device.toLowerCase())||inVpnRange(e.source_ip)}
+function detect(e){if(!e.success||e.logon_type!==10)return false;const newUser=!knownUserSources.has(key(e.user,e.source_ip));const newDevice=!knownDeviceSources.has(key(e.target_device,e.source_ip));return newUser&&newDevice&&!approvedException(e)}
+let current=1;
+function go(n){current=Math.min(8,Math.max(1,n));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',+p.dataset.page===current));document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i+1===current));document.getElementById('progress').style.width=(current/8*100)+'%';document.getElementById('prevBtn').disabled=current===1;document.getElementById('nextBtn').disabled=current===8;window.scrollTo({top:0,behavior:'smooth'});localStorage.setItem('week8Page',current)}
+function toggle(id){document.getElementById(id).classList.toggle('open')}
+function copyFrom(id,btn){navigator.clipboard.writeText(document.getElementById(id).innerText).then(()=>{const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=old,1000)})}
+function downloadText(name,text){const blob=new Blob([text+'\n'],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function renderEvents(){document.getElementById('eventsTable').innerHTML=events.map(e=>`<tr><td><b>${e.id}</b></td><td>${e.timestamp.replace('T','<br>')}</td><td>${e.user}</td><td>${e.source_ip}<br><span style="color:var(--muted)">${e.source_device}</span></td><td>${e.target_device}</td><td>Type ${e.logon_type}<br>${e.success?'success':'failure'}</td><td><span class="tag ${e.expected_match?'tp':'tn'}">${e.label}</span></td><td>${e.reason}</td></tr>`).join('');document.getElementById('eventPicker').innerHTML=events.map((e,i)=>`<button class="small-btn" aria-pressed="${i===0}" onclick="showEvent(${i},this)">${e.id}</button>`).join('');document.getElementById('rawJsonCode').textContent=events.map(e=>JSON.stringify(e)).join('\n');showEvent(0,document.querySelector('#eventPicker button'))}
+function showEvent(i,btn){document.querySelectorAll('#eventPicker button').forEach(b=>b.setAttribute('aria-pressed','false'));if(btn)btn.setAttribute('aria-pressed','true');const e=events[i];const newUser=!knownUserSources.has(key(e.user,e.source_ip));const newDevice=!knownDeviceSources.has(key(e.target_device,e.source_ip));document.getElementById('eventDetail').innerHTML=`<div class="flow"><div class="node"><small>Source</small><strong>${e.source_device}</strong><span>${e.source_ip}</span></div><div class="arrow">→</div><div class="node"><small>User</small><strong>${e.user}</strong><span>${newUser?'new source':'known source'}</span></div><div class="arrow">→</div><div class="node"><small>Target</small><strong>${e.target_device}</strong><span>${newDevice?'new source':'known source'}</span></div></div><div class="detail-grid"><div class="detail-item"><small>Logon type</small><b>${e.logon_type}</b></div><div class="detail-item"><small>Outcome</small><b>${e.success?'Success':'Failure'}</b></div><div class="detail-item"><small>Exception</small><b>${approvedException(e)?'Yes':'No'}</b></div><div class="detail-item"><small>Expected</small><b style="color:${e.expected_match?'var(--green)':'var(--blue)'}">${e.label}</b></div></div><p>${e.reason}</p>`}
+function runValidation(){const rows=events.map(e=>({id:e.id,actual:detect(e),expected:e.expected_match}));const passed=rows.filter(r=>r.actual===r.expected).length;const alerts=rows.filter(r=>r.actual).map(r=>r.id);const el=document.getElementById('validationResult');el.className='result '+(passed===events.length&&alerts.join(',')==='R1,R2'?'pass':'fail');el.innerHTML=`<b>${passed}/${events.length} decisions passed</b><br>Detected: ${alerts.join(', ')||'none'} · Expected: R1, R2`}
+document.getElementById('dots').innerHTML=Array.from({length:8},(_,i)=>`<button class="dot" onclick="go(${i+1})" aria-label="Page ${i+1}">${i+1}</button>`).join('');
+document.getElementById('themeBtn').onclick=()=>{const light=document.documentElement.dataset.theme==='light';document.documentElement.dataset.theme=light?'dark':'light';document.getElementById('themeBtn').textContent=light?'Light':'Dark';localStorage.setItem('week8Theme',light?'dark':'light')};
+let large=localStorage.getItem('week8Text')==='large';function applyText(){document.body.style.fontSize=large?'18px':'16px';document.getElementById('textBtn').textContent=large?'A−':'A+'}document.getElementById('textBtn').onclick=()=>{large=!large;localStorage.setItem('week8Text',large?'large':'normal');applyText()};
+document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key==='ArrowRight')go(current+1);if(e.key==='ArrowLeft')go(current-1)});
+if(localStorage.getItem('week8Theme')==='light'){document.documentElement.dataset.theme='light';document.getElementById('themeBtn').textContent='Dark'}
+applyText();renderEvents();go(+(localStorage.getItem('week8Page')||1));
+</script>
+</body>
+</html>

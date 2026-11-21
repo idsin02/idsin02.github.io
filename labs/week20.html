@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Week 20 detection engineering lab: correlate Linux download, permission change, and execution activity.">
+<title>Week 20 Lab - Linux Download to Execution</title>
+<style>
+:root{--bg:#08111f;--panel:#101d31;--panel2:#152641;--text:#eef5ff;--muted:#aebed5;--line:#29415f;--cyan:#4fd1c5;--blue:#61a9ff;--amber:#ffcc66;--red:#ff7d8d;--green:#6ee7a8;--shadow:0 18px 46px rgba(0,0,0,.24)}
+[data-theme="light"]{--bg:#eef4fb;--panel:#fff;--panel2:#f4f8fd;--text:#10213b;--muted:#586b84;--line:#cfdaea;--cyan:#087f78;--blue:#1768c4;--amber:#9b6500;--red:#ba2940;--green:#087d48;--shadow:0 16px 40px rgba(26,52,90,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(97,169,255,.12),transparent 28%),var(--bg);color:var(--text);font:16px/1.55 Inter,Segoe UI,Arial,sans-serif;min-height:100vh}button,a{font:inherit}.shell{max-width:1180px;margin:auto;padding:18px}.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.topbar-inner{max-width:1180px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:12px}.brand{font-weight:800;letter-spacing:.2px}.brand span{color:var(--cyan)}.grow{flex:1}.icon-btn,.nav-btn,.answer-btn,.small-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer;transition:.18s}.icon-btn:hover,.nav-btn:hover,.answer-btn:hover,.small-btn:hover{border-color:var(--cyan);transform:translateY(-1px)}.icon-btn:focus-visible,.nav-btn:focus-visible,.answer-btn:focus-visible,.small-btn:focus-visible,.day-tile:focus-visible,.dot:focus-visible{outline:3px solid color-mix(in srgb,var(--cyan) 55%,transparent);outline-offset:2px}.progress{height:4px;background:var(--line)}.progress>div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .25s}
+.hero{padding:32px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(79,209,197,.10),rgba(97,169,255,.06)),var(--panel);box-shadow:var(--shadow)}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);font-weight:800}.hero h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.02;margin:.35rem 0 1rem;max-width:900px}.hero p{max-width:850px;color:var(--muted);font-size:1.08rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.chip{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);font-size:.86rem}.chip.good{color:var(--green)}.chip.warn{color:var(--amber)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.stat strong{display:block;font-size:1.8rem;color:var(--cyan)}.stat span{color:var(--muted);font-size:.88rem}.page{display:none;animation:fade .22s ease}.page.active{display:block}@keyframes fade{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:22px 0}.page-head h2{font-size:clamp(1.8rem,4vw,3rem);margin:.2rem 0}.page-no{color:var(--muted);font-weight:700}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{grid-column:span 6;padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}.card h3{margin-top:0}.card p,.card li{color:var(--muted)}.callout{border-left:4px solid var(--cyan);padding:12px 16px;background:var(--panel2);border-radius:0 12px 12px 0}.warning{border-left-color:var(--amber)}.danger{border-left-color:var(--red)}
+.week-map{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-top:18px}.day-tile{padding:14px 10px;border:1px solid var(--line);color:var(--text);border-radius:14px;background:var(--panel2);cursor:pointer;min-height:112px}.day-tile:hover{border-color:var(--cyan)}.day-tile b{display:block;color:var(--cyan);margin-bottom:6px}.day-tile span{font-size:.82rem;color:var(--muted)}.flow{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;padding:22px}.node{min-width:170px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);text-align:center}.node strong{display:block}.node small{color:var(--muted)}.arrow{font-size:2rem;color:var(--cyan);line-height:1}.attack{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:15px}.attack-card{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.attack-card b{font-size:1.2rem;color:var(--amber)}.attack-card p{font-size:.9rem}.attack-link{color:var(--blue);text-decoration:none}.attack-link:hover{text-decoration:underline}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:930px;background:var(--panel2)}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);background:var(--panel)}td{font-size:.9rem}.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.76rem;font-weight:800}.tp{color:var(--green);background:rgba(110,231,168,.12)}.tn{color:var(--blue);background:rgba(97,169,255,.12)}.action{color:var(--amber);font-weight:800}code{overflow-wrap:anywhere}pre{margin:0;padding:18px;overflow:auto;background:#050a12;color:#dce9fa;border-radius:14px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}.code-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.answer{display:none;margin-top:10px}.answer.open{display:block}.raw{max-height:430px}.field-map{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field-map div{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}.field-map code{color:var(--cyan)}
+.event-picker{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.event-picker button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}.event-detail{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.detail-item{padding:10px;border-radius:10px;background:var(--panel)}.detail-item small{display:block;color:var(--muted)}.timeline{display:flex;align-items:stretch;gap:8px;overflow:auto;padding:12px 2px}.timeline-step{flex:1;min-width:185px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel2)}.timeline-step b{display:block;color:var(--cyan)}.timeline-arrow{display:grid;place-items:center;color:var(--cyan);font-size:1.5rem}.result{margin-top:12px;padding:12px;border-radius:12px;background:var(--panel2);min-height:48px}.result.pass{border:1px solid var(--green);color:var(--green)}.result.fail{border:1px solid var(--red);color:var(--red)}.checklist{list-style:none;padding:0}.checklist li{padding:10px 0;border-bottom:1px solid var(--line)}.checklist li:before{content:'✓';color:var(--green);font-weight:900;margin-right:9px}.validator-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{padding:16px;border:1px solid var(--line);border-radius:14px;text-align:center;background:var(--panel2)}.metric strong{display:block;font-size:2rem}.nav-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:24px 0 8px}.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.dot{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--muted);cursor:pointer}.dot.active{background:var(--cyan);color:#03111b;border-color:var(--cyan);font-weight:900}.status-bar{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.88rem}
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.week-map{grid-template-columns:repeat(2,1fr)}.card,.card.third{grid-column:1/-1}.attack{grid-template-columns:1fr}.attack>.arrow{transform:rotate(90deg);text-align:center}.detail-grid,.validator-grid{grid-template-columns:1fr 1fr}.topbar .brand{font-size:.9rem}.topbar-inner{gap:7px}.icon-btn{padding:8px}.hero{padding:22px}.timeline{flex-direction:column}.timeline-arrow{transform:rotate(90deg)}}
+@media(max-width:540px){.shell{padding:12px}.stats{grid-template-columns:1fr}.week-map{grid-template-columns:1fr}.page-head{align-items:start;flex-direction:column}.nav-footer .nav-btn{font-size:.84rem;padding:8px}.dots{display:none}.detail-grid,.validator-grid{grid-template-columns:1fr}.brand{display:none}}
+@media print{.topbar,.nav-footer,.code-tools{display:none}.page{display:block!important;break-after:page}.answer{display:block!important}.shell{max-width:none}.card,.hero{box-shadow:none}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><a href="index.html" class="icon-btn" style="text-decoration:none" title="Back to all labs">← All labs</a><div class="brand">Detection Lab <span>W20</span></div><div class="grow"></div><button class="icon-btn" id="textBtn" title="Increase text size" aria-label="Increase text size">A+</button><button class="icon-btn" id="themeBtn" title="Switch theme" aria-label="Switch color theme">Light</button></div><div class="progress" aria-hidden="true"><div id="progress"></div></div></header>
+<main class="shell">
+<section class="page active" data-page="1">
+  <div class="hero">
+    <div class="eyebrow">Month 5 - Linux Foundations · Week 20 · Intermediate</div>
+    <h1>Linux download → chmod → execution</h1>
+    <p>Correlate a small Linux chain: <b>curl</b> or <b>wget</b> saves a file, <b>chmod</b> makes it executable, and the same normalized path runs. Learn the behavior without treating every installer, CI job, container, or developer command as malicious.</p>
+    <div class="chips"><span class="chip">Linux, cloud &amp; containers</span><span class="chip">Process + file telemetry</span><span class="chip">T1105</span><span class="chip">T1222.002</span><span class="chip">T1059.004</span><span class="chip good">2 true-positive chains</span><span class="chip">7 benign-negative chains</span><span class="chip warn">Harmless YARA fixture</span></div>
+  </div>
+  <div class="stats"><div class="stat"><strong>8</strong><span>interactive pages</span></div><div class="stat"><strong>27</strong><span>JSONL events</span></div><div class="stat"><strong>3</strong><span>actions in the chain</span></div><div class="stat"><strong>10m</strong><span>correlation window</span></div></div>
+  <div class="grid">
+    <article class="card full"><h3>How this week works</h3><p>Start with labeled event chains. Then express the same idea in KQL, CrowdStrike CQL, Sigma, Python, and Go. Day 7 reconstructs each chain and applies narrow tuning for approved repositories, users, and build paths.</p><div class="week-map">
+      <button class="day-tile" onclick="go(2)"><b>Day 1</b><span>Read event chains and fixtures</span></button><button class="day-tile" onclick="go(3)"><b>Day 2</b><span>Build and tune KQL</span></button><button class="day-tile" onclick="go(4)"><b>Day 3</b><span>Translate to CrowdStrike CQL</span></button><button class="day-tile" onclick="go(5)"><b>Day 4</b><span>Write Sigma and YARA</span></button><button class="day-tile" onclick="go(6)"><b>Day 5</b><span>Normalize paths in Python</span></button><button class="day-tile" onclick="go(7)"><b>Day 6</b><span>Build a Go state machine</span></button><button class="day-tile" onclick="go(8)"><b>Day 7</b><span>Reconstruct and validate</span></button>
+    </div></article>
+    <article class="card"><h3>Week goal</h3><p>Detect <b>download → chmod → execute</b> for one device, UID, hash, and normalized path within ten minutes.</p><div class="callout">Success means <b>TP-CURL</b> and <b>TP-WGET</b> match; all seven benign fixtures stay quiet.</div></article>
+    <article class="card"><h3>What you will keep</h3><ul class="checklist"><li>27 labeled JSONL records</li><li>KQL, CQL, and Sigma detections</li><li>Simple Python path correlation</li><li>Go per-path mini state machine</li><li>Harmless text fixture and YARA rule</li><li>Validation evidence and limits</li></ul></article>
+  </div>
+</section>
+
+<section class="page" data-page="2">
+  <div class="page-head"><div><div class="eyebrow">Week 20 · Day 1</div><h2>Understand the three-event chain</h2></div><div class="page-no">Page 2 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>What should be done</h3><ol><li>Group events by device, UID, hash, and normalized path.</li><li>Confirm a <code>curl</code> or <code>wget</code> download happened first.</li><li>Confirm <code>chmod</code> added execute permission.</li><li>Confirm the same file ran within ten minutes.</li><li>Apply only exact, documented exceptions.</li></ol></article>
+    <article class="card full"><h3>Visual event process</h3><div class="flow"><div class="node"><small>1 · Downloader</small><strong>curl / wget</strong><small>Writes destination file</small></div><div class="arrow" aria-label="then">→</div><div class="node"><small>2 · Permission</small><strong>chmod +x</strong><small>Adds execute permission</small></div><div class="arrow" aria-label="then">→</div><div class="node"><small>3 · Process</small><strong>same path runs</strong><small>UID + hash stay consistent</small></div></div></article>
+    <article class="card full"><h3>Nine labeled chains</h3><div class="table-wrap"><table><thead><tr><th>Case</th><th>Device / UID</th><th>Downloader</th><th>Destination</th><th>Actions</th><th>Expected</th><th>Why</th></tr></thead><tbody id="casesTable"></tbody></table></div></article>
+    <article class="card"><h3>Explore one chain</h3><div class="event-picker" id="casePicker"></div><div class="event-detail" id="caseDetail"></div></article>
+    <article class="card"><h3>Raw JSONL fixtures</h3><p>Each line is one event. Relative execution paths are normalized with their working directory.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('rawJson')">Show JSONL</button><button class="small-btn" onclick="copyFrom('rawJsonCode',this)">Copy JSONL</button><button class="small-btn" onclick="downloadText('week20-events.jsonl',jsonlText())">Download JSONL</button></div><div class="answer" id="rawJson"><pre class="raw"><code id="rawJsonCode"></code></pre></div></article>
+    <article class="card full"><h3>MITRE ATT&amp;CK - visual map</h3><div class="attack"><div class="attack-card"><b>T1105</b><h4>Ingress Tool Transfer</h4><p>The downloader retrieves a file from a remote source.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1105/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div><div class="arrow">→</div><div class="attack-card"><b>T1222.002</b><h4>Linux and Mac File Permissions</h4><p><code>chmod</code> changes the file so it can execute.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1222/002/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div><div class="arrow">→</div><div class="attack-card"><b>T1059.004</b><h4>Unix Shell</h4><p>A shell or command line launches the downloaded path.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1059/004/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div></div></article>
+  </div>
+</section>
+
+<section class="page" data-page="3">
+  <div class="page-head"><div><div class="eyebrow">Week 20 · Day 2</div><h2>KQL behavior query + tuning</h2></div><div class="page-no">Page 3 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><ol><li>Use the normalized lab table <code>LinuxChainEvents_CL</code>.</li><li>Group on device, UID, normalized path, and SHA-256.</li><li>Require all three actions in ten minutes.</li><li>Keep the source URL for investigation.</li><li>Remove only the three exact approved workflow patterns.</li></ol></article>
+    <article class="card"><h3>Why the tuning is narrow</h3><p>The exception combines repository, UID, and destination. A trusted domain alone is not enough. The CI exception also requires the runner UID and its build path.</p><div class="callout warning">Replace sample domains, users, and paths with owned inventory. Give every production allowlist an owner and review date.</div></article>
+    <article class="card full"><h3>KQL answer</h3><p>This query targets the normalized custom fields shown in Day 3. Confirm your connector schema before using it.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('kqlAnswer')">Show KQL answer</button><button class="small-btn" onclick="copyFrom('kqlCode',this)">Copy KQL</button></div><div class="answer" id="kqlAnswer"><pre><code id="kqlCode">let Window = 10m;
+LinuxChainEvents_CL
+| where Action_s in ("download", "chmod", "execute")
+| summarize
+    FirstSeen=min(TimeGenerated),
+    LastSeen=max(TimeGenerated),
+    Actions=make_set(Action_s),
+    Downloaders=make_set_if(ProcessName_s, Action_s == "download"),
+    Sources=make_set_if(SourceUrl_s, Action_s == "download"),
+    Modes=make_set_if(Mode_s, Action_s == "chmod")
+  by DeviceName_s, UID_d, UserName_s, NormalizedPath_s, SHA256_s
+| where LastSeen - FirstSeen &lt;= Window
+| where set_has_element(Actions, "download")
+  and set_has_element(Actions, "chmod")
+  and set_has_element(Actions, "execute")
+| where set_has_element(Downloaders, "curl") or set_has_element(Downloaders, "wget")
+| where not(
+    (UID_d == 0 and NormalizedPath_s startswith "/var/cache/apt/"
+      and tostring(Sources) contains "https://archive.ubuntu.com/ubuntu/")
+    or (UID_d == 1002 and NormalizedPath_s startswith "/builds/acme/"
+      and tostring(Sources) contains "https://artifacts.acme.example/")
+    or (UserName_s == "devbuild" and NormalizedPath_s startswith "/home/devbuild/src/")
+)
+| project FirstSeen, LastSeen, DeviceName_s, UID_d, UserName_s,
+          NormalizedPath_s, SHA256_s, Sources, Modes</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> operating-system install scripts, approved CI runners, container image or entrypoint preparation, and developer build workflows. Verify the repository, package or job owner, UID, destination, hash, image or runner identity, and whether the execute step belongs to the same approved workflow.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="4">
+  <div class="page-head"><div><div class="eyebrow">Week 20 · Day 3</div><h2>CrowdStrike CQL translation</h2></div><div class="page-no">Page 4 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Translate the behavior, not only the keywords. The example uses normalized fields from a Falcon LogScale parser and <code>selfJoinFilter</code> to require the three actions for one device, UID, path, and hash.</p><div class="callout">CQL here means CrowdStrike Falcon LogScale query language.</div></article>
+    <article class="card"><h3>Small field map</h3><div class="field-map"><div>KQL<br><code>DeviceName_s</code></div><div>CrowdStrike<br><code>aid</code></div><div>KQL<br><code>UID_d</code></div><div>CrowdStrike<br><code>uid</code></div><div>KQL<br><code>NormalizedPath_s</code></div><div>CrowdStrike<br><code>normalized_path</code></div><div>KQL<br><code>SHA256_s</code></div><div>CrowdStrike<br><code>sha256</code></div><div>KQL<br><code>Action_s</code></div><div>CrowdStrike<br><code>action</code></div><div>KQL<br><code>SourceUrl_s</code></div><div>CrowdStrike<br><code>source_url</code></div></div></article>
+    <article class="card full"><h3>CrowdStrike CQL answer</h3><p>Confirm event names and parser fields with a known Linux event before using the translation.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('cqlAnswer')">Show CrowdStrike CQL answer</button><button class="small-btn" onclick="copyFrom('cqlCode',this)">Copy CQL</button></div><div class="answer" id="cqlAnswer"><pre><code id="cqlCode">platform="Linux" action=/^(download|chmod|execute)$/
+| selfJoinFilter([aid, uid, normalized_path, sha256],
+    where=[
+      {action="download" process_name=/^(curl|wget)$/},
+      {action="chmod" mode=/^(\+x|[0-7]*[1357][0-7]*)$/},
+      {action="execute"}
+    ], prefilter=true)
+| groupBy([aid, uid, user_name, normalized_path, sha256],
+    function=[min(@timestamp, as=first_seen), max(@timestamp, as=last_seen),
+              collect([action, process_name, source_url, mode])])
+| test(last_seen-first_seen &lt;= duration("10m"))
+| case {
+    uid=0 normalized_path=/^\/var\/cache\/apt\// source_url=/^https:\/\/archive\.ubuntu\.com\/ubuntu\// | drop();
+    uid=1002 normalized_path=/^\/builds\/acme\// source_url=/^https:\/\/artifacts\.acme\.example\// | drop();
+    user_name="devbuild" normalized_path=/^\/home\/devbuild\/src\// | drop();
+    *
+  }</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> Falcon-visible package installation, CI runner bootstrap jobs, container entrypoint setup, and developer builds. Tenant schemas vary; validate the field map, wildcard behavior, time units, and parser-provided <code>normalized_path</code> before deployment.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="5">
+  <div class="page-head"><div><div class="eyebrow">Week 20 · Day 4</div><h2>Sigma selection/filter + YARA</h2></div><div class="page-no">Page 5 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Sigma detects a shell command that contains downloader, permission-change, and chaining tokens. It is a useful single-event lead; the multi-event KQL, CQL, Python, or Go correlation supplies stronger proof.</p></article>
+    <article class="card"><h3>Read the Sigma condition</h3><div class="flow"><div class="node"><strong>Shell + downloader</strong><small>selection_shell + selection_download</small></div><div class="arrow">+</div><div class="node"><strong>chmod + chain token</strong><small>selection_chmod + selection_chain</small></div><div class="arrow">−</div><div class="node"><strong>Exact workflow</strong><small>not 1 of filter_*</small></div></div></article>
+    <article class="card full"><h3>Sigma answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('sigmaAnswer')">Show Sigma answer</button><button class="small-btn" onclick="copyFrom('sigmaCode',this)">Copy Sigma</button></div><div class="answer" id="sigmaAnswer"><pre><code id="sigmaCode">title: Linux Downloader Permission Change And Execution Chain
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection_shell:
+    Image|endswith:
+      - '/sh'
+      - '/bash'
+  selection_download:
+    CommandLine|contains:
+      - 'curl '
+      - 'wget '
+  selection_chmod:
+    CommandLine|contains: 'chmod '
+  selection_chain:
+    CommandLine|contains:
+      - ' &amp;&amp; '
+      - '; '
+  filter_approved_apt:
+    User: 'root'
+    CommandLine|contains|all:
+      - 'archive.ubuntu.com/ubuntu/'
+      - '/var/cache/apt/'
+  filter_approved_ci:
+    User: 'gitlab-runner'
+    CommandLine|contains|all:
+      - 'artifacts.acme.example/'
+      - '/builds/acme/'
+  filter_developer_build:
+    User: 'devbuild'
+    CommandLine|contains: '/home/devbuild/src/'
+  condition: selection_shell and selection_download and selection_chmod and selection_chain and not 1 of filter_*
+falsepositives:
+  - Approved package install scripts
+  - CI runner bootstrap jobs
+  - Container entrypoint preparation
+  - Developer build workflows
+level: medium</code></pre></div></article>
+    <article class="card"><h3>Harmless fixture</h3><p>The downloadable text file is not a program. It only carries an obvious lab marker and a fake ELF description for safe YARA practice.</p><div class="code-tools"><button class="small-btn" onclick="downloadText('week20-harmless-fixture.txt',fixtureText)">Download harmless fixture</button><button class="small-btn" onclick="copyText(fixtureText,this)">Copy fixture</button></div><pre><code id="fixturePreview">W20_LAB_MARKER
+format=ELF-like-text
+purpose=download-execute-training
+safe=true</code></pre></article>
+    <article class="card"><h3>YARA answer</h3><p>Save the fixture and rule, then run <code>yara week20-marker.yar week20-harmless-fixture.txt</code>.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('yaraAnswer')">Show YARA answer</button><button class="small-btn" onclick="copyFrom('yaraCode',this)">Copy YARA</button></div><div class="answer" id="yaraAnswer"><pre><code id="yaraCode">rule Week20_Harmless_Lab_Marker
+{
+    meta:
+        description = "Matches only the Week 20 harmless training marker"
+        author = "Detection Learning Lab"
+        purpose = "training"
+
+    strings:
+        $marker = "W20_LAB_MARKER" ascii
+        $purpose = "purpose=download-execute-training" ascii
+        $elf_text = "format=ELF-like-text" ascii
+
+    condition:
+        all of them
+}</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> one-line install commands, approved CI bootstrap scripts, container image builds, and developer setup scripts. Sigma sees one command line, not guaranteed file identity across multiple events. YARA only confirms the training marker; it does not label a real file as malicious.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="6">
+  <div class="page-head"><div><div class="eyebrow">Week 20 · Day 5</div><h2>Python: correlate by normalized path</h2></div><div class="page-no">Page 6 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Save Day 1 data as <code>events.jsonl</code>. Normalize an absolute path directly; join a relative path to its working directory. Group by device, UID, normalized path, and hash, then require all three actions within ten minutes.</p></article>
+    <article class="card"><h3>Easy reading plan</h3><ol><li>Open one JSON object per line.</li><li>Normalize the event path.</li><li>Add the event to its file chain.</li><li>Check actions and time.</li><li>Skip only exact approved workflows.</li><li>Print the two suspicious cases.</li></ol></article>
+    <article class="card full"><h3>Python answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('pythonAnswer')">Show Python answer</button><button class="small-btn" onclick="copyFrom('pythonCode',this)">Copy Python</button></div><div class="answer" id="pythonAnswer"><pre><code id="pythonCode">import json
+import os
+from collections import defaultdict
+from datetime import datetime
+
+
+def normal_path(path, cwd):
+    if not path.startswith("/"):
+        path = os.path.join(cwd, path)
+    return os.path.normpath(path)
+
+
+def approved(events, path, uid, user):
+    source = next((e["source_url"] for e in events if e["action"] == "download"), "")
+    return (
+        (uid == 0 and path.startswith("/var/cache/apt/")
+         and source.startswith("https://archive.ubuntu.com/ubuntu/"))
+        or (uid == 1002 and path.startswith("/builds/acme/")
+            and source.startswith("https://artifacts.acme.example/"))
+        or (user == "devbuild" and path.startswith("/home/devbuild/src/"))
+    )
+
+
+chains = defaultdict(list)
+with open("events.jsonl", encoding="utf-8") as file:
+    for line in file:
+        event = json.loads(line)
+        path = normal_path(event["path"], event["cwd"])
+        key = (event["device"], event["uid"], path, event["sha256"])
+        chains[key].append(event)
+
+for (device, uid, path, sha256), events in chains.items():
+    events.sort(key=lambda e: e["timestamp"])
+    actions = [e["action"] for e in events]
+    first = datetime.fromisoformat(events[0]["timestamp"].replace("Z", "+00:00"))
+    last = datetime.fromisoformat(events[-1]["timestamp"].replace("Z", "+00:00"))
+    user = events[0]["user"]
+
+    complete = actions == ["download", "chmod", "execute"]
+    in_time = (last - first).total_seconds() &lt;= 600
+    downloader = events[0]["process_name"] in {"curl", "wget"}
+
+    if complete and in_time and downloader and not approved(events, path, uid, user):
+        print(events[0]["case_id"], path, f"uid={uid}")</code></pre></div></article>
+    <article class="card full"><h3>Run and expected output</h3><pre><code>python3 solution.py
+TP-CURL /tmp/update-check uid=1001
+TP-WGET /var/tmp/.cache-sync uid=1000</code></pre></article>
+  </div>
+</section>
+
+<section class="page" data-page="7">
+  <div class="page-head"><div><div class="eyebrow">Week 20 · Day 6</div><h2>Go: per-path mini state machine</h2></div><div class="page-no">Page 7 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Read the ordered JSONL stream. Each device + UID + normalized path + hash owns a small state. A download opens the state, chmod advances it, and execution completes it.</p></article>
+    <article class="card"><h3>State transition</h3><div class="flow"><div class="node"><strong>0 · New</strong><small>wait for curl/wget</small></div><div class="arrow">→</div><div class="node"><strong>1 · Downloaded</strong><small>wait for chmod</small></div><div class="arrow">→</div><div class="node"><strong>2 · Executable</strong><small>alert if same path runs</small></div></div></article>
+    <article class="card full"><h3>Go answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('goAnswer')">Show Go answer</button><button class="small-btn" onclick="copyFrom('goCode',this)">Copy Go</button></div><div class="answer" id="goAnswer"><pre><code id="goCode">package main
+
+import (
+    "bufio"
+    "encoding/json"
+    "fmt"
+    "os"
+    "path/filepath"
+    "strings"
+    "time"
+)
+
+type Event struct {
+    CaseID      string `json:"case_id"`
+    Timestamp   string `json:"timestamp"`
+    Device      string `json:"device"`
+    User        string `json:"user"`
+    Action      string `json:"action"`
+    ProcessName string `json:"process_name"`
+    Path        string `json:"path"`
+    Cwd         string `json:"cwd"`
+    SourceURL   string `json:"source_url"`
+    SHA256      string `json:"sha256"`
+    UID         int    `json:"uid"`
+}
+
+type State struct {
+    Step int
+    First time.Time
+    Source, CaseID, User, Path string
+    UID int
+}
+
+func normalPath(path, cwd string) string {
+    if !filepath.IsAbs(path) {
+        path = filepath.Join(cwd, path)
+    }
+    return filepath.Clean(path)
+}
+
+func approved(s State) bool {
+    return (s.UID == 0 &amp;&amp; strings.HasPrefix(s.Path, "/var/cache/apt/") &amp;&amp;
+        strings.HasPrefix(s.Source, "https://archive.ubuntu.com/ubuntu/")) ||
+        (s.UID == 1002 &amp;&amp; strings.HasPrefix(s.Path, "/builds/acme/") &amp;&amp;
+            strings.HasPrefix(s.Source, "https://artifacts.acme.example/")) ||
+        (s.User == "devbuild" &amp;&amp; strings.HasPrefix(s.Path, "/home/devbuild/src/"))
+}
+
+func main() {
+    file, err := os.Open("events.jsonl")
+    if err != nil { panic(err) }
+    defer file.Close()
+
+    states := map[string]State{}
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        var event Event
+        if err := json.Unmarshal(scanner.Bytes(), &amp;event); err != nil {
+            fmt.Fprintln(os.Stderr, "bad JSON:", err)
+            continue
+        }
+
+        path := normalPath(event.Path, event.Cwd)
+        key := fmt.Sprintf("%s|%d|%s|%s", event.Device, event.UID, path, event.SHA256)
+        when, err := time.Parse(time.RFC3339, event.Timestamp)
+        if err != nil { continue }
+        state := states[key]
+
+        switch {
+        case event.Action == "download" &amp;&amp; (event.ProcessName == "curl" || event.ProcessName == "wget"):
+            states[key] = State{1, when, event.SourceURL, event.CaseID, event.User, path, event.UID}
+        case event.Action == "chmod" &amp;&amp; state.Step == 1:
+            state.Step = 2
+            states[key] = state
+        case event.Action == "execute" &amp;&amp; state.Step == 2:
+            if when.Sub(state.First) &lt;= 10*time.Minute &amp;&amp; !approved(state) {
+                fmt.Printf("%s %s uid=%d\n", state.CaseID, path, state.UID)
+            }
+            delete(states, key)
+        }
+    }
+    if err := scanner.Err(); err != nil { panic(err) }
+}</code></pre></div></article>
+    <article class="card"><h3>Run and expected output</h3><pre><code>go run main.go
+TP-CURL /tmp/update-check uid=1001
+TP-WGET /var/tmp/.cache-sync uid=1000</code></pre></article>
+    <article class="card"><h3>Analyst note</h3><p>The state machine is intentionally small. Production code should handle out-of-order events, late arrivals, state expiry, duplicate records, process IDs, host restarts, and bounded memory. Here the goal is to understand a per-path sequence.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="8">
+  <div class="page-head"><div><div class="eyebrow">Week 20 · Day 7</div><h2>Capstone: reconstruct and tune</h2></div><div class="page-no">Page 8 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>Full hunt checklist</h3><ol><li>Use all 27 Day 1 events.</li><li>Normalize relative paths before grouping.</li><li>Require download → chmod → execute in order.</li><li>Require the same device, UID, SHA-256, and normalized path.</li><li>Keep only chains completed within ten minutes.</li><li>Apply exact repository + UID + path or user + path tuning.</li><li>Confirm two TP chains match and seven TN chains stay quiet.</li></ol></article>
+    <article class="card"><h3>Expected proof</h3><div class="validator-grid"><div class="metric"><strong style="color:var(--green)">2</strong><span>true-positive chains</span></div><div class="metric"><strong style="color:var(--blue)">7</strong><span>benign-negative chains</span></div><div class="metric"><strong style="color:var(--cyan)">9/9</strong><span>correct decisions</span></div></div><div class="code-tools"><button class="answer-btn" onclick="runValidation()">Run fixture validator</button></div><div id="validationResult" class="result" aria-live="polite">Press the button to correlate all nine chains in your browser.</div></article>
+    <article class="card"><h3>Decision path</h3><div class="flow"><div class="node"><strong>All 3 actions?</strong><small>No: incomplete chain</small></div><div class="arrow">→</div><div class="node"><strong>Same path + UID + hash?</strong><small>No: do not join</small></div><div class="arrow">→</div><div class="node"><strong>Approved exact workflow?</strong><small>No: investigate</small></div></div></article>
+    <article class="card full"><h3>Analyst notes: false positives</h3><div class="grid"><div class="card third"><h3>Install scripts</h3><p>Verify repository ownership, package signature, root UID, package-manager parent, destination, hash, and change window.</p></div><div class="card third"><h3>CI and containers</h3><p>Verify runner or image identity, job definition, source registry, build path, UID, expected artifact, and ephemeral lifecycle.</p></div><div class="card third"><h3>Developer workflows</h3><p>Verify developer identity, ticket or branch, source repository, build path, compiler or script parent, and whether the hash is expected.</p></div></div></article>
+    <article class="card"><h3>Validation status</h3><ul class="checklist"><li>Browser fixture logic: passed, 9/9 decisions</li><li>Python fixture replay: passed, expected two alerts</li><li>Go state machine: not executed; Go toolchain unavailable</li><li>Sigma YAML: parsed successfully; no id or status fields</li><li>YARA rule: not executed; YARA engine unavailable</li></ul></article>
+    <article class="card"><h3>Honest limits</h3><ul><li>KQL was not executed in a live Microsoft tenant.</li><li>CrowdStrike CQL was not executed in a live Falcon LogScale tenant.</li><li>Both queries use a documented normalized field map that must be adapted to the actual connector.</li><li>The harmless YARA marker proves rule mechanics only; it is not a malware signature.</li></ul></article>
+    <article class="card full"><h3>Week 20 complete</h3><p>You now have a portfolio-ready chain: labeled Linux telemetry → behavior queries → portable single-event signal → Python path correlation → Go state machine → evidence that suspicious fixtures match and approved or incomplete workflows do not.</p><div class="callout">Completion target: explain why path normalization matters, show the 8/8 result, and describe why repository-only allowlisting is too broad.</div></article>
+  </div>
+</section>
+
+<nav class="nav-footer" aria-label="Lab pages"><button class="nav-btn" id="prevBtn" onclick="go(current-1)">← Previous</button><div class="dots" id="dots"></div><button class="nav-btn" id="nextBtn" onclick="go(current+1)">Next →</button></nav>
+<div class="status-bar">Offline-ready · No external libraries · Use ← and → keys to change pages · Answers copy as plain text</div>
+</main>
+<script>
+const fixtureText=`W20_LAB_MARKER
+format=ELF-like-text
+purpose=download-execute-training
+safe=true`;
+const events=[
+ {case_id:"TP-CURL",event_order:1,timestamp:"2026-11-10T08:00:00Z",device:"lnx-web-07",user:"appsvc",uid:1001,action:"download",process_name:"curl",path:"/tmp/update-check",cwd:"/opt/app",source_url:"https://cdn-tools.example.net/update-check",mode:"0644",sha256:"8a10f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3011001",expected_match:true,reason:"Unapproved curl download is made executable and run."},
+ {case_id:"TP-CURL",event_order:2,timestamp:"2026-11-10T08:01:00Z",device:"lnx-web-07",user:"appsvc",uid:1001,action:"chmod",process_name:"chmod",path:"/tmp/update-check",cwd:"/opt/app",source_url:"",mode:"0755",sha256:"8a10f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3011001",expected_match:true,reason:"Execute permission is added."},
+ {case_id:"TP-CURL",event_order:3,timestamp:"2026-11-10T08:02:00Z",device:"lnx-web-07",user:"appsvc",uid:1001,action:"execute",process_name:"update-check",path:"/tmp/update-check",cwd:"/opt/app",source_url:"",mode:"0755",sha256:"8a10f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3011001",expected_match:true,reason:"The same normalized path and hash execute."},
+ {case_id:"TP-WGET",event_order:1,timestamp:"2026-11-10T09:10:00Z",device:"lnx-api-03",user:"root",uid:1000,action:"download",process_name:"wget",path:".cache-sync",cwd:"/var/tmp",source_url:"https://198.51.100.27/cache-sync",mode:"0644",sha256:"9b20f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3022002",expected_match:true,reason:"Unapproved wget source saves a relative path."},
+ {case_id:"TP-WGET",event_order:2,timestamp:"2026-11-10T09:11:00Z",device:"lnx-api-03",user:"root",uid:1000,action:"chmod",process_name:"chmod",path:"./.cache-sync",cwd:"/var/tmp",source_url:"",mode:"0700",sha256:"9b20f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3022002",expected_match:true,reason:"Path normalizes to /var/tmp/.cache-sync."},
+ {case_id:"TP-WGET",event_order:3,timestamp:"2026-11-10T09:12:30Z",device:"lnx-api-03",user:"root",uid:1000,action:"execute",process_name:".cache-sync",path:"./.cache-sync",cwd:"/var/tmp",source_url:"",mode:"0700",sha256:"9b20f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3022002",expected_match:true,reason:"The normalized file executes inside ten minutes."},
+ {case_id:"TN-APT",event_order:1,timestamp:"2026-11-10T10:00:00Z",device:"lnx-db-02",user:"root",uid:0,action:"download",process_name:"curl",path:"/var/cache/apt/pkg-helper",cwd:"/root",source_url:"https://archive.ubuntu.com/ubuntu/pool/pkg-helper",mode:"0644",sha256:"a100f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3033003",expected_match:false,reason:"Exact approved repository + root UID + apt cache path."},
+ {case_id:"TN-APT",event_order:2,timestamp:"2026-11-10T10:01:00Z",device:"lnx-db-02",user:"root",uid:0,action:"chmod",process_name:"chmod",path:"/var/cache/apt/pkg-helper",cwd:"/root",source_url:"",mode:"0755",sha256:"a100f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3033003",expected_match:false,reason:"Approved install workflow."},
+ {case_id:"TN-APT",event_order:3,timestamp:"2026-11-10T10:02:00Z",device:"lnx-db-02",user:"root",uid:0,action:"execute",process_name:"pkg-helper",path:"/var/cache/apt/pkg-helper",cwd:"/root",source_url:"",mode:"0755",sha256:"a100f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3033003",expected_match:false,reason:"Narrow apt exception suppresses the full chain."},
+ {case_id:"TN-CI",event_order:1,timestamp:"2026-11-10T11:00:00Z",device:"ci-runner-04",user:"gitlab-runner",uid:1002,action:"download",process_name:"curl",path:"bin/test-helper",cwd:"/builds/acme/widget",source_url:"https://artifacts.acme.example/widget/test-helper",mode:"0644",sha256:"b200f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3044004",expected_match:false,reason:"Exact CI source + runner UID + build path."},
+ {case_id:"TN-CI",event_order:2,timestamp:"2026-11-10T11:00:20Z",device:"ci-runner-04",user:"gitlab-runner",uid:1002,action:"chmod",process_name:"chmod",path:"./bin/test-helper",cwd:"/builds/acme/widget",source_url:"",mode:"0755",sha256:"b200f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3044004",expected_match:false,reason:"Expected CI permission change."},
+ {case_id:"TN-CI",event_order:3,timestamp:"2026-11-10T11:00:40Z",device:"ci-runner-04",user:"gitlab-runner",uid:1002,action:"execute",process_name:"test-helper",path:"bin/test-helper",cwd:"/builds/acme/widget",source_url:"",mode:"0755",sha256:"b200f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3044004",expected_match:false,reason:"Narrow CI exception suppresses the full chain."},
+ {case_id:"TN-NOCHMOD",event_order:1,timestamp:"2026-11-10T12:00:00Z",device:"dev-lnx-12",user:"nisha",uid:1100,action:"download",process_name:"curl",path:"/home/nisha/Downloads/readme.txt",cwd:"/home/nisha",source_url:"https://docs.example.org/readme.txt",mode:"0644",sha256:"c300f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3055005",expected_match:false,reason:"A text download has no chmod or execution."},
+ {case_id:"TN-NOCHMOD",event_order:2,timestamp:"2026-11-10T12:01:00Z",device:"dev-lnx-12",user:"nisha",uid:1100,action:"file_close",process_name:"curl",path:"/home/nisha/Downloads/readme.txt",cwd:"/home/nisha",source_url:"",mode:"0644",sha256:"c300f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3055005",expected_match:false,reason:"File write completes normally."},
+ {case_id:"TN-NOCHMOD",event_order:3,timestamp:"2026-11-10T12:02:00Z",device:"dev-lnx-12",user:"nisha",uid:1100,action:"read",process_name:"less",path:"/home/nisha/Downloads/readme.txt",cwd:"/home/nisha",source_url:"",mode:"0644",sha256:"c300f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3055005",expected_match:false,reason:"Reading a text file is not execution."},
+ {case_id:"TN-NOEXEC",event_order:1,timestamp:"2026-11-10T13:00:00Z",device:"lnx-bastion-01",user:"ops",uid:1200,action:"download",process_name:"wget",path:"/tmp/tool.tar.gz",cwd:"/tmp",source_url:"https://downloads.example.org/tool.tar.gz",mode:"0644",sha256:"d400f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3066006",expected_match:false,reason:"Archive is downloaded but never executed."},
+ {case_id:"TN-NOEXEC",event_order:2,timestamp:"2026-11-10T13:01:00Z",device:"lnx-bastion-01",user:"ops",uid:1200,action:"chmod",process_name:"chmod",path:"/tmp/tool.tar.gz",cwd:"/tmp",source_url:"",mode:"0600",sha256:"d400f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3066006",expected_match:false,reason:"Mode 0600 does not add execute permission."},
+ {case_id:"TN-NOEXEC",event_order:3,timestamp:"2026-11-10T13:02:00Z",device:"lnx-bastion-01",user:"ops",uid:1200,action:"extract",process_name:"tar",path:"/tmp/tool.tar.gz",cwd:"/tmp",source_url:"",mode:"0600",sha256:"d400f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3066006",expected_match:false,reason:"Extraction is not execution of the archive."},
+ {case_id:"TN-DIFFPATH",event_order:1,timestamp:"2026-11-10T14:00:00Z",device:"lnx-app-05",user:"deploy",uid:1300,action:"download",process_name:"curl",path:"/tmp/agent.new",cwd:"/opt/app",source_url:"https://vendor.example.com/agent.new",mode:"0644",sha256:"e500f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3077007",expected_match:false,reason:"Downloaded file path differs from later execution."},
+ {case_id:"TN-DIFFPATH",event_order:2,timestamp:"2026-11-10T14:01:00Z",device:"lnx-app-05",user:"deploy",uid:1300,action:"chmod",process_name:"chmod",path:"/tmp/agent.new",cwd:"/opt/app",source_url:"",mode:"0755",sha256:"e500f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3077007",expected_match:false,reason:"Downloaded file becomes executable."},
+ {case_id:"TN-DIFFPATH",event_order:3,timestamp:"2026-11-10T14:02:00Z",device:"lnx-app-05",user:"deploy",uid:1300,action:"execute",process_name:"agent",path:"/opt/vendor/agent",cwd:"/opt/app",source_url:"",mode:"0755",sha256:"f600f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3088008",expected_match:false,reason:"Different path and hash must not be joined."},
+ {case_id:"TN-CONTAINER",event_order:1,timestamp:"2026-11-10T15:00:00Z",device:"k8s-node-02",user:"container",uid:2000,action:"copy",process_name:"containerd",path:"/var/lib/containerd/tasks/init.sh",cwd:"/",source_url:"",mode:"0644",sha256:"f700f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3099009",expected_match:false,reason:"Container content is copied locally; no downloader."},
+ {case_id:"TN-CONTAINER",event_order:2,timestamp:"2026-11-10T15:00:05Z",device:"k8s-node-02",user:"container",uid:2000,action:"chmod",process_name:"chmod",path:"/var/lib/containerd/tasks/init.sh",cwd:"/",source_url:"",mode:"0755",sha256:"f700f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3099009",expected_match:false,reason:"Expected entrypoint preparation."},
+ {case_id:"TN-CONTAINER",event_order:3,timestamp:"2026-11-10T15:00:10Z",device:"k8s-node-02",user:"container",uid:2000,action:"execute",process_name:"init.sh",path:"/var/lib/containerd/tasks/init.sh",cwd:"/",source_url:"",mode:"0755",sha256:"f700f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3099009",expected_match:false,reason:"No curl or wget download starts this chain."},
+ {case_id:"TN-DEV",event_order:1,timestamp:"2026-11-10T16:00:00Z",device:"build-lnx-09",user:"devbuild",uid:1400,action:"download",process_name:"curl",path:"tools/gen",cwd:"/home/devbuild/src/widget",source_url:"https://source.acme.example/tools/gen",mode:"0644",sha256:"aa00f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3101010",expected_match:false,reason:"Exact approved developer build path and user."},
+ {case_id:"TN-DEV",event_order:2,timestamp:"2026-11-10T16:00:30Z",device:"build-lnx-09",user:"devbuild",uid:1400,action:"chmod",process_name:"chmod",path:"./tools/gen",cwd:"/home/devbuild/src/widget",source_url:"",mode:"0755",sha256:"aa00f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3101010",expected_match:false,reason:"Approved developer build step."},
+ {case_id:"TN-DEV",event_order:3,timestamp:"2026-11-10T16:01:00Z",device:"build-lnx-09",user:"devbuild",uid:1400,action:"execute",process_name:"gen",path:"tools/gen",cwd:"/home/devbuild/src/widget",source_url:"",mode:"0755",sha256:"aa00f2b70d0b5d3584e4cdd0b9910f6b92257bca7a2f2c0d14f3e72aa3101010",expected_match:false,reason:"Narrow user + build path exception suppresses the chain."}
+];
+function normalPath(path,cwd){const raw=path.startsWith('/')?path:cwd.replace(/\/$/,'')+'/'+path;const parts=[];for(const part of raw.split('/')){if(!part||part==='.')continue;if(part==='..')parts.pop();else parts.push(part)}return '/'+parts.join('/')}
+function approved(chain,path){const first=chain.find(e=>e.action==='download')||{};const e=chain[0];return(e.uid===0&&path.startsWith('/var/cache/apt/')&&(first.source_url||'').startsWith('https://archive.ubuntu.com/ubuntu/'))||(e.uid===1002&&path.startsWith('/builds/acme/')&&(first.source_url||'').startsWith('https://artifacts.acme.example/'))||(e.user==='devbuild'&&path.startsWith('/home/devbuild/src/'))}
+function detectCase(chain){const groups=new Map();for(const e of chain){const path=normalPath(e.path,e.cwd);const key=[e.device,e.uid,path,e.sha256].join('|');if(!groups.has(key))groups.set(key,[]);groups.get(key).push(e)}for(const [key,group] of groups){group.sort((a,b)=>a.timestamp.localeCompare(b.timestamp));const actions=group.map(e=>e.action);const path=key.split('|')[2];const elapsed=(Date.parse(group.at(-1).timestamp)-Date.parse(group[0].timestamp))/1000;const complete=actions.length===3&&actions[0]==='download'&&actions[1]==='chmod'&&actions[2]==='execute';const downloader=['curl','wget'].includes(group[0].process_name);const execMode=/[1357]/.test((group[1]||{}).mode?.slice(-3)||'');if(complete&&downloader&&execMode&&elapsed<=600&&!approved(group,path))return true}return false}
+function cases(){return [...new Set(events.map(e=>e.case_id))].map(id=>events.filter(e=>e.case_id===id))}
+function jsonlText(){return events.map(e=>JSON.stringify(e)).join('\n')+'\n'}
+let current=1;
+function go(n){current=Math.min(8,Math.max(1,n));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',+p.dataset.page===current));document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i+1===current));document.getElementById('progress').style.width=(current/8*100)+'%';document.getElementById('prevBtn').disabled=current===1;document.getElementById('nextBtn').disabled=current===8;window.scrollTo({top:0,behavior:'smooth'});localStorage.setItem('week20Page',current)}
+function toggle(id){const el=document.getElementById(id);el.classList.toggle('open');const btn=document.querySelector(`[onclick="toggle('${id}')"]`);if(btn){const open=el.classList.contains('open');btn.textContent=(open?'Hide ':'Show ')+btn.textContent.replace(/^(Show|Hide) /,'');btn.setAttribute('aria-expanded',String(open))}}
+function copyFrom(id,btn){copyText(document.getElementById(id).innerText,btn)}
+function copyText(text,btn){navigator.clipboard.writeText(text).then(()=>{const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=old,1000)}).catch(()=>{btn.textContent='Copy unavailable'})}
+function downloadText(name,text){const blob=new Blob([text],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function renderCases(){const groups=cases();document.getElementById('casesTable').innerHTML=groups.map(g=>{const e=g[0],path=normalPath(e.path,e.cwd),actions=g.map(x=>x.action).join(' → ');return `<tr><td><b>${e.case_id}</b></td><td>${e.device}<br><span style="color:var(--muted)">${e.user} · ${e.uid}</span></td><td>${e.process_name}</td><td><code>${path}</code></td><td class="action">${actions}</td><td><span class="tag ${e.expected_match?'tp':'tn'}">${e.expected_match?'TP':'TN'}</span></td><td>${e.reason}</td></tr>`}).join('');document.getElementById('casePicker').innerHTML=groups.map((g,i)=>`<button class="small-btn" aria-pressed="${i===0}" onclick="showCase(${i},this)">${g[0].case_id}</button>`).join('');document.getElementById('rawJsonCode').textContent=jsonlText();showCase(0,document.querySelector('#casePicker button'))}
+function showCase(i,btn){document.querySelectorAll('#casePicker button').forEach(b=>b.setAttribute('aria-pressed','false'));if(btn)btn.setAttribute('aria-pressed','true');const group=cases()[i],first=group[0];const steps=group.map((e,n)=>`<div class="timeline-step"><b>${n+1} · ${e.action}</b><small>${e.timestamp.replace('T',' ').replace('Z',' UTC')}</small><p><code>${e.process_name}</code><br><code>${normalPath(e.path,e.cwd)}</code></p><small>${e.reason}</small></div>${n<group.length-1?'<div class="timeline-arrow">→</div>':''}`).join('');document.getElementById('caseDetail').innerHTML=`<div class="detail-grid"><div class="detail-item"><small>Case</small><b>${first.case_id}</b></div><div class="detail-item"><small>Device / UID</small><b>${first.device} / ${first.uid}</b></div><div class="detail-item"><small>Expected</small><b style="color:${first.expected_match?'var(--green)':'var(--blue)'}">${first.expected_match?'True positive':'Benign negative'}</b></div><div class="detail-item"><small>Browser detector</small><b>${detectCase(group)?'MATCH':'QUIET'}</b></div></div><div class="timeline">${steps}</div>`}
+function runValidation(){const rows=cases().map(group=>({id:group[0].case_id,expected:group[0].expected_match,actual:detectCase(group)}));const passed=rows.filter(r=>r.expected===r.actual).length;const tp=rows.filter(r=>r.expected&&r.actual).length;const tn=rows.filter(r=>!r.expected&&!r.actual).length;const failed=rows.filter(r=>r.expected!==r.actual).map(r=>r.id);const el=document.getElementById('validationResult');el.className='result '+(passed===rows.length?'pass':'fail');el.innerHTML=`<b>${passed}/${rows.length} decisions passed</b><br>${tp} true positives matched · ${tn} benign negatives stayed quiet${failed.length?'<br>Review: '+failed.join(', '):''}`}
+document.getElementById('dots').innerHTML=Array.from({length:8},(_,i)=>`<button class="dot" onclick="go(${i+1})" aria-label="Page ${i+1}">${i+1}</button>`).join('');
+document.getElementById('themeBtn').onclick=()=>{const light=document.documentElement.dataset.theme==='light';document.documentElement.dataset.theme=light?'dark':'light';document.getElementById('themeBtn').textContent=light?'Light':'Dark';localStorage.setItem('week20Theme',light?'dark':'light')};
+let large=localStorage.getItem('week20Text')==='large';function applyText(){document.body.style.fontSize=large?'18px':'16px';document.getElementById('textBtn').textContent=large?'A−':'A+'}document.getElementById('textBtn').onclick=()=>{large=!large;localStorage.setItem('week20Text',large?'large':'normal');applyText()};
+document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key==='ArrowRight')go(current+1);if(e.key==='ArrowLeft')go(current-1)});
+if(localStorage.getItem('week20Theme')==='light'){document.documentElement.dataset.theme='light';document.getElementById('themeBtn').textContent='Dark'}
+applyText();renderCases();go(+(localStorage.getItem('week20Page')||1));
+</script>
+</body>
+</html>

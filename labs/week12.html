@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Week 12 beginner-friendly detection engineering lab for suspicious WMI-launched PowerShell and command shells.">
+<title>Week 12 Lab - WMI Launches PowerShell or cmd</title>
+<style>
+:root{--bg:#07111f;--panel:#0f1d31;--panel2:#142641;--text:#eef6ff;--muted:#adbed5;--line:#294360;--cyan:#52d6cb;--blue:#6daeff;--amber:#ffd06b;--red:#ff8190;--green:#72e6aa;--violet:#b59cff;--shadow:0 18px 46px rgba(0,0,0,.25);--base:16px}
+[data-theme="light"]{--bg:#eef4fb;--panel:#fff;--panel2:#f3f8fd;--text:#10213b;--muted:#566b84;--line:#cbd9e9;--cyan:#087e77;--blue:#1768c4;--amber:#946000;--red:#b92b42;--green:#087a47;--violet:#6843bd;--shadow:0 16px 40px rgba(24,54,92,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;background:radial-gradient(circle at 10% 0%,rgba(109,174,255,.13),transparent 29%),var(--bg);color:var(--text);font:var(--base)/1.58 Inter,Segoe UI,Arial,sans-serif}button,a{font:inherit}.shell{max-width:1180px;margin:auto;padding:18px}.topbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 89%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.topbar-inner{max-width:1180px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:10px}.brand{font-weight:850;letter-spacing:.2px}.brand span{color:var(--cyan)}.grow{flex:1}.icon-btn,.nav-btn,.answer-btn,.small-btn,.event-btn,.day-tile,.choice{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer;transition:.18s transform,.18s border-color,.18s background}.icon-btn:hover,.nav-btn:hover,.answer-btn:hover,.small-btn:hover,.event-btn:hover,.day-tile:hover,.choice:hover{border-color:var(--cyan);transform:translateY(-1px)}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid color-mix(in srgb,var(--cyan) 65%,transparent);outline-offset:2px}.progress{height:4px;background:var(--line)}.progress>div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .25s}
+.hero{padding:32px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(82,214,203,.10),rgba(109,174,255,.06)),var(--panel);box-shadow:var(--shadow)}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);font-weight:850}.hero h1{font-size:clamp(2rem,5vw,4.15rem);line-height:1.03;margin:.35rem 0 1rem;max-width:940px}.hero p{max-width:850px;color:var(--muted);font-size:1.08rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.chip{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);font-size:.86rem}.chip.good{color:var(--green)}.chip.warn{color:var(--amber)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.stat strong{display:block;font-size:1.8rem;color:var(--cyan)}.stat span{color:var(--muted);font-size:.88rem}.page{display:none;animation:fade .22s ease}.page.active{display:block}@keyframes fade{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:22px 0}.page-head h2{font-size:clamp(1.8rem,4vw,3rem);margin:.2rem 0}.page-no{color:var(--muted);font-weight:750;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{grid-column:span 6;padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}.card h3{margin-top:0}.card p,.card li{color:var(--muted)}.card b{color:var(--text)}.callout{border-left:4px solid var(--cyan);padding:12px 16px;background:var(--panel2);border-radius:0 12px 12px 0}.warning{border-left-color:var(--amber)}.danger{border-left-color:var(--red)}.success{border-left-color:var(--green)}
+.week-map{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-top:18px}.day-tile{padding:14px 10px;text-align:left;background:var(--panel2);min-height:116px}.day-tile b{display:block;color:var(--cyan);margin-bottom:6px}.day-tile span{font-size:.82rem;color:var(--muted)}.flow{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;padding:22px}.node{min-width:180px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);text-align:center}.node strong{display:block}.node small{display:block;color:var(--muted)}.arrow{font-size:2rem;color:var(--cyan);font-weight:700}.attack{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:15px}.attack-card{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.attack-card b{font-size:1.2rem;color:var(--amber)}.attack-link{color:var(--blue);text-decoration:none}.attack-link:hover{text-decoration:underline}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:920px;background:var(--panel2)}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);background:var(--panel)}td{font-size:.9rem}.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.76rem;font-weight:850}.tp{color:var(--green);background:rgba(114,230,170,.12)}.tn{color:var(--blue);background:rgba(109,174,255,.12)}.high{color:var(--red)}.low{color:var(--green)}
+pre{margin:0;padding:18px;overflow:auto;background:#050a12;color:#dce9fa;border-radius:14px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.code-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.answer{display:none;margin-top:10px}.answer.open{display:block}.raw{max-height:430px}.field-map{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field-map div{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}.field-map code{color:var(--cyan)}details{border:1px solid var(--line);border-radius:14px;background:var(--panel2)}summary{cursor:pointer;padding:14px;font-weight:800;color:var(--cyan)}details pre{border-radius:0 0 13px 13px}
+.event-picker{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.event-btn[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan);background:var(--panel2)}.event-detail{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);min-height:310px}.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.detail-item{padding:10px;border-radius:10px;background:var(--panel);overflow-wrap:anywhere}.detail-item small{display:block;color:var(--muted)}.mini-chain{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;margin:0 0 16px}.mini-node{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-weight:750}.reason{margin-top:12px;padding:11px;border-radius:10px;border-left:4px solid var(--cyan);background:var(--panel)}
+.quiz{padding:16px;border:1px dashed var(--line);border-radius:14px}.choices{display:grid;gap:8px}.choice{text-align:left;background:var(--panel2)}.choice.correct{border-color:var(--green);color:var(--green)}.choice.incorrect{border-color:var(--red);color:var(--red)}.result{margin-top:12px;padding:12px;border-radius:12px;background:var(--panel2);min-height:48px}.result.pass{border:1px solid var(--green);color:var(--green)}.result.fail{border:1px solid var(--red);color:var(--red)}.checklist{list-style:none;padding:0}.checklist li{padding:10px 0;border-bottom:1px solid var(--line)}.checklist li:before{content:'✓';color:var(--green);font-weight:900;margin-right:9px}.validator-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.metric{padding:16px;border:1px solid var(--line);border-radius:14px;text-align:center;background:var(--panel2)}.metric strong{display:block;font-size:1.8rem}.matrix{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.matrix-card{padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--panel2)}.matrix-card h4{margin:.1rem 0 .45rem}.matrix-card.rare{border-color:color-mix(in srgb,var(--red) 65%,var(--line))}.matrix-card.common{border-color:color-mix(in srgb,var(--green) 65%,var(--line))}
+.nav-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:24px 0 8px}.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.dot{width:35px;height:35px;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--muted);cursor:pointer}.dot.active{background:var(--cyan);color:#03111b;border-color:var(--cyan);font-weight:900}.status-bar{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.88rem}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.week-map{grid-template-columns:repeat(2,1fr)}.card,.card.third{grid-column:1/-1}.attack{grid-template-columns:1fr}.attack>.arrow{transform:rotate(90deg);text-align:center}.detail-grid,.validator-grid{grid-template-columns:repeat(2,1fr)}.topbar .brand{font-size:.9rem}.topbar-inner{gap:7px}.icon-btn{padding:8px}.hero{padding:22px}}@media(max-width:560px){.shell{padding:12px}.stats,.week-map,.detail-grid,.validator-grid,.matrix{grid-template-columns:1fr}.page-head{align-items:start;flex-direction:column}.nav-footer .nav-btn{font-size:.82rem;padding:8px}.dots{display:none}.brand{display:none}}@media print{.topbar,.nav-footer,.code-tools{display:none}.page{display:block!important;break-after:page}.shell{max-width:none}.card,.hero{box-shadow:none}.answer{display:block!important}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><a href="index.html" class="icon-btn" style="text-decoration:none" title="Back to all labs">← All labs</a><div class="brand">Detection Lab <span>W12</span></div><div class="grow"></div><button class="icon-btn" id="textBtn" type="button" title="Change text size" aria-label="Change text size">A+</button><button class="icon-btn" id="themeBtn" type="button" title="Switch theme">Light</button></div><div class="progress" aria-hidden="true"><div id="progress"></div></div></header>
+<main class="shell" id="mainContent">
+<section class="page active" data-page="1">
+  <div class="hero">
+    <div class="eyebrow">Month 3 - Persistence &amp; Credential · Week 12 · Beginner+</div>
+    <h1>WMI launches PowerShell or cmd</h1>
+    <p>Learn to detect a WMI provider process creating a command shell or PowerShell with suspicious arguments. Start with eight labeled process events, then build the same behavior across KQL, CrowdStrike CQL, Sigma, Python, and Go.</p>
+    <div class="chips"><span class="chip">Windows endpoint</span><span class="chip">Process creation</span><span class="chip">T1047</span><span class="chip">T1059</span><span class="chip good">4 true positives</span><span class="chip">4 benign negatives</span><span class="chip warn">No YARA - process behavior</span></div>
+  </div>
+  <div class="stats"><div class="stat"><strong>8</strong><span>labeled JSONL fixtures</span></div><div class="stat"><strong>2</strong><span>ATT&amp;CK techniques</span></div><div class="stat"><strong>5</strong><span>detection languages</span></div><div class="stat"><strong>7</strong><span>daily activities</span></div></div>
+  <div class="grid">
+    <article class="card full"><h3>Your path through the week</h3><p>Each day adds one small, reusable detection-engineering skill. The goal is not to memorize syntax. It is to keep the behavior, test data, tuning, and analyst reasoning consistent while the language changes.</p><div class="week-map">
+      <button class="day-tile" type="button" onclick="go(2)"><b>Day 1</b><span>Read events and fixtures</span></button>
+      <button class="day-tile" type="button" onclick="go(3)"><b>Day 2</b><span>Write and tune KQL</span></button>
+      <button class="day-tile" type="button" onclick="go(4)"><b>Day 3</b><span>Translate to CrowdStrike CQL</span></button>
+      <button class="day-tile" type="button" onclick="go(5)"><b>Day 4</b><span>Build a Sigma rule</span></button>
+      <button class="day-tile" type="button" onclick="go(6)"><b>Day 5</b><span>Classify JSONL with Python</span></button>
+      <button class="day-tile" type="button" onclick="go(7)"><b>Day 6</b><span>Count matches with Go</span></button>
+      <button class="day-tile" type="button" onclick="go(8)"><b>Day 7</b><span>Triage context and validate</span></button>
+    </div></article>
+    <article class="card"><h3>Week goal</h3><p>Find <b>WmiPrvSE.exe</b> spawning <b>powershell.exe</b>, <b>pwsh.exe</b>, or <b>cmd.exe</b> when the command line contains high-signal execution clues.</p><div class="callout success">Success means fixtures WMI-001 through WMI-004 match, while WMI-005 through WMI-008 do not.</div></article>
+    <article class="card"><h3>The beginner mental model</h3><div class="flow"><div class="node"><small>Parent</small><strong>WmiPrvSE.exe</strong></div><div class="arrow">→</div><div class="node"><small>Child</small><strong>PowerShell or cmd</strong></div><div class="arrow">→</div><div class="node"><small>Context</small><strong>Arguments + actor</strong></div></div></article>
+    <article class="card"><h3>What you will keep</h3><ul class="checklist"><li>Eight TP/TN JSONL fixtures</li><li>KQL, CQL, and Sigma detection content</li><li>Small Python classifier</li><li>Small Go counter</li><li>Day 7 triage and validation record</li></ul></article>
+    <article class="card"><h3>Important scope</h3><p>This lab uses <b>process behavior</b> as the primary signal. It intentionally has no YARA exercise because no file-content signature is required to detect the parent-child-command relationship.</p><div class="callout warning">A match is a reason to investigate, not automatic proof of compromise.</div></article>
+  </div>
+</section>
+
+<section class="page" data-page="2">
+  <div class="page-head"><div><div class="eyebrow">Week 12 · Day 1</div><h2>Understand the telemetry</h2></div><div class="page-no">Page 2 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>What should be done</h3><ol><li>Confirm the parent process is <code>WmiPrvSE.exe</code>.</li><li>Confirm the child is PowerShell, pwsh, or cmd.</li><li>Read the full command line for suspicious execution clues.</li><li>Use actor, device, and remote source to decide whether the activity is expected.</li><li>Compare your result with the TP/TN label.</li></ol></article>
+    <article class="card full"><h3>Visual process story</h3><div class="flow"><div class="node"><small>Remote source</small><strong>10.20.4.51</strong><small>if telemetry records it</small></div><div class="arrow">→</div><div class="node"><small>WMI provider</small><strong>WmiPrvSE.exe</strong><small>parent process</small></div><div class="arrow">→</div><div class="node"><small>Command interpreter</small><strong>powershell.exe</strong><small>child process</small></div><div class="arrow">→</div><div class="node"><small>Suspicious clue</small><strong>-EncodedCommand</strong><small>investigate context</small></div></div></article>
+    <article class="card full"><h3>Eight labeled process events</h3><div class="table-wrap"><table><thead><tr><th>ID</th><th>Time</th><th>Device / actor</th><th>Parent → child</th><th>Command clue</th><th>Remote source</th><th>Expected</th></tr></thead><tbody id="eventsTable"></tbody></table></div></article>
+    <article class="card"><h3>Explore one event</h3><div class="event-picker" id="eventPicker" aria-label="Choose an event"></div><div class="event-detail" id="eventDetail" aria-live="polite"></div></article>
+    <article class="card"><h3>TP/TN JSONL fixtures</h3><p>JSONL stores one complete JSON object on each line. Copy these lines into <code>events.jsonl</code> for Days 5 and 6.</p><details><summary>Expand all eight JSONL records</summary><pre class="raw"><code id="rawJsonCode"></code></pre></details><div class="code-tools"><button class="small-btn" type="button" onclick="copyFrom('rawJsonCode',this)">Copy JSONL</button><button class="small-btn" type="button" onclick="downloadFixtures()">Download events.jsonl</button></div></article>
+    <article class="card full"><h3>MITRE ATT&amp;CK - visual map</h3><div class="attack"><div class="attack-card"><b>T1047</b><h4>Windows Management Instrumentation</h4><p>WMI can execute processes locally or remotely. Here, the visible telemetry clue is the WMI provider as the parent.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1047/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div><div class="arrow">→</div><div class="attack-card"><b>T1059</b><h4>Command and Scripting Interpreter</h4><p>PowerShell and Windows Command Shell interpret commands. Arguments reveal more context than the process name alone.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1059/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div></div></article>
+  </div>
+</section>
+
+<section class="page" data-page="3">
+  <div class="page-head"><div><div class="eyebrow">Week 12 · Day 2</div><h2>KQL behavior query + tuning</h2></div><div class="page-no">Page 3 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>Build the behavior in four steps</h3><ol><li>Read <code>DeviceProcessEvents</code>.</li><li>Keep the WMI provider parent.</li><li>Keep PowerShell, pwsh, or cmd children.</li><li>Require a suspicious command-line clue, then apply narrow approved-context filters.</li></ol></article>
+    <article class="card"><h3>Why narrow tuning matters</h3><p>Do not exclude every event from an administrator or every WMI-launched shell. Tie an exception to at least two stable facts, such as an approved actor plus an exact script path.</p><div class="callout warning">Give production allowlists an owner, business reason, review date, and expiry date.</div></article>
+    <article class="card full"><h3>KQL answer</h3><p>Validation place: Microsoft Defender Advanced Hunting. Confirm field availability and replace example approved context with tenant-owned values before production use.</p><div class="code-tools"><button class="answer-btn" type="button" onclick="toggle('kqlAnswer',this)">Show KQL answer</button><button class="small-btn" type="button" onclick="copyFrom('kqlCode',this)">Copy KQL</button></div><div class="answer" id="kqlAnswer"><pre><code id="kqlCode">DeviceProcessEvents
+| where InitiatingProcessFileName =~ "WmiPrvSE.exe"
+| where FileName in~ ("powershell.exe", "pwsh.exe", "cmd.exe")
+| where ProcessCommandLine has_any (
+    "EncodedCommand", "whoami", "DownloadString",
+    "Invoke-WebRequest", "FromBase64String"
+  )
+  or ProcessCommandLine contains " -enc "
+  or ProcessCommandLine contains "-WindowStyle Hidden"
+  or ProcessCommandLine contains " -w hidden"
+  or ProcessCommandLine contains "-ExecutionPolicy Bypass"
+  or ProcessCommandLine contains " -ep bypass"
+  or ProcessCommandLine contains @"\Users\Public\"
+| where not(
+    AccountName =~ "svc_sccm"
+    and ProcessCommandLine has @"C:\ProgramData\Microsoft\CCM\Scripts\Inventory.ps1"
+  )
+| where not(
+    AccountName =~ "svc_monitor"
+    and ProcessCommandLine has @"C:\Program Files\MonitoringAgent\collect.cmd"
+  )
+| extend RemoteSource = coalesce(
+    column_ifexists("InitiatingProcessRemoteSessionIP", ""),
+    "not_recorded"
+  )
+| project Timestamp, DeviceName, AccountName, RemoteSource,
+          InitiatingProcessFileName, FileName, ProcessCommandLine
+| order by Timestamp desc</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning and false positives</h3><p><b>Likely false positives:</b> SCCM or another software-deployment platform, monitoring products that launch health checks, inventory scripts, and approved remote administration. Verify the actor or service account, exact command, script path, source address, device group, owner, schedule, and change ticket. A common product name alone is not enough to close the alert.</p></article>
+    <article class="card full"><h3>Quick tuning check</h3><div class="quiz"><p><b>Which exclusion is safer?</b></p><div class="choices"><button class="choice" type="button" onclick="quiz(this,false,'Too broad: an attacker could also use this account or WMI.')">Exclude all activity by administrators</button><button class="choice" type="button" onclick="quiz(this,true,'Correct: actor plus exact path is narrow and reviewable.')">Exclude svc_sccm only when the exact approved inventory script runs</button><button class="choice" type="button" onclick="quiz(this,false,'Too broad: this removes the behavior the lab is designed to find.')">Exclude every child of WmiPrvSE.exe</button></div><div class="result" aria-live="polite">Choose one answer.</div></div></article>
+  </div>
+</section>
+
+<section class="page" data-page="4">
+  <div class="page-head"><div><div class="eyebrow">Week 12 · Day 3</div><h2>CrowdStrike CQL translation</h2></div><div class="page-no">Page 4 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>Translate behavior, not punctuation</h3><p>Keep the same parent, child set, suspicious clues, approved context, and output fields. Field names can differ across Falcon datasets, so first inspect one known <code>ProcessRollup2</code> event in your tenant.</p></article>
+    <article class="card"><h3>Small field map</h3><div class="field-map"><div>Fixture<br><code>timestamp</code></div><div>CrowdStrike<br><code>@timestamp</code></div><div>Fixture<br><code>parent_image</code></div><div>CrowdStrike<br><code>ParentBaseFileName</code></div><div>Fixture<br><code>child_image</code></div><div>CrowdStrike<br><code>FileName</code></div><div>Fixture<br><code>command_line</code></div><div>CrowdStrike<br><code>CommandLine</code></div><div>Fixture<br><code>device</code></div><div>CrowdStrike<br><code>ComputerName</code></div><div>Fixture<br><code>actor</code></div><div>CrowdStrike<br><code>UserName</code></div></div></article>
+    <article class="card full"><h3>CrowdStrike CQL answer</h3><p>Validation place: Falcon LogScale or Next-Gen SIEM Search. Confirm normalized names with a known event before using the query.</p><div class="code-tools"><button class="answer-btn" type="button" onclick="toggle('cqlAnswer',this)">Show CrowdStrike CQL answer</button><button class="small-btn" type="button" onclick="copyFrom('cqlCode',this)">Copy CQL</button></div><div class="answer" id="cqlAnswer"><pre><code id="cqlCode">#event_simpleName=ProcessRollup2
+| ParentBaseFileName=/^WmiPrvSE\.exe$/i
+| FileName=/^(powershell|pwsh|cmd)\.exe$/i
+| CommandLine=/(encodedcommand| -enc |windowstyle hidden| -w hidden|executionpolicy bypass| -ep bypass|whoami|downloadstring|invoke-webrequest|frombase64string|\\users\\public\\)/i
+| not(UserName="svc_sccm" and CommandLine=/C:\\ProgramData\\Microsoft\\CCM\\Scripts\\Inventory\.ps1/i)
+| not(UserName="svc_monitor" and CommandLine=/C:\\Program Files\\MonitoringAgent\\collect\.cmd/i)
+| table([@timestamp, ComputerName, UserName, RemoteAddressIP4,
+         ParentBaseFileName, FileName, CommandLine])</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning and false positives</h3><p><b>Likely false positives:</b> Falcon-observed SCCM execution, monitoring-agent collection commands, inventory automation, and approved help-desk remote actions. Check whether the actor, command, source, target device, and execution time all match the documented workflow. If <code>RemoteAddressIP4</code> is absent, keep the event and record that the remote source is unavailable rather than treating absence as benign.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="5">
+  <div class="page-head"><div><div class="eyebrow">Week 12 · Day 4</div><h2>Sigma selection + filters</h2></div><div class="page-no">Page 5 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>Rule shape</h3><p>Create three positive selections: WMI parent, shell child, and suspicious arguments. Then subtract two exact approved workflows. The rule intentionally has no <code>id</code> and no <code>status: experimental</code>.</p></article>
+    <article class="card"><h3>Read the condition visually</h3><div class="flow"><div class="node"><strong>WMI parent</strong><small>selection_parent</small></div><div class="arrow">+</div><div class="node"><strong>Shell child</strong><small>selection_child</small></div><div class="arrow">+</div><div class="node"><strong>Suspicious args</strong><small>selection_args</small></div><div class="arrow">−</div><div class="node"><strong>Approved context</strong><small>filter_*</small></div></div></article>
+    <article class="card full"><h3>Sigma answer</h3><p>Validation place: save as YAML, parse it, then convert it with your Sigma toolchain for the target backend. Backend field mappings still require review.</p><div class="code-tools"><button class="answer-btn" type="button" onclick="toggle('sigmaAnswer',this)">Show Sigma answer</button><button class="small-btn" type="button" onclick="copyFrom('sigmaCode',this)">Copy Sigma</button></div><div class="answer" id="sigmaAnswer"><pre><code id="sigmaCode">title: Suspicious WMI Provider Spawns Command Shell
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_parent:
+    ParentImage|endswith: '\WmiPrvSE.exe'
+  selection_child:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\cmd.exe'
+  selection_args:
+    CommandLine|contains:
+      - '-EncodedCommand'
+      - ' -enc '
+      - '-WindowStyle Hidden'
+      - ' -w hidden'
+      - '-ExecutionPolicy Bypass'
+      - ' -ep bypass'
+      - 'whoami'
+      - 'DownloadString'
+      - 'Invoke-WebRequest'
+      - 'FromBase64String'
+      - '\Users\Public\'
+  filter_sccm_inventory:
+    User|endswith: '\svc_sccm'
+    CommandLine|contains: '\ProgramData\Microsoft\CCM\Scripts\Inventory.ps1'
+  filter_monitoring_health:
+    User|endswith: '\svc_monitor'
+    CommandLine|contains: '\Program Files\MonitoringAgent\collect.cmd'
+  condition: all of selection_* and not 1 of filter_*
+falsepositives:
+  - SCCM or other approved software deployment
+  - Monitoring and inventory products
+  - Approved remote administration
+level: medium</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning and false positives</h3><p><b>Likely false positives:</b> SCCM task execution, monitoring-product health collection, inventory scripts, and approved remote administration. The Sigma filters are deliberately paired conditions. Review the converted query to make sure your backend preserves the intended AND relationship inside each filter.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="6">
+  <div class="page-head"><div><div class="eyebrow">Week 12 · Day 5</div><h2>Python: classify JSONL events</h2></div><div class="page-no">Page 6 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>Your small program</h3><ol><li>Open <code>events.jsonl</code>.</li><li>Read one JSON object at a time.</li><li>Check parent, child, suspicious arguments, and approved context.</li><li>Print <code>MATCH</code> or <code>NO MATCH</code>.</li><li>Compare the result with <code>expected</code>.</li></ol></article>
+    <article class="card"><h3>Expected result</h3><div class="flow"><div class="node"><strong>4 MATCH</strong><small>WMI-001 to WMI-004</small></div><div class="arrow">+</div><div class="node"><strong>4 NO MATCH</strong><small>WMI-005 to WMI-008</small></div><div class="arrow">→</div><div class="node"><strong>8 / 8 correct</strong><small>fixture validation</small></div></div></article>
+    <article class="card full"><h3>Python answer</h3><p>Run locally: <code>python wmi_classifier.py events.jsonl</code></p><div class="code-tools"><button class="answer-btn" type="button" onclick="toggle('pythonAnswer',this)">Show Python answer</button><button class="small-btn" type="button" onclick="copyFrom('pythonCode',this)">Copy Python</button></div><div class="answer" id="pythonAnswer"><pre><code id="pythonCode">import json
+import sys
+
+SHELLS = {"powershell.exe", "pwsh.exe", "cmd.exe"}
+SUSPICIOUS = (
+    "-encodedcommand", " -enc ", "-windowstyle hidden", " -w hidden",
+    "-executionpolicy bypass", " -ep bypass", "whoami", "downloadstring",
+    "invoke-webrequest", "frombase64string", "\\users\\public\\",
+)
+
+def base_name(path):
+    return path.replace("/", "\\").lower().rsplit("\\", 1)[-1]
+
+def is_approved(event, command):
+    actor = event.get("actor", "").lower()
+    return (
+        actor.endswith("\\svc_sccm")
+        and "\\programdata\\microsoft\\ccm\\scripts\\inventory.ps1" in command
+    ) or (
+        actor.endswith("\\svc_monitor")
+        and "\\program files\\monitoringagent\\collect.cmd" in command
+    )
+
+def is_wmi_shell(event):
+    parent = base_name(event.get("parent_image", ""))
+    child = base_name(event.get("child_image", ""))
+    command = event.get("command_line", "").lower()
+    suspicious = any(term in command for term in SUSPICIOUS)
+    return (
+        parent == "wmiprvse.exe"
+        and child in SHELLS
+        and suspicious
+        and not is_approved(event, command)
+    )
+
+def main(path):
+    correct = 0
+    total = 0
+    with open(path, encoding="utf-8") as handle:
+        for line in handle:
+            if not line.strip():
+                continue
+            event = json.loads(line)
+            matched = is_wmi_shell(event)
+            verdict = "MATCH" if matched else "NO MATCH"
+            print(f"{event['event_id']}: {verdict} → {event['device']}")
+            correct += matched == (event["expected"] == "TP")
+            total += 1
+    print(f"Validation: {correct}/{total} correct")
+
+if __name__ == "__main__":
+    main(sys.argv[1] if len(sys.argv) > 1 else "events.jsonl")</code></pre></div></article>
+    <article class="card"><h3>Why this stays simple</h3><p>The classifier uses one function per idea: get a base name, check approved context, then check the detection behavior. It streams the file line by line and does not need third-party packages.</p></article>
+    <article class="card"><h3>Validation status</h3><div class="callout success"><b>Executed:</b> the embedded Python was run against the eight embedded fixtures during creation and returned <b>8/8 correct</b>.</div><p>The browser validator on Day 7 independently repeats the same expected TP/TN check in JavaScript.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="7">
+  <div class="page-head"><div><div class="eyebrow">Week 12 · Day 6</div><h2>Go: count by device and actor</h2></div><div class="page-no">Page 7 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>Your small program</h3><ol><li>Scan JSONL one line at a time.</li><li>Reuse the same WMI-shell behavior.</li><li>For each match, build a <code>device | actor</code> key.</li><li>Increment the count and print sorted results.</li></ol><div class="callout">Streaming keeps memory use small when the fixture grows into a large export.</div></article>
+    <article class="card"><h3>Expected counts</h3><div class="table-wrap"><table style="min-width:520px"><thead><tr><th>Device</th><th>Actor</th><th>Matches</th></tr></thead><tbody><tr><td>ENG-LT-044</td><td>CORP\jsmith</td><td>1</td></tr><tr><td>FIN-WS-019</td><td>CORP\helpdesk-temp</td><td>1</td></tr><tr><td>HR-LT-207</td><td>CORP\mlewis</td><td>1</td></tr><tr><td>OPS-SRV-03</td><td>NT AUTHORITY\NETWORK SERVICE</td><td>1</td></tr></tbody></table></div></article>
+    <article class="card full"><h3>Go answer</h3><p>Run locally: <code>go run wmi_counter.go events.jsonl</code></p><div class="code-tools"><button class="answer-btn" type="button" onclick="toggle('goAnswer',this)">Show Go answer</button><button class="small-btn" type="button" onclick="copyFrom('goCode',this)">Copy Go</button></div><div class="answer" id="goAnswer"><pre><code id="goCode">package main
+
+import (
+    "bufio"
+    "encoding/json"
+    "fmt"
+    "os"
+    "path/filepath"
+    "sort"
+    "strings"
+)
+
+type Event struct {
+    EventID    string `json:"event_id"`
+    Device     string `json:"device"`
+    Actor      string `json:"actor"`
+    Parent     string `json:"parent_image"`
+    Child      string `json:"child_image"`
+    Command    string `json:"command_line"`
+}
+
+var suspicious = []string{
+    "-encodedcommand", " -enc ", "-windowstyle hidden", " -w hidden",
+    "-executionpolicy bypass", " -ep bypass", "whoami", "downloadstring",
+    "invoke-webrequest", "frombase64string", `\users\public\`,
+}
+
+func approved(e Event, command string) bool {
+    actor := strings.ToLower(e.Actor)
+    return (strings.HasSuffix(actor, `\svc_sccm`) &amp;&amp;
+        strings.Contains(command, `\programdata\microsoft\ccm\scripts\inventory.ps1`)) ||
+        (strings.HasSuffix(actor, `\svc_monitor`) &amp;&amp;
+        strings.Contains(command, `\program files\monitoringagent\collect.cmd`))
+}
+
+func isWMIShell(e Event) bool {
+    parent := strings.ToLower(filepath.Base(strings.ReplaceAll(e.Parent, `\`, `/`)))
+    child := strings.ToLower(filepath.Base(strings.ReplaceAll(e.Child, `\`, `/`)))
+    command := strings.ToLower(e.Command)
+    shell := child == "powershell.exe" || child == "pwsh.exe" || child == "cmd.exe"
+    hasClue := false
+    for _, term := range suspicious {
+        if strings.Contains(command, term) {
+            hasClue = true
+            break
+        }
+    }
+    return parent == "wmiprvse.exe" &amp;&amp; shell &amp;&amp; hasClue &amp;&amp; !approved(e, command)
+}
+
+func main() {
+    path := "events.jsonl"
+    if len(os.Args) &gt; 1 {
+        path = os.Args[1]
+    }
+    file, err := os.Open(path)
+    if err != nil {
+        fmt.Fprintln(os.Stderr, err)
+        os.Exit(1)
+    }
+    defer file.Close()
+
+    counts := map[string]int{}
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        var event Event
+        if err := json.Unmarshal(scanner.Bytes(), &amp;event); err != nil {
+            fmt.Fprintln(os.Stderr, "bad JSONL:", err)
+            os.Exit(1)
+        }
+        if isWMIShell(event) {
+            counts[event.Device+" | "+event.Actor]++
+        }
+    }
+    if err := scanner.Err(); err != nil {
+        fmt.Fprintln(os.Stderr, err)
+        os.Exit(1)
+    }
+
+    keys := make([]string, 0, len(counts))
+    for key := range counts {
+        keys = append(keys, key)
+    }
+    sort.Strings(keys)
+    for _, key := range keys {
+        fmt.Printf("%s → %d\n", key, counts[key])
+    }
+}</code></pre></div></article>
+    <article class="card"><h3>No YARA this week</h3><p>YARA is useful for matching file content or memory patterns. This detection is driven by process ancestry and command-line context, so adding a YARA rule would distract from the primary signal.</p></article>
+    <article class="card"><h3>Validation status</h3><div class="callout warning"><b>Not executed here:</b> the Go toolchain was unavailable in the creation environment. The code was reviewed against the same field names and detection steps as the executed Python classifier; run <code>go run wmi_counter.go events.jsonl</code> in a Go environment to confirm the four expected rows.</div></article>
+  </div>
+</section>
+
+<section class="page" data-page="8">
+  <div class="page-head"><div><div class="eyebrow">Week 12 · Day 7</div><h2>Separate management from rare execution</h2></div><div class="page-no">Page 8 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>Context changes the decision</h3><div class="matrix"><div class="matrix-card common"><h4>Common, documented management</h4><p><b>Actor:</b> named service account owned by IT<br><b>Command:</b> exact approved script in a protected path<br><b>Source:</b> management server subnet<br><b>Timing:</b> expected deployment or inventory window<br><b>Action:</b> confirm and tune narrowly</p></div><div class="matrix-card rare"><h4>Rare, high-priority WMI shell</h4><p><b>Actor:</b> unusual user or temporary admin<br><b>Command:</b> encoded, hidden, bypass, discovery, or user-writable path<br><b>Source:</b> workstation or unknown host<br><b>Timing:</b> outside the normal window<br><b>Action:</b> investigate process tree and remote activity</p></div></div></article>
+    <article class="card"><h3>Five-question triage</h3><ol><li>Is WmiPrvSE really the direct parent?</li><li>Who owns the actor or service account?</li><li>Is the entire command expected, not just one keyword?</li><li>Is the source address part of approved administration?</li><li>Is the same actor-command-device pattern common in the baseline?</li></ol></article>
+    <article class="card"><h3>Evidence to collect next</h3><ul class="checklist"><li>Full parent and child process tree</li><li>WMI operational logs and remote logon evidence</li><li>PowerShell script block or module logs, if enabled</li><li>DNS, network, and file activity near the event</li><li>Change ticket and automation owner confirmation</li></ul></article>
+    <article class="card full"><h3>Interactive fixture validator</h3><p>This runs the lab's detection logic against all eight embedded fixtures in your browser. It verifies that all TP fixtures match and all benign fixtures do not.</p><div class="validator-grid"><div class="metric"><strong id="totalMetric">8</strong><span>Total fixtures</span></div><div class="metric"><strong id="tpMetric">4</strong><span>Expected TP</span></div><div class="metric"><strong id="tnMetric">4</strong><span>Expected TN</span></div><div class="metric"><strong id="passMetric">—</strong><span>Correct results</span></div></div><div class="code-tools"><button class="answer-btn" type="button" onclick="runValidator()">Run fixture validator</button></div><div class="result" id="validatorResult" aria-live="polite">Ready to validate.</div></article>
+    <article class="card full"><h3>Capstone decision practice</h3><div class="quiz"><p><b>WmiPrvSE.exe starts <code>powershell.exe -NoProfile -File C:\ProgramData\Microsoft\CCM\Scripts\Inventory.ps1</code> as <code>CORP\svc_sccm</code> from the approved management server during the inventory window. What is the best action?</b></p><div class="choices"><button class="choice" type="button" onclick="quiz(this,false,'Not enough evidence for an incident: every provided context point matches the documented workflow.')">Declare an incident immediately</button><button class="choice" type="button" onclick="quiz(this,true,'Correct: confirm ownership, document the evidence, and use a narrow paired exception if needed.')">Confirm the workflow, document it, and tune only the actor + exact path pair</button><button class="choice" type="button" onclick="quiz(this,false,'Do not remove visibility for all WMI execution; the broad behavior remains useful.')">Exclude all WmiPrvSE child processes</button></div><div class="result" aria-live="polite">Choose one answer.</div></div></article>
+    <article class="card"><h3>Completion checklist</h3><ul class="checklist"><li>Reviewed all eight process events</li><li>Compared KQL, CQL, and Sigma logic</li><li>Ran Python on JSONL</li><li>Ran Go counts by device and actor</li><li>Recorded false positives and tuning assumptions</li><li>Validated four TP and four TN fixtures</li></ul></article>
+    <article class="card"><h3>Honest validation record</h3><ul><li><b>Fixtures:</b> executed, 8/8 correct</li><li><b>Python:</b> executed successfully</li><li><b>Go:</b> not executed because the Go toolchain was unavailable; local execution is required</li><li><b>Sigma:</b> YAML parsed successfully; backend conversion not run</li><li><b>KQL/CQL:</b> syntax reviewed, but live tenant execution is still required because schemas vary</li><li><b>HTML/JavaScript:</b> parsed and syntax-checked</li></ul></article>
+  </div>
+</section>
+
+<nav class="nav-footer" aria-label="Lab pages"><button class="nav-btn" id="prevBtn" type="button" onclick="step(-1)">← Previous</button><div class="dots" id="dots"></div><button class="nav-btn" id="nextBtn" type="button" onclick="step(1)">Next →</button></nav>
+<div class="status-bar"><b>Navigation:</b> use Previous/Next, page dots, the week map, or ← and → arrow keys. Press Home for the introduction. Theme and text-size choices are saved in this browser.</div>
+</main>
+<script>
+const events = [
+ {event_id:"WMI-001",timestamp:"2026-11-10T09:14:22Z",device:"ENG-LT-044",actor:"CORP\\jsmith",parent_image:"C:\\Windows\\System32\\wbem\\WmiPrvSE.exe",child_image:"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",command_line:"powershell.exe -NoProfile -WindowStyle Hidden -EncodedCommand SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkA",remote_source:"10.20.4.51",expected:"TP",why:"WMI parent, PowerShell child, hidden window, and encoded command from a workstation source."},
+ {event_id:"WMI-002",timestamp:"2026-11-10T10:02:07Z",device:"FIN-WS-019",actor:"CORP\\helpdesk-temp",parent_image:"C:\\Windows\\System32\\wbem\\WmiPrvSE.exe",child_image:"C:\\Windows\\System32\\cmd.exe",command_line:"cmd.exe /Q /c whoami && ipconfig /all > C:\\Windows\\Temp\\diag.txt",remote_source:"10.20.4.77",expected:"TP",why:"WMI starts cmd for account and network discovery; the temporary help-desk actor is not approved."},
+ {event_id:"WMI-003",timestamp:"2026-11-10T11:37:49Z",device:"HR-LT-207",actor:"CORP\\mlewis",parent_image:"C:\\Windows\\System32\\wbem\\WmiPrvSE.exe",child_image:"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",command_line:"powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\\Users\\Public\\stage.ps1",remote_source:"10.20.8.23",expected:"TP",why:"Execution policy bypass plus a script in the user-writable Public directory is unusual."},
+ {event_id:"WMI-004",timestamp:"2026-11-10T12:15:33Z",device:"OPS-SRV-03",actor:"NT AUTHORITY\\NETWORK SERVICE",parent_image:"C:\\Windows\\System32\\wbem\\WmiPrvSE.exe",child_image:"C:\\Windows\\System32\\cmd.exe",command_line:"cmd.exe /Q /c powershell.exe -NoProfile -w hidden -enc RwBlAHQALQBEAGEAdABlAA==",remote_source:"10.20.15.9",expected:"TP",why:"WMI starts cmd, which launches hidden encoded PowerShell; this needs immediate source validation."},
+ {event_id:"WMI-005",timestamp:"2026-11-10T13:00:00Z",device:"ENG-LT-052",actor:"CORP\\svc_sccm",parent_image:"C:\\Windows\\System32\\wbem\\WmiPrvSE.exe",child_image:"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",command_line:"powershell.exe -NoProfile -File C:\\ProgramData\\Microsoft\\CCM\\Scripts\\Inventory.ps1",remote_source:"10.20.1.10",expected:"TN",why:"Documented SCCM actor, exact inventory script, management source, and no high-signal suspicious argument."},
+ {event_id:"WMI-006",timestamp:"2026-11-10T13:05:00Z",device:"DB-SRV-02",actor:"CORP\\svc_monitor",parent_image:"C:\\Windows\\System32\\wbem\\WmiPrvSE.exe",child_image:"C:\\Windows\\System32\\cmd.exe",command_line:"cmd.exe /c \"C:\\Program Files\\MonitoringAgent\\collect.cmd\" --health",remote_source:"10.20.1.21",expected:"TN",why:"Known monitoring actor and exact health script; generic /c alone is not treated as suspicious."},
+ {event_id:"WMI-007",timestamp:"2026-11-10T13:20:00Z",device:"MKT-LT-088",actor:"CORP\\agarcia",parent_image:"C:\\Windows\\System32\\svchost.exe",child_image:"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",command_line:"powershell.exe -NoProfile -EncodedCommand RwBlAHQALQBEAGEAdABlAA==",remote_source:"not_available",expected:"TN",why:"The command is suspicious, but the direct parent is svchost.exe, not WmiPrvSE.exe; investigate with a different detection."},
+ {event_id:"WMI-008",timestamp:"2026-11-10T14:11:08Z",device:"IT-ADMIN-05",actor:"CORP\\adm_kpatel",parent_image:"C:\\Windows\\System32\\wbem\\WmiPrvSE.exe",child_image:"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",command_line:"powershell.exe -NoProfile -Command Get-CimInstance Win32_OperatingSystem",remote_source:"10.20.1.35",expected:"TN",why:"WMI launches PowerShell, but the command is a plain operating-system inventory query with no selected suspicious clue."}
+];
+const suspiciousTerms=["-encodedcommand"," -enc ","-windowstyle hidden"," -w hidden","-executionpolicy bypass"," -ep bypass","whoami","downloadstring","invoke-webrequest","frombase64string","\\users\\public\\"];
+const pages=[...document.querySelectorAll('.page')];
+let current=1;
+let textLevel=0;
+function escapeHtml(value){return String(value).replace(/[&<>"']/g,ch=>({"&":"&","<":"<",">":">",'"':"&quot;","'":"&#39;"}[ch]));}
+function baseName(path){return String(path||'').replaceAll('/','\\').toLowerCase().split('\\').pop();}
+function approved(event,command){const actor=(event.actor||'').toLowerCase();return (actor.endsWith('\\svc_sccm')&&command.includes('\\programdata\\microsoft\\ccm\\scripts\\inventory.ps1'))||(actor.endsWith('\\svc_monitor')&&command.includes('\\program files\\monitoringagent\\collect.cmd'));}
+function isWmiShell(event){const command=(event.command_line||'').toLowerCase();return baseName(event.parent_image)==='wmiprvse.exe'&&['powershell.exe','pwsh.exe','cmd.exe'].includes(baseName(event.child_image))&&suspiciousTerms.some(term=>command.includes(term))&&!approved(event,command);}
+function renderEvents(){
+ document.getElementById('eventsTable').innerHTML=events.map(e=>`<tr><td><b>${e.event_id}</b></td><td>${e.timestamp.replace('T','<br>')}</td><td>${escapeHtml(e.device)}<br><small>${escapeHtml(e.actor)}</small></td><td>${escapeHtml(baseName(e.parent_image))} <span class="arrow" style="font-size:1rem">→</span> ${escapeHtml(baseName(e.child_image))}</td><td>${escapeHtml(e.command_line.length>76?e.command_line.slice(0,76)+'…':e.command_line)}</td><td>${escapeHtml(e.remote_source)}</td><td><span class="tag ${e.expected.toLowerCase()}">${e.expected}</span></td></tr>`).join('');
+ document.getElementById('eventPicker').innerHTML=events.map((e,i)=>`<button class="event-btn" type="button" aria-pressed="${i===0}" onclick="showEvent(${i})">${e.event_id}</button>`).join('');
+ document.getElementById('rawJsonCode').textContent=events.map(e=>JSON.stringify(e)).join('\n');
+ showEvent(0);
+}
+function showEvent(index){const e=events[index];document.querySelectorAll('.event-btn').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));const detected=isWmiShell(e);document.getElementById('eventDetail').innerHTML=`<div class="mini-chain"><span class="mini-node">${escapeHtml(baseName(e.parent_image))}</span><span class="arrow">→</span><span class="mini-node">${escapeHtml(baseName(e.child_image))}</span></div><div class="detail-grid"><div class="detail-item"><small>Event</small><b>${e.event_id}</b></div><div class="detail-item"><small>Device</small><b>${escapeHtml(e.device)}</b></div><div class="detail-item"><small>Actor</small><b>${escapeHtml(e.actor)}</b></div><div class="detail-item"><small>Remote source</small><b>${escapeHtml(e.remote_source)}</b></div><div class="detail-item"><small>Expected</small><span class="tag ${e.expected.toLowerCase()}">${e.expected}</span></div><div class="detail-item"><small>Lab logic</small><b>${detected?'MATCH':'NO MATCH'}</b></div></div><p><small>Command line</small><br><code>${escapeHtml(e.command_line)}</code></p><div class="reason"><b>Why:</b> ${escapeHtml(e.why)}</div>`;}
+function go(page){current=Math.max(1,Math.min(pages.length,page));pages.forEach((p,i)=>p.classList.toggle('active',i===current-1));document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===current-1));document.getElementById('progress').style.width=`${current/pages.length*100}%`;document.getElementById('prevBtn').disabled=current===1;document.getElementById('nextBtn').disabled=current===pages.length;document.getElementById('nextBtn').textContent=current===pages.length?'Completed ✓':'Next →';window.scrollTo({top:0,behavior:'smooth'});document.title=`Week 12 Lab · ${current}/8`;}
+function step(delta){go(current+delta);}
+function toggle(id,button){const panel=document.getElementById(id);panel.classList.toggle('open');button.textContent=panel.classList.contains('open')?button.textContent.replace('Show','Hide'):button.textContent.replace('Hide','Show');}
+async function copyFrom(id,button){const text=document.getElementById(id).textContent;try{await navigator.clipboard.writeText(text);}catch(_){const area=document.createElement('textarea');area.value=text;document.body.append(area);area.select();document.execCommand('copy');area.remove();}const old=button.textContent;button.textContent='Copied ✓';setTimeout(()=>button.textContent=old,1400);}
+function downloadFixtures(){const blob=new Blob([events.map(e=>JSON.stringify(e)).join('\n')+'\n'],{type:'application/x-ndjson'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='events.jsonl';a.click();URL.revokeObjectURL(url);}
+function quiz(button,correct,message){const quiz=button.closest('.quiz');quiz.querySelectorAll('.choice').forEach(b=>b.classList.remove('correct','incorrect'));button.classList.add(correct?'correct':'incorrect');const result=quiz.querySelector('.result');result.textContent=message;result.className='result '+(correct?'pass':'fail');}
+function runValidator(){const rows=events.map(e=>({id:e.event_id,actual:isWmiShell(e)?'TP':'TN',expected:e.expected}));const correct=rows.filter(r=>r.actual===r.expected).length;document.getElementById('passMetric').textContent=`${correct}/8`;const result=document.getElementById('validatorResult');result.className='result '+(correct===events.length?'pass':'fail');result.innerHTML=correct===events.length?`PASS: all ${correct} fixtures produced the expected result. TP matched; benign fixtures did not.`:`FAIL: ${correct}/${events.length} correct. Review ${rows.filter(r=>r.actual!==r.expected).map(r=>r.id).join(', ')}.`;}
+function initDots(){document.getElementById('dots').innerHTML=pages.map((_,i)=>`<button class="dot" type="button" aria-label="Go to page ${i+1}" onclick="go(${i+1})">${i+1}</button>`).join('');}
+document.getElementById('themeBtn').addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=next;localStorage.setItem('w12-theme',next);document.getElementById('themeBtn').textContent=next==='light'?'Dark':'Light';});
+document.getElementById('textBtn').addEventListener('click',()=>{textLevel=(textLevel+1)%3;const sizes=['16px','18px','14px'];document.documentElement.style.setProperty('--base',sizes[textLevel]);localStorage.setItem('w12-text',String(textLevel));document.getElementById('textBtn').textContent=['A+','A++','A'][textLevel];});
+document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key==='ArrowRight')step(1);if(e.key==='ArrowLeft')step(-1);if(e.key==='Home')go(1);if(e.key==='End')go(8);});
+const savedTheme=localStorage.getItem('w12-theme')||'dark';document.documentElement.dataset.theme=savedTheme;document.getElementById('themeBtn').textContent=savedTheme==='light'?'Dark':'Light';textLevel=Number(localStorage.getItem('w12-text')||0)%3;document.documentElement.style.setProperty('--base',['16px','18px','14px'][textLevel]);document.getElementById('textBtn').textContent=['A+','A++','A'][textLevel];
+initDots();renderEvents();go(1);
+</script>
+</body>
+</html>

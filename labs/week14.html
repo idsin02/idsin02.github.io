@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Week 14 detection engineering lab: rare DNS domains queried by script processes.">
+<title>Week 14 Lab - Script Process Queries a Rare Domain</title>
+<style>
+:root{--bg:#07131b;--panel:#0d202b;--panel2:#132d3a;--text:#effcff;--muted:#aac5cf;--line:#285061;--cyan:#4de3d1;--blue:#71afff;--amber:#ffd166;--red:#ff7d8d;--green:#6ee7a8;--purple:#c4a7ff;--shadow:0 18px 46px rgba(0,0,0,.25)}
+[data-theme="light"]{--bg:#edf7f8;--panel:#fff;--panel2:#f1f9fa;--text:#102d37;--muted:#55717b;--line:#c6dfe4;--cyan:#087f78;--blue:#1768c4;--amber:#916000;--red:#ba2940;--green:#087d48;--purple:#6741a6;--shadow:0 16px 40px rgba(24,66,76,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(77,227,209,.12),transparent 29%),var(--bg);color:var(--text);font:16px/1.58 Inter,Segoe UI,Arial,sans-serif;min-height:100vh}
+button,a{font:inherit}.shell{max-width:1180px;margin:auto;padding:18px}.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.topbar-inner{max-width:1180px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:12px}.brand{font-weight:800;letter-spacing:.2px}.brand span{color:var(--cyan)}.grow{flex:1}.icon-btn,.nav-btn,.answer-btn,.small-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer;transition:.18s ease}.icon-btn:hover,.nav-btn:hover,.answer-btn:hover,.small-btn:hover{border-color:var(--cyan);transform:translateY(-1px)}button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:3px}button:disabled{opacity:.42;cursor:not-allowed;transform:none}.progress{height:4px;background:var(--line)}.progress>div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .25s}
+.hero{padding:32px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(77,227,209,.11),rgba(113,175,255,.06)),var(--panel);box-shadow:var(--shadow)}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);font-weight:800}.hero h1{font-size:clamp(2rem,5vw,4.15rem);line-height:1.03;margin:.35rem 0 1rem;max-width:900px}.hero p{max-width:850px;color:var(--muted);font-size:1.08rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.chip{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);font-size:.86rem}.chip.good{color:var(--green)}.chip.warn{color:var(--amber)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.stat strong{display:block;font-size:1.8rem;color:var(--cyan)}.stat span{color:var(--muted);font-size:.88rem}
+.page{display:none;animation:fade .22s ease}.page.active{display:block}@keyframes fade{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:22px 0}.page-head h2{font-size:clamp(1.8rem,4vw,3rem);margin:.2rem 0}.page-no{color:var(--muted);font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{grid-column:span 6;padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}.card h3{margin-top:0}.card p,.card li{color:var(--muted)}.callout{border-left:4px solid var(--cyan);padding:12px 16px;background:var(--panel2);border-radius:0 12px 12px 0}.warning{border-left-color:var(--amber)}.danger{border-left-color:var(--red)}
+.week-map{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-top:18px}.day-tile{padding:14px 10px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);color:var(--text);cursor:pointer;min-height:112px}.day-tile:hover{border-color:var(--cyan)}.day-tile b{display:block;color:var(--cyan);margin-bottom:6px}.day-tile span{font-size:.82rem;color:var(--muted)}
+.flow{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;padding:22px}.node{min-width:180px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);text-align:center}.node strong{display:block}.node small{color:var(--muted)}.node.alert{border-color:var(--red)}.node.safe{border-color:var(--green)}.arrow{font-size:2rem;color:var(--cyan)}
+.attack{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;gap:15px}.attack-card{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.attack-card b{font-size:1.2rem;color:var(--amber)}.attack-link{color:var(--blue);text-decoration:none}.attack-link:hover{text-decoration:underline}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:920px;background:var(--panel2)}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);background:var(--panel)}td{font-size:.88rem}.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.75rem;font-weight:800}.tp{color:var(--green);background:rgba(110,231,168,.12)}.tn{color:var(--blue);background:rgba(113,175,255,.12)}
+pre{margin:0;padding:18px;overflow:auto;background:#040a0e;color:#dff7fb;border-radius:14px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}.code-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.answer{display:none;margin-top:10px}.answer.open{display:block}.raw{max-height:430px}.field-map{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field-map div{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}.field-map code{color:var(--cyan)}
+.event-picker{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.event-picker button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}.event-detail{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.detail-item{padding:10px;border-radius:10px;background:var(--panel);overflow-wrap:anywhere}.detail-item small{display:block;color:var(--muted)}
+details.fixture{border:1px solid var(--line);border-radius:14px;background:var(--panel2);margin:12px 0}details.fixture summary{cursor:pointer;padding:14px 16px;color:var(--cyan);font-weight:800}details.fixture pre{border-radius:0 0 13px 13px}
+.checklist{list-style:none;padding:0}.checklist li{padding:10px 0;border-bottom:1px solid var(--line)}.checklist li:before{content:'✓';color:var(--green);font-weight:900;margin-right:9px}.validator-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{padding:16px;border:1px solid var(--line);border-radius:14px;text-align:center;background:var(--panel2)}.metric strong{display:block;font-size:2rem}.result{margin-top:12px;padding:12px;border-radius:12px;background:var(--panel2);min-height:48px}.result.pass{border:1px solid var(--green);color:var(--green)}.result.fail{border:1px solid var(--red);color:var(--red)}
+.domain-demo{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}.domain-box{padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);overflow-wrap:anywhere}.domain-box b{color:var(--cyan)}
+.nav-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:24px 0 8px}.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.dot{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--muted);cursor:pointer}.dot.active{background:var(--cyan);color:#031115;border-color:var(--cyan);font-weight:900}.status-bar{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.88rem}
+@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.week-map{grid-template-columns:repeat(2,1fr)}.card,.card.third{grid-column:1/-1}.attack,.domain-demo{grid-template-columns:1fr}.attack .arrow,.domain-demo .arrow{transform:rotate(90deg);text-align:center}.detail-grid,.validator-grid{grid-template-columns:repeat(2,1fr)}.topbar .brand{font-size:.9rem}.topbar-inner{gap:7px}.icon-btn{padding:8px}.hero{padding:22px}}
+@media(max-width:520px){.shell{padding:12px}.stats,.week-map,.detail-grid,.validator-grid{grid-template-columns:1fr}.page-head{align-items:start;flex-direction:column}.nav-footer .nav-btn{font-size:.84rem;padding:8px}.dots{display:none}.brand{display:none}}
+@media print{.topbar,.nav-footer,.code-tools{display:none}.page{display:block!important;break-after:page}.answer{display:block!important}.shell{max-width:none}.card,.hero{box-shadow:none}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><a href="index.html" class="icon-btn" style="text-decoration:none" title="Back to all labs">← All labs</a><div class="brand">Detection Lab <span>W14</span></div><div class="grow"></div><button class="icon-btn" id="textBtn" title="Increase text size" aria-label="Toggle larger text">A+</button><button class="icon-btn" id="themeBtn" title="Switch theme" aria-label="Switch color theme">Light</button></div><div class="progress" aria-hidden="true"><div id="progress"></div></div></header>
+<main class="shell">
+<section class="page active" data-page="1">
+  <div class="hero">
+    <div class="eyebrow">Month 4 - Network &amp; Lateral Movement · Week 14 · Intermediate</div>
+    <h1>Script process queries a rare domain</h1>
+    <p>Learn to connect DNS activity to its requesting process and find a domain that was absent from a small baseline. Rarity starts the investigation; process context and careful allowlisting make the signal useful.</p>
+    <div class="chips"><span class="chip">Network &amp; process</span><span class="chip">DNS telemetry</span><span class="chip">T1071.004</span><span class="chip">T1059</span><span class="chip good">3 true positives</span><span class="chip">7 benign negatives</span><span class="chip warn">No YARA - telemetry only</span></div>
+  </div>
+  <div class="stats"><div class="stat"><strong>10</strong><span>labeled DNS fixtures</span></div><div class="stat"><strong>14d</strong><span>example baseline window</span></div><div class="stat"><strong>2</strong><span>exact approved domains</span></div><div class="stat"><strong>7</strong><span>daily lab steps</span></div></div>
+  <div class="grid">
+    <article class="card full"><h3>Your seven-day path</h3><p>Each day reuses the same fields and decision rule. Start by reading events, translate the behavior across tools, then prove that every malicious fixture matches and every benign fixture stays quiet.</p>
+      <div class="week-map">
+        <button class="day-tile" onclick="go(2)"><b>Day 1</b><span>Read DNS + process fixtures</span></button>
+        <button class="day-tile" onclick="go(3)"><b>Day 2</b><span>Build and tune KQL</span></button>
+        <button class="day-tile" onclick="go(4)"><b>Day 3</b><span>Translate to CrowdStrike CQL</span></button>
+        <button class="day-tile" onclick="go(5)"><b>Day 4</b><span>Write a Sigma rule</span></button>
+        <button class="day-tile" onclick="go(6)"><b>Day 5</b><span>Count domains with Python</span></button>
+        <button class="day-tile" onclick="go(7)"><b>Day 6</b><span>Stream JSONL with Go</span></button>
+        <button class="day-tile" onclick="go(8)"><b>Day 7</b><span>Combine context + rarity</span></button>
+      </div>
+    </article>
+    <article class="card"><h3>Week goal</h3><p>Return a DNS event only when the requesting process is a script host, the normalized domain has a baseline count of zero, and the full domain is not an exact approved value.</p><div class="callout">Success means events 1, 2, and 8 match; the other seven do not.</div></article>
+    <article class="card"><h3>Data contract</h3><ul class="checklist"><li><code>domain</code> and <code>process</code></li><li><code>user</code>, <code>device</code>, and <code>timestamp</code></li><li><code>baseline_count</code> from earlier telemetry</li><li><code>expected_match</code> only in lab fixtures</li></ul></article>
+    <article class="card"><h3>Simple detection idea</h3><div class="flow"><div class="node"><strong>Script host?</strong><small>PowerShell, WSH, Python</small></div><div class="arrow">→</div><div class="node"><strong>Baseline = 0?</strong><small>Domain was not observed</small></div><div class="arrow">→</div><div class="node alert"><strong>Not approved?</strong><small>Return for review</small></div></div></article>
+    <article class="card"><h3>Important boundary</h3><p>A first-seen domain is not automatically malicious. The lab creates a triage lead, not a verdict. An analyst still checks the command line, parent process, user activity, domain age, DNS answers, and nearby connections.</p><div class="callout warning">Do not turn “rare” into “malicious.”</div></article>
+  </div>
+</section>
+
+<section class="page" data-page="2">
+  <div class="page-head"><div><div class="eyebrow">Week 14 · Day 1</div><h2>Understand DNS + process context</h2></div><div class="page-no">Page 2 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>What should be done</h3><ol><li>Read the domain, requesting process, user, device, timestamp, and baseline count.</li><li>Normalize the domain to lowercase and remove one trailing dot.</li><li>Ask whether the process is a script host.</li><li>Ask whether the baseline count is zero.</li><li>Apply only exact approved-domain exclusions.</li></ol></article>
+    <article class="card full"><h3>Visual event path</h3><div class="flow"><div class="node"><small>Parent process</small><strong>WINWORD.EXE</strong><small>Opens a document</small></div><div class="arrow">→</div><div class="node"><small>Script host</small><strong>powershell.exe</strong><small>Runs a command</small></div><div class="arrow">→</div><div class="node alert"><small>DNS query</small><strong>sync-checker.pages.dev</strong><small>Baseline count: 0</small></div></div></article>
+    <article class="card full"><h3>Ten sample events</h3><p>TP means the lab detector should return the event. TN means it should stay quiet. Scroll horizontally on smaller screens.</p><div class="table-wrap"><table><thead><tr><th>#</th><th>Timestamp</th><th>Device / user</th><th>Process</th><th>Domain</th><th>Baseline</th><th>Expected</th><th>Why</th></tr></thead><tbody id="eventsTable"></tbody></table></div></article>
+    <article class="card"><h3>Explore one event</h3><div class="event-picker" id="eventPicker"></div><div class="event-detail" id="eventDetail"></div></article>
+    <article class="card"><h3>Expandable JSONL fixture</h3><p>Save the text as <code>events.jsonl</code>. JSONL has one JSON object per line.</p><details class="fixture"><summary>Show all 10 JSONL events</summary><pre class="raw"><code id="rawJsonCode"></code></pre></details><button class="small-btn" onclick="copyFrom('rawJsonCode',this)">Copy JSONL</button></article>
+    <article class="card full"><h3>MITRE ATT&amp;CK - visual map</h3><div class="attack"><div class="attack-card"><b>T1059</b><h4>Command and Scripting Interpreter</h4><p>The requesting process is an interpreter such as PowerShell, Windows Script Host, or Python. A script host is context; it is not proof of malicious behavior.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1059/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div><div class="arrow">→</div><div class="attack-card"><b>T1071.004</b><h4>Application Layer Protocol: DNS</h4><p>Adversaries may abuse DNS for command-and-control communications. This lab only detects a rare query pattern and does not claim that every rare query is C2.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1071/004/" target="_blank" rel="noopener noreferrer">Official MITRE page ↗</a></div></div></article>
+  </div>
+</section>
+
+<section class="page" data-page="3">
+  <div class="page-head"><div><div class="eyebrow">Week 14 · Day 2</div><h2>KQL behavior query + tuning</h2></div><div class="page-no">Page 3 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>Build it in five steps</h3><ol><li>Use the last 14 days, excluding today, as the baseline.</li><li>Count each normalized domain.</li><li>Read today’s DNS events from script hosts.</li><li>Left-join the baseline and turn missing counts into zero.</li><li>Remove only exact approved domains.</li></ol></article>
+    <article class="card"><h3>Narrow tuning</h3><p>The allowlist contains complete normalized domains, not suffixes. Exact equality filters <code>telemetry.corp.example</code> but keeps <code>telemetry.corp.example.evil.net</code> visible.</p><div class="callout warning">Confirm the real action type and field names with one known DNS event before deployment.</div></article>
+    <article class="card full"><h3>KQL answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('kqlAnswer')">Show KQL answer</button><button class="small-btn" onclick="copyFrom('kqlCode',this)">Copy KQL</button></div><div class="answer" id="kqlAnswer"><pre><code id="kqlCode">let BaselineStart = ago(14d);
+let HuntStart = startofday(now());
+let ScriptHosts = dynamic(["powershell.exe", "pwsh.exe", "wscript.exe", "cscript.exe", "python.exe", "python3.exe"]);
+let ApprovedDomains = dynamic(["telemetry.corp.example", "approved-scanner.security.example"]);
+let Baseline =
+    DeviceNetworkEvents
+    | where Timestamp between (BaselineStart .. HuntStart)
+    | where ActionType == "DnsQueryResponse"
+    | extend domain = tolower(trim_end(@"[.]$", RemoteUrl))
+    | summarize baseline_count = count() by domain;
+DeviceNetworkEvents
+| where Timestamp > HuntStart
+| where ActionType == "DnsQueryResponse"
+| extend domain = tolower(trim_end(@"[.]$", RemoteUrl)),
+         process = tolower(InitiatingProcessFileName)
+| where process in~ (ScriptHosts)
+| join kind=leftouter Baseline on domain
+| extend baseline_count = coalesce(baseline_count, 0)
+| where baseline_count == 0
+| where domain !in~ (ApprovedDomains)
+| project Timestamp, DeviceName, InitiatingProcessAccountName,
+          process, InitiatingProcessParentFileName, domain, baseline_count
+| order by Timestamp desc</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> a new SaaS service contacted for the first time, unique CDN subdomains, developer tools fetching packages or documentation, and approved security testing. Before tuning, verify the exact domain, process command line, parent process, owner, expected devices, and expiry date. Keep an allowlist record with a ticket or change reference.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="4">
+  <div class="page-head"><div><div class="eyebrow">Week 14 · Day 3</div><h2>CrowdStrike CQL translation</h2></div><div class="page-no">Page 4 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>Translate the behavior</h3><p>This example assumes the DNS record already carries <code>baseline_count</code> from a scheduled lookup or enrichment. Keep the same script-host set, zero-count check, and exact approved-domain values.</p><div class="callout">CQL here means CrowdStrike Falcon LogScale query language.</div></article>
+    <article class="card"><h3>Small field map</h3><div class="field-map"><div>Lab field<br><code>domain</code></div><div>Falcon example<br><code>DomainName</code></div><div>Lab field<br><code>process</code></div><div>Falcon example<br><code>ContextBaseFileName</code></div><div>Lab field<br><code>parent_process</code></div><div>Falcon example<br><code>ContextParentBaseFileName</code></div><div>Lab field<br><code>device</code></div><div>Falcon example<br><code>ComputerName</code></div><div>Lab field<br><code>baseline_count</code></div><div>Enriched field<br><code>baseline_count</code></div></div></article>
+    <article class="card full"><h3>CrowdStrike CQL answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('cqlAnswer')">Show CrowdStrike CQL answer</button><button class="small-btn" onclick="copyFrom('cqlCode',this)">Copy CQL</button></div><div class="answer" id="cqlAnswer"><pre><code id="cqlCode">#event_simpleName=DnsRequest
+| in(field="ContextBaseFileName", values=["powershell.exe", "pwsh.exe", "wscript.exe", "cscript.exe", "python.exe", "python3.exe"], ignoreCase=true)
+| baseline_count=0
+| !in(field="DomainName", values=["telemetry.corp.example", "approved-scanner.security.example"], ignoreCase=true)
+| table([@timestamp, ComputerName, UserName, ContextBaseFileName, ContextParentBaseFileName, DomainName, baseline_count])</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> new SaaS onboarding, CDN-generated hostnames, package managers or developer scripts, and red-team or security validation. Falcon schemas and parser mappings vary, so inspect a known <code>DnsRequest</code> event and replace the example fields where necessary. Do not widen the approved-domain filter to a loose substring.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="5">
+  <div class="page-head"><div><div class="eyebrow">Week 14 · Day 4</div><h2>Sigma selection + exact filter</h2></div><div class="page-no">Page 5 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Select script-host DNS queries, require the enriched baseline count to be zero, and subtract the exact approved domains. The rule intentionally has no <code>id</code> and no <code>status</code> field.</p></article>
+    <article class="card"><h3>Read the condition</h3><div class="flow"><div class="node"><strong>Script host</strong><small>selection_script</small></div><div class="arrow">+</div><div class="node"><strong>First seen</strong><small>selection_first_seen</small></div><div class="arrow">−</div><div class="node"><strong>Exact approved</strong><small>filter_approved_exact</small></div></div></article>
+    <article class="card full"><h3>Sigma answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('sigmaAnswer')">Show Sigma answer</button><button class="small-btn" onclick="copyFrom('sigmaCode',this)">Copy Sigma</button></div><div class="answer" id="sigmaAnswer"><pre><code id="sigmaCode">title: Rare Domain Queried by a Script Host
+logsource:
+  product: windows
+  category: dns_query
+detection:
+  selection_script:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\python.exe'
+      - '\python3.exe'
+  selection_first_seen:
+    BaselineCount: 0
+  filter_approved_exact:
+    QueryName:
+      - 'telemetry.corp.example'
+      - 'approved-scanner.security.example'
+  condition: selection_script and selection_first_seen and not filter_approved_exact
+falsepositives:
+  - New SaaS services first contacted by automation
+  - CDN subdomains with little or no history
+  - Developer tools and package retrieval scripts
+  - Approved security testing
+level: medium</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> new SaaS services, CDN subdomains, developer tools, and approved security testing. <code>BaselineCount</code> is a local enriched field rather than a universal Sigma field; document how your pipeline produces it. A match is a triage lead. Review the query response, command line, parent process, destination connections, user intent, and other devices querying the same domain.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="6">
+  <div class="page-head"><div><div class="eyebrow">Week 14 · Day 5</div><h2>Build a domain table with Python</h2></div><div class="page-no">Page 6 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Read <code>events.jsonl</code>, normalize each domain, count how often it appears in this small file, and remember which domains have a baseline count of zero. Print one easy frequency table.</p></article>
+    <article class="card"><h3>Easy reading plan</h3><ol><li>Create an empty counter.</li><li>Read one JSON line.</li><li>Normalize and count the domain.</li><li>Put baseline-zero domains in a set.</li><li>Print the sorted table.</li></ol></article>
+    <article class="card full"><h3>Python answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('pythonAnswer')">Show Python answer</button><button class="small-btn" onclick="copyFrom('pythonCode',this)">Copy Python</button></div><div class="answer" id="pythonAnswer"><pre><code id="pythonCode">import json
+from collections import Counter
+
+counts = Counter()
+first_seen = set()
+
+with open("events.jsonl", encoding="utf-8") as file:
+    for line in file:
+        event = json.loads(line)
+        domain = event["domain"].lower().removesuffix(".")
+
+        counts[domain] += 1
+        if event["baseline_count"] == 0:
+            first_seen.add(domain)
+
+print(f"{'domain':45} count  first_seen")
+for domain in sorted(counts):
+    flag = "YES" if domain in first_seen else "no"
+    print(f"{domain:45} {counts[domain]:5}  {flag}")</code></pre></div></article>
+    <article class="card full"><h3>Run and sample output</h3><pre><code>python solution.py
+domain                                        count  first_seen
+api-reporting-storage.com                         1  YES
+approved-scanner.security.example                 1  YES
+images.cdn.example.net                            1  no
+login.microsoftonline.com                         1  no
+pypi.org                                          1  no
+sync-checker.pages.dev                            2  YES
+telemetry.corp.example                            1  YES
+telemetry.corp.example.evil.net                   1  YES
+updates.new-saas.example                          1  YES</code></pre></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p>The table separates “how often it appears in this file” from “whether it appeared in the earlier baseline.” <b>Likely false positives:</b> new SaaS services, one-off CDN subdomains, developer package requests, and approved security testing. Frequency helps prioritize; it does not determine intent.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="7">
+  <div class="page-head"><div><div class="eyebrow">Week 14 · Day 6</div><h2>Stream DNS JSONL with Go</h2></div><div class="page-no">Page 7 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Use a scanner to read one event at a time. Normalize the domain, increase its count in a map, and print the running total. This version stays intentionally small.</p></article>
+    <article class="card"><h3>Run and first lines</h3><pre><code>go run main.go
+sync-checker.pages.dev -> 1
+api-reporting-storage.com -> 1
+login.microsoftonline.com -> 1
+sync-checker.pages.dev -> 2</code></pre></article>
+    <article class="card full"><h3>Go answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('goAnswer')">Show Go answer</button><button class="small-btn" onclick="copyFrom('goCode',this)">Copy Go</button></div><div class="answer" id="goAnswer"><pre><code id="goCode">package main
+
+import (
+    "bufio"
+    "encoding/json"
+    "fmt"
+    "os"
+    "strings"
+)
+
+type Event struct {
+    Domain string `json:"domain"`
+}
+
+func main() {
+    file, err := os.Open("events.jsonl")
+    if err != nil {
+        fmt.Println("open error:", err)
+        return
+    }
+    defer file.Close()
+
+    counts := map[string]int{}
+    scanner := bufio.NewScanner(file)
+
+    for scanner.Scan() {
+        var event Event
+        if json.Unmarshal(scanner.Bytes(), &event) != nil {
+            continue
+        }
+
+        domain := strings.TrimSuffix(strings.ToLower(event.Domain), ".")
+        counts[domain]++
+        fmt.Printf("%s -> %d\n", domain, counts[domain])
+    }
+
+    if err := scanner.Err(); err != nil {
+        fmt.Println("read error:", err)
+    }
+}</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p>The map is a simple in-memory counter, not a production baseline store. <b>Likely false positives:</b> new SaaS services, CDN subdomains, developer tools, and security testing. A production version would add time windows, bounded storage, tests, metrics, and a reviewed exact-domain allowlist.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="8">
+  <div class="page-head"><div><div class="eyebrow">Week 14 · Day 7</div><h2>Capstone: combine context with rarity</h2></div><div class="page-no">Page 8 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>Final decision path</h3><div class="flow"><div class="node"><strong>Normalize domain</strong><small>Lowercase; remove trailing dot</small></div><div class="arrow">→</div><div class="node"><strong>Script host?</strong><small>No: stay quiet</small></div><div class="arrow">→</div><div class="node"><strong>Baseline = 0?</strong><small>No: known in baseline</small></div><div class="arrow">→</div><div class="node alert"><strong>Exact allowlist?</strong><small>No: return to analyst</small></div></div></article>
+    <article class="card"><h3>Why exact matching matters</h3><div class="domain-demo"><div class="domain-box"><small>Approved exact domain</small><br><b>telemetry.corp.example</b></div><div class="arrow">≠</div><div class="domain-box"><small>Attacker-controlled lookalike</small><br><b>telemetry.corp.example.evil.net</b></div></div><p>A broad <code>contains</code> or loose suffix rule could hide the second domain. The lab detector compares the complete normalized value.</p></article>
+    <article class="card"><h3>Expected proof</h3><div class="validator-grid"><div class="metric"><strong style="color:var(--green)">3</strong><span>true positives</span></div><div class="metric"><strong style="color:var(--blue)">7</strong><span>benign negatives</span></div><div class="metric"><strong style="color:var(--cyan)">10/10</strong><span>correct decisions</span></div></div><div class="code-tools"><button class="answer-btn" onclick="runValidation()">Run fixture validator</button></div><div id="validationResult" class="result" aria-live="polite">Press the button to test all ten events in your browser.</div></article>
+    <article class="card full"><h3>Analyst reasoning: false positives</h3><div class="grid"><div class="card third"><h3>New SaaS</h3><p>Confirm the service owner, tenant, exact domain, rollout date, process command line, and expected devices.</p></div><div class="card third"><h3>CDN + developer tools</h3><p>CDN hostnames and package tools can be rare. Check the parent process, package source, TLS connection, and reputation.</p></div><div class="card third"><h3>Security testing</h3><p>Confirm the test window, operator, ticket, source devices, exact infrastructure, and allowlist expiry.</p></div></div></article>
+    <article class="card"><h3>Investigation checklist</h3><ul class="checklist"><li>Review the full script command line</li><li>Check the parent and grandparent process</li><li>Resolve DNS answers and inspect follow-on connections</li><li>Compare other users and devices</li><li>Record owner and expiry for every exclusion</li></ul></article>
+    <article class="card"><h3>Validation status</h3><ul class="checklist"><li>Browser fixture logic: available below and pre-checked 10/10</li><li>Python executed against the ten-line JSONL: passed</li><li>Sigma YAML parsed: passed</li><li>HTML structure and internal IDs checked: passed</li></ul></article>
+    <article class="card"><h3>Honest limits</h3><ul><li>Go was not executed because the validation environment had no Go toolchain.</li><li>KQL was not executed in a live Microsoft Defender tenant.</li><li>CrowdStrike CQL was not executed in a live Falcon tenant.</li><li>Confirm action types, fields, and normalization in your environment.</li><li>No YARA was created because this lab uses network and process telemetry only.</li></ul></article>
+    <article class="card full"><h3>Week 14 complete</h3><p>You now have a portfolio-ready chain: labeled DNS and process telemetry → baseline rarity → KQL and CrowdStrike translation → portable Sigma logic → simple Python and Go counting → proof that three suspicious fixtures match while seven benign fixtures stay quiet.</p><div class="callout">Completion target: explain why rarity is only a lead, then demonstrate the 10/10 fixture result and the exact-domain allowlist test.</div></article>
+  </div>
+</section>
+
+<nav class="nav-footer" aria-label="Lab pages"><button class="nav-btn" id="prevBtn" onclick="go(current-1)">← Previous</button><div class="dots" id="dots"></div><button class="nav-btn" id="nextBtn" onclick="go(current+1)">Next →</button></nav>
+<div class="status-bar">Offline-ready · No external libraries · Use ← and → keys to change pages · Progress and preferences are saved locally</div>
+</main>
+<script>
+const events = [
+ {event_number:1,timestamp:"2026-11-12T09:14:22Z",device:"FIN-WS-014",user:"CORP\\maya",process:"powershell.exe",parent_process:"WINWORD.EXE",domain:"sync-checker.pages.dev",baseline_count:0,expected_match:true,label:"True positive",reason:"PowerShell queries a domain absent from the baseline."},
+ {event_number:2,timestamp:"2026-11-12T09:41:08Z",device:"HR-LT-022",user:"CORP\\arun",process:"wscript.exe",parent_process:"explorer.exe",domain:"api-reporting-storage.com",baseline_count:0,expected_match:true,label:"True positive",reason:"Windows Script Host queries a first-seen domain."},
+ {event_number:3,timestamp:"2026-11-12T10:02:11Z",device:"IT-AUTO-03",user:"CORP\\svc_identity",process:"pwsh.exe",parent_process:"taskeng.exe",domain:"login.microsoftonline.com",baseline_count:4821,expected_match:false,label:"Benign negative",reason:"Script host, but the domain is common in the baseline."},
+ {event_number:4,timestamp:"2026-11-12T10:17:44Z",device:"MKT-WS-008",user:"CORP\\neha",process:"chrome.exe",parent_process:"explorer.exe",domain:"sync-checker.pages.dev",baseline_count:0,expected_match:false,label:"Benign negative",reason:"The domain is first seen, but the requester is not a script host."},
+ {event_number:5,timestamp:"2026-11-12T10:33:26Z",device:"OPS-LT-019",user:"CORP\\vikram",process:"powershell.exe",parent_process:"taskeng.exe",domain:"telemetry.corp.example",baseline_count:0,expected_match:false,label:"Benign negative",reason:"Exact approved domain used by a new internal automation job."},
+ {event_number:6,timestamp:"2026-11-12T11:04:50Z",device:"WEB-DEV-07",user:"CORP\\lina",process:"python.exe",parent_process:"code.exe",domain:"pypi.org",baseline_count:126,expected_match:false,label:"Benign negative",reason:"Developer tool queries a domain already present in the baseline."},
+ {event_number:7,timestamp:"2026-11-12T11:26:10Z",device:"SEC-TEST-02",user:"CORP\\redteam",process:"cscript.exe",parent_process:"cmd.exe",domain:"approved-scanner.security.example",baseline_count:0,expected_match:false,label:"Benign negative",reason:"Exact approved domain for a documented security test."},
+ {event_number:8,timestamp:"2026-11-12T11:48:37Z",device:"ENG-WS-031",user:"CORP\\ravi",process:"powershell.exe",parent_process:"outlook.exe",domain:"telemetry.corp.example.evil.net",baseline_count:0,expected_match:true,label:"True positive",reason:"A first-seen lookalike must not inherit approval from another domain."},
+ {event_number:9,timestamp:"2026-11-12T12:09:13Z",device:"APP-SRV-04",user:"CORP\\svc_reports",process:"powershell.exe",parent_process:"taskeng.exe",domain:"images.cdn.example.net",baseline_count:37,expected_match:false,label:"Benign negative",reason:"CDN domain is already present in the small baseline."},
+ {event_number:10,timestamp:"2026-11-12T12:31:59Z",device:"SALES-LT-018",user:"CORP\\sara",process:"msedge.exe",parent_process:"explorer.exe",domain:"updates.new-saas.example",baseline_count:0,expected_match:false,label:"Benign negative",reason:"New SaaS domain, but the requester is a browser rather than a script host."}
+];
+const scriptHosts = ["powershell.exe","pwsh.exe","wscript.exe","cscript.exe","python.exe","python3.exe"];
+const approvedDomains = ["telemetry.corp.example","approved-scanner.security.example"];
+function normalizeDomain(value){return value.toLowerCase().replace(/[.]$/,"")}
+function detect(e){const domain=normalizeDomain(e.domain);return scriptHosts.includes(e.process.toLowerCase())&&e.baseline_count===0&&!approvedDomains.includes(domain)}
+function escapeHtml(value){return String(value).replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]))}
+let current=1;
+function go(n){current=Math.min(8,Math.max(1,n));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',+p.dataset.page===current));document.querySelectorAll('.dot').forEach((d,i)=>{d.classList.toggle('active',i+1===current);d.setAttribute('aria-current',i+1===current?'page':'false')});document.getElementById('progress').style.width=(current/8*100)+'%';document.getElementById('prevBtn').disabled=current===1;document.getElementById('nextBtn').disabled=current===8;window.scrollTo({top:0,behavior:'smooth'});localStorage.setItem('week14Page',current)}
+function toggle(id){const el=document.getElementById(id);el.classList.toggle('open')}
+function copyFrom(id,btn){const text=document.getElementById(id).innerText;const done=()=>{const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=old,1000)};if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done)}else{const area=document.createElement('textarea');area.value=text;document.body.appendChild(area);area.select();document.execCommand('copy');area.remove();done()}}
+function renderEvents(){document.getElementById('eventsTable').innerHTML=events.map(e=>`<tr><td><b>${e.event_number}</b></td><td>${escapeHtml(e.timestamp.replace('T',' '))}</td><td>${escapeHtml(e.device)}<br><span style="color:var(--muted)">${escapeHtml(e.user)}</span></td><td>${escapeHtml(e.parent_process)}<br><b>${escapeHtml(e.process)}</b></td><td>${escapeHtml(e.domain)}</td><td>${e.baseline_count}</td><td><span class="tag ${e.expected_match?'tp':'tn'}">${e.expected_match?'TP':'TN'}</span></td><td>${escapeHtml(e.reason)}</td></tr>`).join('');document.getElementById('eventPicker').innerHTML=events.map((e,i)=>`<button class="small-btn" aria-pressed="${i===0}" onclick="showEvent(${i},this)">Event ${e.event_number}</button>`).join('');document.getElementById('rawJsonCode').textContent=events.map(e=>JSON.stringify(e)).join('\n');showEvent(0,document.querySelector('#eventPicker button'))}
+function showEvent(i,btn){document.querySelectorAll('#eventPicker button').forEach(b=>b.setAttribute('aria-pressed','false'));if(btn)btn.setAttribute('aria-pressed','true');const e=events[i];document.getElementById('eventDetail').innerHTML=`<div class="detail-grid"><div class="detail-item"><small>Process</small><b>${escapeHtml(e.process)}</b></div><div class="detail-item"><small>Domain</small><b>${escapeHtml(e.domain)}</b></div><div class="detail-item"><small>Baseline count</small><b>${e.baseline_count}</b></div><div class="detail-item"><small>Expected</small><b style="color:${e.expected_match?'var(--green)':'var(--blue)'}">${escapeHtml(e.label)}</b></div></div><p><b>Path:</b> ${escapeHtml(e.parent_process)} → ${escapeHtml(e.process)} → ${escapeHtml(e.domain)}</p><p>${escapeHtml(e.reason)}</p>`}
+function runValidation(){const rows=events.map(e=>({n:e.event_number,pass:detect(e)===e.expected_match}));const passed=rows.filter(r=>r.pass).length;const tp=events.filter(e=>detect(e)&&e.expected_match).length;const tn=events.filter(e=>!detect(e)&&!e.expected_match).length;const failures=rows.filter(r=>!r.pass).map(r=>r.n);const el=document.getElementById('validationResult');el.className='result '+(passed===events.length?'pass':'fail');el.innerHTML=`<b>${passed}/${events.length} decisions passed</b><br>${tp} true positives matched · ${tn} benign negatives stayed quiet${failures.length?'<br>Check events: '+failures.join(', '):''}`}
+document.getElementById('dots').innerHTML=Array.from({length:8},(_,i)=>`<button class="dot" onclick="go(${i+1})" aria-label="Page ${i+1}">${i+1}</button>`).join('');
+document.getElementById('themeBtn').onclick=()=>{const light=document.documentElement.dataset.theme==='light';const next=light?'dark':'light';document.documentElement.dataset.theme=next;document.getElementById('themeBtn').textContent=next==='light'?'Dark':'Light';localStorage.setItem('week14Theme',next)};
+let large=localStorage.getItem('week14Text')==='large';function applyText(){document.body.style.fontSize=large?'18px':'16px';document.getElementById('textBtn').textContent=large?'A−':'A+'}document.getElementById('textBtn').onclick=()=>{large=!large;localStorage.setItem('week14Text',large?'large':'normal');applyText()};
+document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key==='ArrowRight')go(current+1);if(e.key==='ArrowLeft')go(current-1)});
+const savedTheme=localStorage.getItem('week14Theme');if(savedTheme){document.documentElement.dataset.theme=savedTheme;document.getElementById('themeBtn').textContent=savedTheme==='light'?'Dark':'Light'}
+applyText();renderEvents();go(+(localStorage.getItem('week14Page')||1));
+</script>
+</body>
+</html>

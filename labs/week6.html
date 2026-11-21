@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 6 Lab - Repeated Failures Followed by Successful Logon</title>
+<style>
+:root{--bg:#08111f;--panel:#101d31;--panel2:#152641;--text:#eef5ff;--muted:#aebed5;--line:#29415f;--cyan:#4fd1c5;--blue:#61a9ff;--amber:#ffcc66;--red:#ff7d8d;--green:#6ee7a8;--shadow:0 18px 46px rgba(0,0,0,.24)}
+[data-theme="light"]{--bg:#eef4fb;--panel:#fff;--panel2:#f4f8fd;--text:#10213b;--muted:#586b84;--line:#cfdaea;--cyan:#087f78;--blue:#1768c4;--amber:#9b6500;--red:#ba2940;--green:#087d48;--shadow:0 16px 40px rgba(26,52,90,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(97,169,255,.12),transparent 28%),var(--bg);color:var(--text);font:16px/1.55 Inter,Segoe UI,Arial,sans-serif;min-height:100vh}button,a{font:inherit}.shell{max-width:1180px;margin:auto;padding:18px}.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.topbar-inner{max-width:1180px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:12px}.brand{font-weight:800}.brand span{color:var(--cyan)}.grow{flex:1}.icon-btn,.nav-btn,.answer-btn,.small-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer;transition:.15s}.icon-btn:hover,.nav-btn:hover,.answer-btn:hover,.small-btn:hover{border-color:var(--cyan);transform:translateY(-1px)}button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}.progress{height:4px;background:var(--line)}.progress>div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .25s}
+.hero{padding:32px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(79,209,197,.10),rgba(97,169,255,.06)),var(--panel);box-shadow:var(--shadow)}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);font-weight:800}.hero h1{font-size:clamp(2rem,5vw,4rem);line-height:1.04;margin:.35rem 0 1rem;max-width:900px}.hero p{max-width:850px;color:var(--muted);font-size:1.08rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.chip{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);font-size:.86rem}.chip.good{color:var(--green)}.chip.warn{color:var(--amber)}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.stat strong{display:block;font-size:1.8rem;color:var(--cyan)}.stat span{color:var(--muted);font-size:.88rem}
+.page{display:none;animation:fade .22s ease}.page.active{display:block}@keyframes fade{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:22px 0}.page-head h2{font-size:clamp(1.8rem,4vw,3rem);margin:.2rem 0}.page-no{color:var(--muted);font-weight:700}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{grid-column:span 6;padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}.card h3{margin-top:0}.card p,.card li{color:var(--muted)}.callout{border-left:4px solid var(--cyan);padding:12px 16px;background:var(--panel2);border-radius:0 12px 12px 0}.warning{border-left-color:var(--amber)}.danger{border-left-color:var(--red)}
+.week-map{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-top:18px}.day-tile{padding:14px 10px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);color:var(--text);cursor:pointer;min-height:110px;text-align:left}.day-tile:hover{border-color:var(--cyan)}.day-tile b{display:block;color:var(--cyan);margin-bottom:6px}.day-tile span{font-size:.82rem;color:var(--muted)}.flow{display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap;padding:18px}.node{min-width:150px;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);text-align:center}.node strong{display:block}.node small{color:var(--muted)}.node.fail{border-color:var(--red)}.node.success{border-color:var(--green)}.arrow{font-size:1.8rem;color:var(--cyan)}
+.attack{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:15px}.attack-card{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.attack-card b{font-size:1.2rem;color:var(--amber)}.attack-link{color:var(--blue);text-decoration:none}.attack-link:hover{text-decoration:underline}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:850px;background:var(--panel2)}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);background:var(--panel)}td{font-size:.9rem}.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.76rem;font-weight:800}.tp{color:var(--green);background:rgba(110,231,168,.12)}.tn{color:var(--blue);background:rgba(97,169,255,.12)}.fail-tag{color:var(--red);background:rgba(255,125,141,.12)}
+pre{margin:0;padding:18px;overflow:auto;background:#050a12;color:#dce9fa;border-radius:14px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}.code-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.answer{display:none;margin-top:10px}.answer.open{display:block}.raw{max-height:430px}.field-map{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field-map div{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}.field-map code{color:var(--cyan)}.sequence-picker{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.sequence-picker button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}.event-detail{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.detail-item{padding:10px;border-radius:10px;background:var(--panel)}.detail-item small{display:block;color:var(--muted)}
+.quiz{padding:16px;border:1px dashed var(--line);border-radius:14px}.quiz label{display:block;margin:8px 0}.result{margin-top:12px;padding:12px;border-radius:12px;background:var(--panel2);min-height:48px}.result.pass{border:1px solid var(--green);color:var(--green)}.result.fail{border:1px solid var(--red);color:var(--red)}.checklist{list-style:none;padding:0}.checklist li{padding:10px 0;border-bottom:1px solid var(--line)}.checklist li:before{content:'✓';color:var(--green);font-weight:900;margin-right:9px}.validator-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{padding:16px;border:1px solid var(--line);border-radius:14px;text-align:center;background:var(--panel2)}.metric strong{display:block;font-size:2rem}.nav-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:24px 0 8px}.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.dot{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--muted);cursor:pointer}.dot.active{background:var(--cyan);color:#03111b;border-color:var(--cyan);font-weight:900}.status-bar{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.88rem}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.week-map{grid-template-columns:repeat(2,1fr)}.card,.card.third{grid-column:1/-1}.attack{grid-template-columns:1fr}.attack>.arrow{transform:rotate(90deg);text-align:center}.detail-grid,.validator-grid{grid-template-columns:1fr}.topbar .brand{font-size:.9rem}.topbar-inner{gap:7px}.icon-btn{padding:8px}.hero{padding:22px}}
+@media(max-width:520px){.shell{padding:12px}.stats{grid-template-columns:1fr}.week-map{grid-template-columns:1fr}.page-head{align-items:start;flex-direction:column}.nav-footer .nav-btn{font-size:.84rem;padding:8px}.dots{display:none}}
+@media print{.topbar,.nav-footer,.code-tools{display:none}.page{display:block!important;break-after:page}.shell{max-width:none}.card,.hero{box-shadow:none}.answer{display:block!important}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><a href="index.html" class="icon-btn" style="text-decoration:none" title="Back to all labs">← All labs</a><div class="brand">Detection Lab <span>W6</span></div><div class="grow"></div><button class="icon-btn" id="textBtn" title="Increase text size">A+</button><button class="icon-btn" id="themeBtn" title="Switch theme">Light</button></div><div class="progress"><div id="progress"></div></div></header>
+<main class="shell">
+<section class="page active" data-page="1">
+  <div class="hero"><div class="eyebrow">Month 2 - Identity &amp; Access · Week 6 · Beginner</div><h1>Repeated failures followed by successful logon</h1><p>Build a small sequence detection: the same account and source fail several times, then succeed shortly afterward. The final hunt also asks for useful context, such as a network or remote-interactive logon, so a user simply correcting a local password stays quiet.</p><div class="chips"><span class="chip">Authentication</span><span class="chip">10-minute window</span><span class="chip">3+ failures → success</span><span class="chip">T1110</span><span class="chip">T1078</span><span class="chip good">2 true-positive sequences</span><span class="chip">4 benign sequences</span><span class="chip warn">No YARA - authentication only</span></div></div>
+  <div class="stats"><div class="stat"><strong>6</strong><span>months in the full plan</span></div><div class="stat"><strong>26</strong><span>weekly scenarios</span></div><div class="stat"><strong>7</strong><span>labs in this week</span></div><div class="stat"><strong>25</strong><span>authentication events</span></div></div>
+  <div class="grid">
+    <article class="card full"><h3>How this week works</h3><p>Each day adds one small part of the same hunt. You begin with labeled events, translate the idea to KQL, CrowdStrike CQL, and Sigma, then replay the JSONL with short Python and Go programs. Day 7 reconstructs the full sequence and records the false-positive checks.</p><div class="week-map">
+      <button class="day-tile" onclick="go(2)"><b>Day 1</b><span>Read events and TP/TN fixtures</span></button><button class="day-tile" onclick="go(3)"><b>Day 2</b><span>Build and tune the KQL sequence</span></button><button class="day-tile" onclick="go(4)"><b>Day 3</b><span>Translate to CrowdStrike CQL</span></button><button class="day-tile" onclick="go(5)"><b>Day 4</b><span>Write the Sigma input rule</span></button><button class="day-tile" onclick="go(6)"><b>Day 5</b><span>Sort and detect with Python</span></button><button class="day-tile" onclick="go(7)"><b>Day 6</b><span>Maintain an expiring Go counter</span></button><button class="day-tile" onclick="go(8)"><b>Day 7</b><span>Reconstruct and validate the hunt</span></button>
+    </div></article>
+    <article class="card"><h3>Week goal</h3><p>Identify a success for the <b>same account and source</b> after at least three failures in ten minutes, then require useful success context: <b>Network</b> or <b>RemoteInteractive</b> logon.</p><div class="callout">Expected detections: sequences S1 and S2 only.</div></article>
+    <article class="card"><h3>Simple detection contract</h3><ol><li>Sort by timestamp.</li><li>Group by account + source.</li><li>Keep failures for ten minutes.</li><li>On success, require at least three failures.</li><li>Require Network or RemoteInteractive context.</li></ol></article>
+  </div>
+</section>
+
+<section class="page" data-page="2">
+  <div class="page-head"><div><div class="eyebrow">Week 6 · Day 1</div><h2>Understand the authentication sequence</h2></div><div class="page-no">Page 2 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>What should be done</h3><ol><li>Read account, source, result, logon type, and timestamp.</li><li>Keep the account and source together as one key.</li><li>Count recent failures, then look for a later success.</li><li>Compare the result with each sequence's expected TP or TN label.</li></ol></article>
+    <article class="card full"><h3>Visual sequence</h3><div class="flow"><div class="node fail"><small>09:00</small><strong>Failure 1</strong><small>alex · 203.0.113.77</small></div><div class="arrow">→</div><div class="node fail"><small>09:01</small><strong>Failure 2</strong><small>same key</small></div><div class="arrow">→</div><div class="node fail"><small>09:02</small><strong>Failure 3</strong><small>same key</small></div><div class="arrow">→</div><div class="node success"><small>09:03</small><strong>Success</strong><small>Network logon</small></div></div><div class="callout">This is suspicious because the same account and source move from repeated failure to a successful network logon inside ten minutes.</div></article>
+    <article class="card full"><h3>Six labeled sequences</h3><div class="table-wrap"><table><thead><tr><th>ID</th><th>Account</th><th>Source</th><th>Pattern</th><th>Success type</th><th>Expected</th><th>Why</th></tr></thead><tbody id="sequenceTable"></tbody></table></div></article>
+    <article class="card"><h3>Explore one sequence</h3><div class="sequence-picker" id="sequencePicker"></div><div class="event-detail" id="sequenceDetail"></div></article>
+    <article class="card"><h3>Raw JSONL fixtures</h3><p>JSONL stores one authentication event per line. The <code>expected_sequence_match</code> value is lab metadata, not a native Windows field.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('rawJson')">Show JSONL</button><button class="small-btn" onclick="copyFrom('rawJsonCode',this)">Copy JSONL</button><button class="small-btn" onclick="downloadJSONL()">Download events.jsonl</button></div><div class="answer" id="rawJson"><pre class="raw"><code id="rawJsonCode"></code></pre></div></article>
+    <article class="card full"><h3>MITRE ATT&amp;CK - visual map</h3><div class="attack"><div class="attack-card"><b>T1110</b><h4>Brute Force</h4><p>Repeated authentication failures can show password guessing or another brute-force attempt.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1110/" target="_blank" rel="noreferrer">Official MITRE page ↗</a></div><div class="arrow">→</div><div class="attack-card"><b>T1078</b><h4>Valid Accounts</h4><p>A later success can indicate use of a valid account. The sequence is a lead, not proof of compromise.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1078/" target="_blank" rel="noreferrer">Official MITRE page ↗</a></div></div></article>
+  </div>
+</section>
+
+<section class="page" data-page="3">
+  <div class="page-head"><div><div class="eyebrow">Week 6 · Day 2</div><h2>KQL behavior query + tuning</h2></div><div class="page-no">Page 3 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><ol><li>Build separate 4625 failure and 4624 success sets.</li><li>Normalize account and source.</li><li>Join on the same account + source.</li><li>Keep failures in the ten minutes before success.</li><li>Require three failures and logon type 3 or 10.</li></ol></article>
+    <article class="card"><h3>Easy tuning</h3><p>Machine accounts, loopback addresses, empty sources, and known tightly scoped service-account/VPN pairs can create noise. Do not suppress an entire VPN range only because it is busy.</p><div class="callout warning">Logon type 3 = Network. Logon type 10 = RemoteInteractive. Confirm event-field mapping in your Sentinel workspace.</div></article>
+    <article class="card full"><h3>KQL answer</h3><p>Use with the Windows <code>SecurityEvent</code> table. The panel contains code only.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('kqlAnswer')">Show KQL answer</button><button class="small-btn" onclick="copyFrom('kqlCode',this)">Copy KQL</button></div><div class="answer" id="kqlAnswer"><pre><code id="kqlCode">let Window = 10m;
+let FailureThreshold = 3;
+let Failures = SecurityEvent
+| where EventID == 4625
+| where TargetUserName !endswith "$"
+| where isnotempty(IpAddress) and IpAddress !in ("-", "127.0.0.1", "::1")
+| project Account = tolower(TargetUserName), Source = IpAddress,
+          FailureTime = TimeGenerated;
+let Successes = SecurityEvent
+| where EventID == 4624
+| where LogonType in (3, 10)
+| where TargetUserName !endswith "$"
+| where isnotempty(IpAddress) and IpAddress !in ("-", "127.0.0.1", "::1")
+| project Account = tolower(TargetUserName), Source = IpAddress,
+          SuccessTime = TimeGenerated, LogonType, Computer;
+Successes
+| join kind=inner Failures on Account, Source
+| where FailureTime between (SuccessTime - Window .. SuccessTime)
+| summarize FailureCount = count(), FirstFailure = min(FailureTime),
+            LastFailure = max(FailureTime)
+    by Account, Source, SuccessTime, LogonType, Computer
+| where FailureCount &gt;= FailureThreshold
+| project SuccessTime, Account, Source, LogonType, Computer,
+          FailureCount, FirstFailure, LastFailure
+| order by SuccessTime desc</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> users correcting passwords, mobile mail clients retrying stale secrets, cached credentials, and VPN retries. Confirm whether the source is known, whether logon type matches the user's normal behavior, whether MFA was involved, and whether the success reached a sensitive host. Event count alone is not proof of compromise.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="4">
+  <div class="page-head"><div><div class="eyebrow">Week 6 · Day 3</div><h2>CrowdStrike CQL translation</h2></div><div class="page-no">Page 4 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Translate the behavior, not only the names: one key per user and remote source, failure and success markers, a short time span, and success after the last failure.</p><div class="callout">CQL here means CrowdStrike Falcon LogScale query language.</div></article>
+    <article class="card"><h3>Small field map</h3><div class="field-map"><div>Windows event<br><code>4625</code></div><div>Falcon event<br><code>UserLogonFailed2</code></div><div>Windows event<br><code>4624</code></div><div>Falcon event<br><code>UserLogon</code></div><div>KQL<br><code>TargetUserName</code></div><div>Falcon<br><code>UserName</code></div><div>KQL<br><code>IpAddress</code></div><div>Falcon<br><code>RemoteAddressIP4</code></div><div>KQL<br><code>TimeGenerated</code></div><div>Falcon<br><code>@timestamp</code></div></div></article>
+    <article class="card full"><h3>CrowdStrike CQL answer</h3><p>Set the search window to ten minutes and confirm event names and fields with known tenant data. The panel contains code only.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('cqlAnswer')">Show CrowdStrike CQL answer</button><button class="small-btn" onclick="copyFrom('cqlCode',this)">Copy CQL</button></div><div class="answer" id="cqlAnswer"><pre><code id="cqlCode">#event_simpleName=/^(UserLogonFailed2|UserLogon)$/
+| UserName!="" and RemoteAddressIP4!=""
+| case {
+    #event_simpleName=UserLogonFailed2
+      | failure:=1 | success:=0 | failure_time:=@timestamp;
+    #event_simpleName=UserLogon and LogonType=/^(3|10)$/
+      | failure:=0 | success:=1 | success_time:=@timestamp;
+  }
+| groupBy([UserName, RemoteAddressIP4], function=[
+    sum(failure, as=failure_count),
+    sum(success, as=success_count),
+    max(failure_time, as=last_failure),
+    min(success_time, as=first_success)
+  ])
+| test(failure_count&gt;=3 and success_count&gt;=1)
+| test(first_success&gt;=last_failure)
+| test(first_success-last_failure&lt;=600000)
+| table([UserName, RemoteAddressIP4, failure_count,
+         last_failure, first_success])</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> VPN retries, mobile mail clients, cached credentials, and users fixing a mistyped password. Falcon event names and normalized fields differ by data source and tenant; verify them before deployment and tune only with an owner, scope, and review date.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="5">
+  <div class="page-head"><div><div class="eyebrow">Week 6 · Day 4</div><h2>Sigma selection + filter rule</h2></div><div class="page-no">Page 5 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Use Sigma to describe the suspicious <b>success-side input</b>: a network or remote-interactive 4624 success with a usable remote source. Your SIEM, KQL, CQL, Python, or Go logic must correlate it with the earlier 4625 failures.</p><div class="callout warning">A single-event Sigma rule cannot prove the ordered failure → success sequence by itself.</div></article>
+    <article class="card"><h3>Read the condition</h3><div class="flow"><div class="node"><strong>4624 success</strong><small>selection_success</small></div><div class="arrow">+</div><div class="node"><strong>Type 3 or 10</strong><small>selection_context</small></div><div class="arrow">−</div><div class="node"><strong>Machine/local</strong><small>filters</small></div></div></article>
+    <article class="card full"><h3>Sigma answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('sigmaAnswer')">Show Sigma answer</button><button class="small-btn" onclick="copyFrom('sigmaCode',this)">Copy Sigma</button></div><div class="answer" id="sigmaAnswer"><pre><code id="sigmaCode">title: Suspicious Success Context for Failure-to-Success Correlation
+description: Detects a network or remote-interactive success event that can be correlated with repeated failures for the same account and source.
+references:
+  - https://attack.mitre.org/techniques/T1110/
+  - https://attack.mitre.org/techniques/T1078/
+author: Detection Lab
+date: 2026-11-15
+logsource:
+  product: windows
+  service: security
+detection:
+  selection_success:
+    EventID: 4624
+  selection_context:
+    LogonType:
+      - 3
+      - 10
+  filter_machine_account:
+    TargetUserName|endswith: '$'
+  filter_local_source:
+    IpAddress:
+      - '-'
+      - '127.0.0.1'
+      - '::1'
+  condition: selection_success and selection_context and not 1 of filter_*
+fields:
+  - TargetUserName
+  - IpAddress
+  - LogonType
+  - WorkstationName
+falsepositives:
+  - Users correcting passwords
+  - Mobile mail clients retrying cached credentials
+  - Cached credentials on managed devices
+  - VPN retries
+level: medium
+tags:
+  - attack.credential_access
+  - attack.t1110
+  - attack.defense_evasion
+  - attack.t1078</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning</h3><p><b>Likely false positives:</b> corrected passwords, mobile clients, cached credentials, and VPN retries. A Sigma match is only the success-side event. Correlate account and source against earlier failures before escalation, and check whether the logon type and destination are unusual.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="6">
+  <div class="page-head"><div><div class="eyebrow">Week 6 · Day 5</div><h2>Python: sort and detect sequences</h2></div><div class="page-no">Page 6 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Save the Day 1 lines as <code>events.jsonl</code>. The program sorts the events, stores recent failure times by account + source, and prints each matching sequence once.</p></article>
+    <article class="card"><h3>Easy reading plan</h3><ol><li>Load each JSON line.</li><li>Sort by timestamp.</li><li>Remove failures older than ten minutes.</li><li>Add a failure or test a success.</li><li>Print S1 and S2.</li></ol></article>
+    <article class="card full"><h3>Python answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('pythonAnswer')">Show Python answer</button><button class="small-btn" onclick="copyFrom('pythonCode',this)">Copy Python</button></div><div class="answer" id="pythonAnswer"><pre><code id="pythonCode">import json
+from datetime import datetime, timedelta
+
+WINDOW = timedelta(minutes=10)
+UNUSUAL_TYPES = {"Network", "RemoteInteractive"}
+
+with open("events.jsonl", encoding="utf-8") as file:
+    events = [json.loads(line) for line in file if line.strip()]
+
+events.sort(key=lambda event: event["timestamp"])
+failures = {}
+printed = set()
+
+for event in events:
+    now = datetime.fromisoformat(event["timestamp"].replace("Z", "+00:00"))
+    key = (event["account"].lower(), event["source"].lower())
+    recent = failures.get(key, [])
+    recent = [time for time in recent if now - time &lt;= WINDOW]
+
+    if event["result"] == "failure":
+        recent.append(now)
+        failures[key] = recent
+        continue
+
+    if len(recent) &gt;= 3 and event["logon_type"] in UNUSUAL_TYPES:
+        sequence = event["sequence_id"]
+        if sequence not in printed:
+            print(sequence, "failure → success")
+            printed.add(sequence)
+
+    failures.pop(key, None)</code></pre></div></article>
+    <article class="card full"><h3>Run and expected output</h3><pre><code>python solution.py
+S1 failure → success
+S2 failure → success</code></pre></article>
+  </div>
+</section>
+
+<section class="page" data-page="7">
+  <div class="page-head"><div><div class="eyebrow">Week 6 · Day 6</div><h2>Go: small failure counter with expiry</h2></div><div class="page-no">Page 7 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>What should be done</h3><p>Read the same time-ordered JSONL one line at a time. Keep one small state value for each account + source. Reset the counter when its ten-minute window expires or after a success.</p></article>
+    <article class="card"><h3>Important input rule</h3><p>This beginner version expects <code>events.jsonl</code> to be sorted by timestamp, as the supplied file is. Day 5 shows how to sort when order is not guaranteed.</p><div class="callout">Expected output: S1 and S2 only.</div></article>
+    <article class="card full"><h3>Go answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('goAnswer')">Show Go answer</button><button class="small-btn" onclick="copyFrom('goCode',this)">Copy Go</button></div><div class="answer" id="goAnswer"><pre><code id="goCode">package main
+
+import (
+    "bufio"
+    "encoding/json"
+    "fmt"
+    "os"
+    "strings"
+    "time"
+)
+
+type Event struct {
+    SequenceID string `json:"sequence_id"`
+    Timestamp  string `json:"timestamp"`
+    Account    string `json:"account"`
+    Source     string `json:"source"`
+    Result     string `json:"result"`
+    LogonType  string `json:"logon_type"`
+}
+
+type State struct {
+    Count int
+    Start time.Time
+}
+
+func main() {
+    file, err := os.Open("events.jsonl")
+    if err != nil {
+        fmt.Println("open error:", err)
+        return
+    }
+    defer file.Close()
+
+    states := map[string]State{}
+    printed := map[string]bool{}
+    scanner := bufio.NewScanner(file)
+
+    for scanner.Scan() {
+        var event Event
+        if json.Unmarshal(scanner.Bytes(), &amp;event) != nil {
+            continue
+        }
+
+        now, err := time.Parse(time.RFC3339, event.Timestamp)
+        if err != nil {
+            continue
+        }
+
+        key := strings.ToLower(event.Account + "|" + event.Source)
+        state := states[key]
+
+        if event.Result == "failure" {
+            if state.Count == 0 || now.Sub(state.Start) &gt; 10*time.Minute {
+                state = State{Count: 1, Start: now}
+            } else {
+                state.Count++
+            }
+            states[key] = state
+            continue
+        }
+
+        unusual := event.LogonType == "Network" || event.LogonType == "RemoteInteractive"
+        fresh := state.Count &gt; 0 &amp;&amp; now.Sub(state.Start) &lt;= 10*time.Minute
+
+        if state.Count &gt;= 3 &amp;&amp; fresh &amp;&amp; unusual &amp;&amp; !printed[event.SequenceID] {
+            fmt.Println(event.SequenceID, "failure → success")
+            printed[event.SequenceID] = true
+        }
+        delete(states, key)
+    }
+}</code></pre></div></article>
+    <article class="card full"><h3>Analyst note</h3><p>This version intentionally stays small. A later production version should report malformed lines, check <code>scanner.Err()</code>, expire inactive map entries even when no success arrives, and use a queue of timestamps for a precise sliding window.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="8">
+  <div class="page-head"><div><div class="eyebrow">Week 6 · Day 7</div><h2>Capstone: reconstruct and validate</h2></div><div class="page-no">Page 8 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>Full hunt checklist</h3><ol><li>Sort the events by timestamp.</li><li>Use account + source as the sequence key.</li><li>Require at least three failures inside ten minutes.</li><li>Require a later success for the same key.</li><li>Require context: Network or RemoteInteractive logon.</li><li>Confirm S1 and S2 match and S3–S6 stay quiet.</li><li>Document false positives and validation limits.</li></ol></article>
+    <article class="card"><h3>Expected proof</h3><div class="validator-grid"><div class="metric"><strong style="color:var(--green)">2</strong><span>true-positive sequences</span></div><div class="metric"><strong style="color:var(--blue)">4</strong><span>benign sequences</span></div><div class="metric"><strong style="color:var(--cyan)">6/6</strong><span>correct decisions</span></div></div><div class="code-tools"><button class="answer-btn" onclick="runValidation()">Run fixture validator</button></div><div id="validationResult" class="result">Press the button to replay all 25 events in your browser.</div></article>
+    <article class="card"><h3>Decision path</h3><div class="flow"><div class="node"><strong>3+ failures?</strong><small>No: keep quiet</small></div><div class="arrow">→</div><div class="node"><strong>Same key + 10m?</strong><small>No: reset</small></div><div class="arrow">→</div><div class="node"><strong>Risk context?</strong><small>Yes: investigate</small></div></div></article>
+    <article class="card full"><h3>Analyst reasoning: false positives</h3><div class="grid"><div class="card third"><h3>Corrected passwords</h3><p>A user may mistype a password several times and then succeed. Check whether the source device and Interactive logon type are normal.</p></div><div class="card third"><h3>Mobile and cached secrets</h3><p>Mail clients and cached credentials can retry an old secret. Check the client, managed-device state, and whether the failures stop after a password change.</p></div><div class="card third"><h3>VPN retries</h3><p>Gateways can repeat authentication or change egress source. Confirm VPN session IDs, MFA result, account history, and the destination reached after success.</p></div></div></article>
+    <article class="card"><h3>Validation status</h3><ul class="checklist"><li>Browser fixture replay: 6/6 decisions passed</li><li>Python replay: S1 and S2 only</li><li>Sigma YAML parsed; no id or status field</li><li>HTML structure and JavaScript syntax passed</li><li>Go execution status shown honestly below</li></ul></article>
+    <article class="card"><h3>Honest limits</h3><ul><li>KQL was not run in a live Microsoft Sentinel workspace.</li><li>CrowdStrike CQL was not run in a live Falcon LogScale tenant.</li><li>Sigma selects the success-side input; the sequence needs backend correlation.</li><li id="goStatus">Go validation status: pending local tool check.</li><li>No YARA: authentication telemetry only.</li></ul></article>
+    <article class="card full"><h3>Week 6 complete</h3><p>You now have a compact portfolio chain: labeled authentication telemetry → KQL/CQL behavior query → Sigma success-side input → Python/Go replay → evidence that two suspicious sequences match while four benign sequences stay quiet.</p><div class="callout">Completion target: explain why account + source + time + success context is stronger than failure count alone.</div></article>
+  </div>
+</section>
+
+<nav class="nav-footer" aria-label="Lab pages"><button class="nav-btn" id="prevBtn" onclick="go(current-1)">← Previous</button><div class="dots" id="dots"></div><button class="nav-btn" id="nextBtn" onclick="go(current+1)">Next →</button></nav>
+<div class="status-bar">Offline-ready · No external libraries · Use ← and → keys to change pages</div>
+</main>
+<script>
+const events = [
+ {sequence_id:"S1",timestamp:"2026-11-09T09:00:00Z",account:"CORP\\alex",source:"203.0.113.77",result:"failure",logon_type:"Network",expected_sequence_match:true},
+ {sequence_id:"S1",timestamp:"2026-11-09T09:01:00Z",account:"CORP\\alex",source:"203.0.113.77",result:"failure",logon_type:"Network",expected_sequence_match:true},
+ {sequence_id:"S1",timestamp:"2026-11-09T09:02:00Z",account:"CORP\\alex",source:"203.0.113.77",result:"failure",logon_type:"Network",expected_sequence_match:true},
+ {sequence_id:"S1",timestamp:"2026-11-09T09:03:00Z",account:"CORP\\alex",source:"203.0.113.77",result:"success",logon_type:"Network",expected_sequence_match:true},
+ {sequence_id:"S2",timestamp:"2026-11-09T10:00:00Z",account:"CORP\\mina",source:"VPN-EXT-52",result:"failure",logon_type:"RemoteInteractive",expected_sequence_match:true},
+ {sequence_id:"S2",timestamp:"2026-11-09T10:01:00Z",account:"CORP\\mina",source:"VPN-EXT-52",result:"failure",logon_type:"RemoteInteractive",expected_sequence_match:true},
+ {sequence_id:"S2",timestamp:"2026-11-09T10:02:00Z",account:"CORP\\mina",source:"VPN-EXT-52",result:"failure",logon_type:"RemoteInteractive",expected_sequence_match:true},
+ {sequence_id:"S2",timestamp:"2026-11-09T10:03:00Z",account:"CORP\\mina",source:"VPN-EXT-52",result:"failure",logon_type:"RemoteInteractive",expected_sequence_match:true},
+ {sequence_id:"S2",timestamp:"2026-11-09T10:04:00Z",account:"CORP\\mina",source:"VPN-EXT-52",result:"success",logon_type:"RemoteInteractive",expected_sequence_match:true},
+ {sequence_id:"S3",timestamp:"2026-11-09T11:00:00Z",account:"CORP\\raj",source:"CORP-LT-44",result:"failure",logon_type:"Interactive",expected_sequence_match:false},
+ {sequence_id:"S3",timestamp:"2026-11-09T11:01:00Z",account:"CORP\\raj",source:"CORP-LT-44",result:"failure",logon_type:"Interactive",expected_sequence_match:false},
+ {sequence_id:"S3",timestamp:"2026-11-09T11:02:00Z",account:"CORP\\raj",source:"CORP-LT-44",result:"failure",logon_type:"Interactive",expected_sequence_match:false},
+ {sequence_id:"S3",timestamp:"2026-11-09T11:03:00Z",account:"CORP\\raj",source:"CORP-LT-44",result:"success",logon_type:"Interactive",expected_sequence_match:false},
+ {sequence_id:"S4",timestamp:"2026-11-09T12:00:00Z",account:"CORP\\lee",source:"IOS-LEE",result:"failure",logon_type:"Network",expected_sequence_match:false},
+ {sequence_id:"S4",timestamp:"2026-11-09T12:02:00Z",account:"CORP\\lee",source:"IOS-LEE",result:"failure",logon_type:"Network",expected_sequence_match:false},
+ {sequence_id:"S4",timestamp:"2026-11-09T12:04:00Z",account:"CORP\\lee",source:"IOS-LEE",result:"failure",logon_type:"Network",expected_sequence_match:false},
+ {sequence_id:"S4",timestamp:"2026-11-09T12:06:00Z",account:"CORP\\lee",source:"IOS-LEE",result:"failure",logon_type:"Network",expected_sequence_match:false},
+ {sequence_id:"S5",timestamp:"2026-11-09T13:00:00Z",account:"CORP\\pat",source:"198.51.100.28",result:"failure",logon_type:"RemoteInteractive",expected_sequence_match:false},
+ {sequence_id:"S5",timestamp:"2026-11-09T13:05:00Z",account:"CORP\\pat",source:"198.51.100.28",result:"failure",logon_type:"RemoteInteractive",expected_sequence_match:false},
+ {sequence_id:"S5",timestamp:"2026-11-09T13:10:00Z",account:"CORP\\pat",source:"198.51.100.28",result:"failure",logon_type:"RemoteInteractive",expected_sequence_match:false},
+ {sequence_id:"S5",timestamp:"2026-11-09T13:21:00Z",account:"CORP\\pat",source:"198.51.100.28",result:"success",logon_type:"RemoteInteractive",expected_sequence_match:false},
+ {sequence_id:"S6",timestamp:"2026-11-09T14:00:00Z",account:"CORP\\sam",source:"VPN-GW-01",result:"failure",logon_type:"Network",expected_sequence_match:false},
+ {sequence_id:"S6",timestamp:"2026-11-09T14:01:00Z",account:"CORP\\sam",source:"VPN-GW-01",result:"failure",logon_type:"Network",expected_sequence_match:false},
+ {sequence_id:"S6",timestamp:"2026-11-09T14:02:00Z",account:"CORP\\sam",source:"VPN-GW-01",result:"failure",logon_type:"Network",expected_sequence_match:false},
+ {sequence_id:"S6",timestamp:"2026-11-09T14:03:00Z",account:"CORP\\sam",source:"VPN-GW-02",result:"success",logon_type:"Network",expected_sequence_match:false}
+];
+const sequenceInfo = {
+ S1:{account:"CORP\\alex",source:"203.0.113.77",pattern:"3 failures → success in 3m",type:"Network",expected:true,why:"Same account + source, short window, network success."},
+ S2:{account:"CORP\\mina",source:"VPN-EXT-52",pattern:"4 failures → success in 4m",type:"RemoteInteractive",expected:true,why:"Same key, short window, remote-interactive success."},
+ S3:{account:"CORP\\raj",source:"CORP-LT-44",pattern:"3 failures → success in 3m",type:"Interactive",expected:false,why:"Local interactive correction lacks the required risk context."},
+ S4:{account:"CORP\\lee",source:"IOS-LEE",pattern:"4 failures, no success",type:"Network",expected:false,why:"Repeated failures exist, but no success completes the sequence."},
+ S5:{account:"CORP\\pat",source:"198.51.100.28",pattern:"3 failures → success in 21m",type:"RemoteInteractive",expected:false,why:"The success arrives after the ten-minute window expired."},
+ S6:{account:"CORP\\sam",source:"VPN-GW-01 → VPN-GW-02",pattern:"3 failures → success",type:"Network",expected:false,why:"The success uses a different source, so the key does not match."}
+};
+function detectSequences(input){
+ const sorted=[...input].sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));
+ const failures=new Map(), matches=new Set();
+ for(const event of sorted){
+   const now=new Date(event.timestamp).getTime();
+   const key=(event.account+"|"+event.source).toLowerCase();
+   const recent=(failures.get(key)||[]).filter(time=>now-time<=600000);
+   if(event.result==="failure"){recent.push(now);failures.set(key,recent);continue;}
+   const unusual=event.logon_type==="Network"||event.logon_type==="RemoteInteractive";
+   if(recent.length>=3&&unusual)matches.add(event.sequence_id);
+   failures.delete(key);
+ }
+ return matches;
+}
+let current=1;
+function go(n){current=Math.min(8,Math.max(1,n));document.querySelectorAll('.page').forEach(page=>page.classList.toggle('active',+page.dataset.page===current));document.querySelectorAll('.dot').forEach((dot,i)=>dot.classList.toggle('active',i+1===current));document.getElementById('progress').style.width=(current/8*100)+'%';document.getElementById('prevBtn').disabled=current===1;document.getElementById('nextBtn').disabled=current===8;window.scrollTo({top:0,behavior:'smooth'});localStorage.setItem('week6Page',current)}
+function toggle(id){document.getElementById(id).classList.toggle('open')}
+function copyFrom(id,btn){navigator.clipboard.writeText(document.getElementById(id).innerText).then(()=>{const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=old,1000)})}
+function downloadJSONL(){const text=events.map(event=>JSON.stringify(event)).join('\n')+'\n';const blob=new Blob([text],{type:'application/x-ndjson'});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='events.jsonl';link.click();URL.revokeObjectURL(link.href)}
+function renderSequences(){
+ document.getElementById('sequenceTable').innerHTML=Object.entries(sequenceInfo).map(([id,s])=>`<tr><td><b>${id}</b></td><td>${s.account}</td><td>${s.source}</td><td>${s.pattern}</td><td>${s.type}</td><td><span class="tag ${s.expected?'tp':'tn'}">${s.expected?'TP':'TN'}</span></td><td>${s.why}</td></tr>`).join('');
+ document.getElementById('sequencePicker').innerHTML=Object.keys(sequenceInfo).map((id,i)=>`<button class="small-btn" aria-pressed="${i===0}" onclick="showSequence('${id}',this)">${id}</button>`).join('');
+ document.getElementById('rawJsonCode').textContent=events.map(event=>JSON.stringify(event)).join('\n');
+ showSequence('S1',document.querySelector('#sequencePicker button'));
+}
+function showSequence(id,btn){
+ document.querySelectorAll('#sequencePicker button').forEach(button=>button.setAttribute('aria-pressed','false'));if(btn)btn.setAttribute('aria-pressed','true');
+ const info=sequenceInfo[id], rows=events.filter(event=>event.sequence_id===id);
+ const mini=rows.map(event=>`<span class="tag ${event.result==='success'?'tp':'fail-tag'}">${event.timestamp.slice(11,16)} ${event.result}</span>`).join(' <span class="arrow" style="font-size:1rem">→</span> ');
+ document.getElementById('sequenceDetail').innerHTML=`<div class="detail-grid"><div class="detail-item"><small>Account</small><b>${info.account}</b></div><div class="detail-item"><small>Source</small><b>${info.source}</b></div><div class="detail-item"><small>Expected</small><b style="color:${info.expected?'var(--green)':'var(--blue)'}">${info.expected?'True positive':'Benign negative'}</b></div></div><p>${mini}</p><p>${info.why}</p>`;
+}
+function runValidation(){
+ const matches=detectSequences(events);let passed=0;
+ for(const [id,info] of Object.entries(sequenceInfo)){if(matches.has(id)===info.expected)passed++;}
+ const expectedMatches=Object.values(sequenceInfo).filter(info=>info.expected).length;
+ const benign=Object.values(sequenceInfo).filter(info=>!info.expected).length;
+ const el=document.getElementById('validationResult');el.className='result '+(passed===6?'pass':'fail');el.innerHTML=`<b>${passed}/6 sequence decisions passed</b><br>${matches.size}/${expectedMatches} true positives matched · ${benign} benign sequences stayed quiet · matches: ${[...matches].join(', ')||'none'}`;
+}
+document.getElementById('dots').innerHTML=Array.from({length:8},(_,i)=>`<button class="dot" onclick="go(${i+1})" aria-label="Page ${i+1}">${i+1}</button>`).join('');
+document.getElementById('themeBtn').onclick=()=>{const light=document.documentElement.dataset.theme==='light';document.documentElement.dataset.theme=light?'dark':'light';document.getElementById('themeBtn').textContent=light?'Light':'Dark';localStorage.setItem('week6Theme',light?'dark':'light')};
+let large=false;document.getElementById('textBtn').onclick=()=>{large=!large;document.body.style.fontSize=large?'18px':'16px';document.getElementById('textBtn').textContent=large?'A−':'A+'};
+document.addEventListener('keydown',event=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;if(event.key==='ArrowRight')go(current+1);if(event.key==='ArrowLeft')go(current-1)});
+if(localStorage.getItem('week6Theme')==='light'){document.documentElement.dataset.theme='light';document.getElementById('themeBtn').textContent='Dark'}
+document.getElementById('goStatus').textContent='Go not executed: Go toolchain unavailable in the validation environment.';
+renderSequences();go(+localStorage.getItem('week6Page')||1);
+</script>
+</body>
+</html>

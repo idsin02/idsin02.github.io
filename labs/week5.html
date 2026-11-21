@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 5 Lab - Password Spray Across Many Accounts</title>
+<style>
+:root{--bg:#08111f;--panel:#101d31;--panel2:#152641;--text:#eef5ff;--muted:#aebed5;--line:#29415f;--cyan:#4fd1c5;--blue:#61a9ff;--amber:#ffcc66;--red:#ff7d8d;--green:#6ee7a8;--shadow:0 18px 46px rgba(0,0,0,.24)}
+[data-theme="light"]{--bg:#eef4fb;--panel:#fff;--panel2:#f4f8fd;--text:#10213b;--muted:#586b84;--line:#cfdaea;--cyan:#087f78;--blue:#1768c4;--amber:#9b6500;--red:#ba2940;--green:#087d48;--shadow:0 16px 40px rgba(26,52,90,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(97,169,255,.12),transparent 28%),var(--bg);color:var(--text);font:16px/1.55 Inter,Segoe UI,Arial,sans-serif;min-height:100vh}button,a{font:inherit}.shell{max-width:1180px;margin:auto;padding:18px}.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.topbar-inner{max-width:1180px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:12px}.brand{font-weight:800;letter-spacing:.2px}.brand span{color:var(--cyan)}.grow{flex:1}.icon-btn,.nav-btn,.answer-btn,.small-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer;transition:.15s}.icon-btn:hover,.nav-btn:hover,.answer-btn:hover,.small-btn:hover{border-color:var(--cyan);transform:translateY(-1px)}.progress{height:4px;background:var(--line)}.progress>div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .25s}
+.hero{padding:32px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(79,209,197,.10),rgba(97,169,255,.06)),var(--panel);box-shadow:var(--shadow)}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);font-weight:800}.hero h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.02;margin:.35rem 0 1rem;max-width:900px}.hero p{max-width:850px;color:var(--muted);font-size:1.08rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.chip{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);font-size:.86rem}.chip.good{color:var(--green)}.chip.warn{color:var(--amber)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.stat strong{display:block;font-size:1.8rem;color:var(--cyan)}.stat span{color:var(--muted);font-size:.88rem}.page{display:none;animation:fade .22s ease}.page.active{display:block}@keyframes fade{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:22px 0}.page-head h2{font-size:clamp(1.8rem,4vw,3rem);margin:.2rem 0}.page-no{color:var(--muted);font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{grid-column:span 6;padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}.card h3{margin-top:0}.card p,.card li{color:var(--muted)}.callout{border-left:4px solid var(--cyan);padding:12px 16px;background:var(--panel2);border-radius:0 12px 12px 0}.warning{border-left-color:var(--amber)}.danger{border-left-color:var(--red)}.week-map{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-top:18px}.day-tile{padding:14px 10px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);color:var(--text);cursor:pointer;min-height:110px;text-align:left}.day-tile:hover{border-color:var(--cyan)}.day-tile b{display:block;color:var(--cyan);margin-bottom:6px}.day-tile span{font-size:.82rem;color:var(--muted)}
+.flow{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;padding:22px}.node{min-width:190px;max-width:280px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);text-align:center}.node strong{display:block}.node small{color:var(--muted)}.arrow{font-size:2rem;color:var(--cyan)}.account-cloud{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:10px}.account{padding:5px 8px;border-radius:999px;background:rgba(255,125,141,.12);color:var(--red);font-size:.78rem}.attack{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:15px}.attack-card{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.attack-card b{font-size:1.2rem;color:var(--amber)}.attack-link{color:var(--blue);text-decoration:none}.attack-link:hover{text-decoration:underline}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:860px;background:var(--panel2)}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);background:var(--panel)}td{font-size:.9rem}.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.76rem;font-weight:800}.tp{color:var(--green);background:rgba(110,231,168,.12)}.tn{color:var(--blue);background:rgba(97,169,255,.12)}pre{margin:0;padding:18px;overflow:auto;background:#050a12;color:#dce9fa;border-radius:14px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}.code-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.answer{display:none;margin-top:10px}.answer.open{display:block}.raw{max-height:430px}.field-map{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field-map div{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}.field-map code{color:var(--cyan)}
+.event-picker{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.event-picker button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}.event-detail{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.detail-item{padding:10px;border-radius:10px;background:var(--panel)}.detail-item small{display:block;color:var(--muted)}.checklist{list-style:none;padding:0}.checklist li{padding:10px 0;border-bottom:1px solid var(--line)}.checklist li:before{content:'✓';color:var(--green);font-weight:900;margin-right:9px}.validator-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{padding:16px;border:1px solid var(--line);border-radius:14px;text-align:center;background:var(--panel2)}.metric strong{display:block;font-size:2rem}.nav-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:24px 0 8px}.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.dot{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--muted);cursor:pointer}.dot.active{background:var(--cyan);color:#03111b;border-color:var(--cyan);font-weight:900}.status-bar{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.88rem}.status-good{color:var(--green)}.status-warn{color:var(--amber)}
+@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.week-map{grid-template-columns:repeat(2,1fr)}.card,.card.third{grid-column:1/-1}.attack{grid-template-columns:1fr}.attack .arrow{transform:rotate(90deg);text-align:center}.detail-grid,.validator-grid{grid-template-columns:1fr}.topbar .brand{font-size:.9rem}.topbar-inner{gap:7px}.icon-btn{padding:8px}.hero{padding:22px}}@media(max-width:520px){.shell{padding:12px}.stats{grid-template-columns:1fr}.week-map{grid-template-columns:1fr}.page-head{align-items:start;flex-direction:column}.nav-footer .nav-btn{font-size:.84rem;padding:8px}.dots{display:none}}@media print{.topbar,.nav-footer,.code-tools{display:none}.page{display:block!important;break-after:page}.shell{max-width:none}.card,.hero{box-shadow:none}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><a href="index.html" class="icon-btn" style="text-decoration:none" title="Back to all labs">← All labs</a><div class="brand">Detection Lab <span>W5</span></div><div class="grow"></div><button class="icon-btn" id="textBtn" title="Increase text size">A+</button><button class="icon-btn" id="themeBtn" title="Switch theme">Light</button></div><div class="progress"><div id="progress"></div></div></header>
+<main class="shell">
+<section class="page active" data-page="1">
+  <div class="hero"><div class="eyebrow">Month 2 - Identity &amp; Access · Week 5 · Beginner</div><h1>Password spray across many accounts</h1><p>An easy authentication-telemetry lab. Find one source that generates failures across many different usernames inside five minutes, then tune known scanners and service connectors.</p><div class="chips"><span class="chip">Identity &amp; Access</span><span class="chip">Authentication failures</span><span class="chip">T1110.003</span><span class="chip good">2 malicious fixtures</span><span class="chip">4 benign fixtures</span><span class="chip warn">No YARA - authentication telemetry only</span></div></div>
+  <div class="stats"><div class="stat"><strong>6</strong><span>months in the full plan</span></div><div class="stat"><strong>26</strong><span>weekly scenarios</span></div><div class="stat"><strong>5m</strong><span>test window</span></div><div class="stat"><strong>5</strong><span>distinct accounts to alert</span></div></div>
+  <div class="grid"><article class="card full"><h3>How Week 5 works</h3><p>Each day adds one small piece. You first read the events, then write the same behavior in KQL, CrowdStrike CQL, Sigma, Python, and Go. Day 7 joins the pieces and explains the false positives. Keep this lab separate from the portfolio: it is a practice artifact, not a portfolio rewrite.</p><div class="week-map">
+    <button class="day-tile" onclick="go(2)"><b>Day 1</b><span>Read TP/TN authentication fixtures</span></button><button class="day-tile" onclick="go(3)"><b>Day 2</b><span>Build and tune the KQL behavior query</span></button><button class="day-tile" onclick="go(4)"><b>Day 3</b><span>Translate the idea to CrowdStrike CQL</span></button><button class="day-tile" onclick="go(5)"><b>Day 4</b><span>Write the Sigma selection and filters</span></button><button class="day-tile" onclick="go(6)"><b>Day 5</b><span>Count distinct users in Python</span></button><button class="day-tile" onclick="go(7)"><b>Day 6</b><span>Aggregate failures by source in Go</span></button><button class="day-tile" onclick="go(8)"><b>Day 7</b><span>Validate and explain the full hunt</span></button>
+  </div></article><article class="card"><h3>Week goal</h3><p>Alert when one source IP and device fails authentication for at least <b>five distinct accounts</b> inside <b>five minutes</b>.</p><div class="callout">A true spray is wide: one source → many usernames. Repeated failures for one username are not enough.</div></article><article class="card"><h3>Telemetry to keep</h3><ul class="checklist"><li>Source IP and source device</li><li>Account or username</li><li>Result: failure or success</li><li>Logon type</li><li>Precise timestamp</li></ul></article></div>
+</section>
+
+<section class="page" data-page="2">
+  <div class="page-head"><div><div class="eyebrow">Week 5 · Day 1</div><h2>Understand the authentication events</h2></div><div class="page-no">Page 2 / 8</div></div>
+  <div class="grid"><article class="card full"><h3>What should be done</h3><ol><li>Group failed logons by source IP and device.</li><li>Look only at a short five-minute window.</li><li>Count different usernames, not only event rows.</li><li>Compare the result with the TP/TN labels below.</li></ol></article>
+  <article class="card full"><h3>Visual password-spray pattern</h3><div class="flow"><div class="node"><small>One source</small><strong>198.51.100.45</strong><small>web-gateway-02</small></div><div class="arrow">→</div><div class="node"><small>Six failed accounts in 2m 30s</small><div class="account-cloud"><span class="account">aisha</span><span class="account">ben</span><span class="account">chen</span><span class="account">diego</span><span class="account">elena</span><span class="account">fatima</span></div></div><div class="arrow">→</div><div class="node"><small>Decision</small><strong>Threshold breach</strong><small>Investigate the source</small></div></div></article>
+  <article class="card full"><h3>Human-readable fixture table</h3><div class="table-wrap"><table><thead><tr><th>Fixture</th><th>Source / device</th><th>Failed events</th><th>Distinct accounts</th><th>Expected</th><th>Why</th></tr></thead><tbody id="fixtureTable"></tbody></table></div></article>
+  <article class="card"><h3>Explore one fixture</h3><div class="event-picker" id="fixturePicker"></div><div class="event-detail" id="fixtureDetail"></div></article>
+  <article class="card"><h3>Raw JSONL</h3><p>JSONL is one JSON object per line. Save the expanded content as <code>events.jsonl</code> for Days 5 and 6.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('rawJson',this)">Show JSONL</button><button class="small-btn" onclick="copyFrom('rawJsonCode',this)">Copy JSONL</button></div><div class="answer" id="rawJson"><pre class="raw"><code id="rawJsonCode"></code></pre></div></article>
+  <article class="card full"><h3>MITRE ATT&amp;CK - visual map</h3><div class="attack"><div class="attack-card"><b>Credential Access</b><h4>Why the attacker does it</h4><p>The attacker tries a small number of common passwords against many identities to find one valid account.</p></div><div class="arrow">→</div><div class="attack-card"><b>T1110.003</b><h4>Brute Force: Password Spraying</h4><p>The useful signal is breadth across accounts from one source in a short period.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1110/003/" target="_blank" rel="noreferrer">Official MITRE page ↗</a></div></div></article></div>
+</section>
+
+<section class="page" data-page="3">
+  <div class="page-head"><div><div class="eyebrow">Week 5 · Day 2</div><h2>KQL behavior query + tuning</h2></div><div class="page-no">Page 3 / 8</div></div>
+  <div class="grid"><article class="card"><h3>Build it in five steps</h3><ol><li>Read <code>IdentityLogonEvents</code>.</li><li>Keep failed logons.</li><li>Remove the documented scanner and password-sync device.</li><li>Group into easy five-minute buckets.</li><li>Require at least five distinct accounts.</li></ol></article><article class="card"><h3>Beginner note</h3><p>This KQL uses fixed five-minute buckets so it is easy to read. A production rule can run frequently with an overlapping lookback. Day 5 demonstrates a true sliding window.</p><div class="callout warning">Only tune a scanner or connector after confirming its owner, purpose, and expected source.</div></article>
+  <article class="card full"><h3>KQL answer</h3><p>Field names match Microsoft Defender's identity table. Validate them in your tenant before production use.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('kqlAnswer',this)">Show KQL answer</button><button class="small-btn" onclick="copyFrom('kqlCode',this)">Copy KQL</button></div><div class="answer" id="kqlAnswer"><pre><code id="kqlCode">let Window = 5m;
+let AccountThreshold = 5;
+let KnownScanners = dynamic(["10.10.5.20"]);
+IdentityLogonEvents
+| where Timestamp > ago(1d)
+| where ActionType == "LogonFailed"
+| where IPAddress !in (KnownScanners)
+| where DeviceName !in~ ("password-sync-01")
+| summarize
+    FailedEvents = count(),
+    DistinctAccounts = dcount(AccountUpn),
+    Accounts = make_set(AccountUpn, 25),
+    FirstSeen = min(Timestamp),
+    LastSeen = max(Timestamp)
+  by IPAddress, DeviceName, bin(Timestamp, Window)
+| where DistinctAccounts >= AccountThreshold
+| project FirstSeen, LastSeen, IPAddress, DeviceName,
+          FailedEvents, DistinctAccounts, Accounts
+| order by DistinctAccounts desc</code></pre></div></article>
+  <article class="card"><h3>Analyst reasoning</h3><p>The rule looks for account breadth, not just volume. False positives can include vulnerability scanners, many users behind a shared proxy, a broken SSO connector, and password-sync systems. Confirm ownership and source stability before allowlisting. Shared proxies should usually receive a higher threshold instead of a broad exclusion.</p></article><article class="card"><h3>Validation status</h3><p class="status-warn"><b>Not executed:</b> KQL needs a live Microsoft Defender tenant. The fixture validator on Day 7 tests the same threshold and tuning idea locally.</p></article></div>
+</section>
+
+<section class="page" data-page="4">
+  <div class="page-head"><div><div class="eyebrow">Week 5 · Day 3</div><h2>CrowdStrike CQL translation</h2></div><div class="page-no">Page 4 / 8</div></div>
+  <div class="grid"><article class="card"><h3>How to use it</h3><ol><li>Set the LogScale time picker to five minutes.</li><li>Keep failed logon events.</li><li>Apply the two narrow exclusions.</li><li>Group by source IP and device.</li><li>Count distinct usernames and keep five or more.</li></ol></article><article class="card"><h3>Simple field map</h3><div class="field-map"><div><code>source_ip</code><br>→ <code>RemoteAddressIP4</code></div><div><code>device</code><br>→ <code>ComputerName</code></div><div><code>account</code><br>→ <code>UserName</code></div><div><code>result</code><br>→ <code>#event_simpleName</code></div><div><code>timestamp</code><br>→ <code>@timestamp</code></div><div><code>logon_type</code><br>→ <code>LogonType</code></div></div></article>
+  <article class="card full"><h3>CrowdStrike CQL answer</h3><p>Falcon field names vary by connector and data source, so confirm this map against your own events.</p><div class="code-tools"><button class="answer-btn" onclick="toggle('cqlAnswer',this)">Show CQL answer</button><button class="small-btn" onclick="copyFrom('cqlCode',this)">Copy CQL</button></div><div class="answer" id="cqlAnswer"><pre><code id="cqlCode">#event_simpleName=UserLogonFailed2
+| RemoteAddressIP4!="10.10.5.20"
+| ComputerName!="password-sync-01"
+| groupBy([RemoteAddressIP4, ComputerName], function=[
+    count(as=failed_events),
+    count(field=UserName, distinct=true, as=distinct_accounts),
+    collect([UserName], limit=25)
+  ], limit=max)
+| distinct_accounts&gt;=5
+| sort(distinct_accounts, order=desc)</code></pre></div></article>
+  <article class="card"><h3>Analyst reasoning</h3><p>Use the five-minute search range as the time window. Investigate whether the IP is external, whether the device value is expected, and whether any failure is followed by success. False positives include vulnerability scanners, shared proxies, broken SSO connectors, and password-sync systems.</p></article><article class="card"><h3>Validation status</h3><p class="status-warn"><b>Not executed:</b> CrowdStrike CQL requires Falcon LogScale and tenant-specific fields. Syntax and the field map must be checked in that environment.</p></article></div>
+</section>
+
+<section class="page" data-page="5">
+  <div class="page-head"><div><div class="eyebrow">Week 5 · Day 4</div><h2>Sigma selection + filters</h2></div><div class="page-no">Page 5 / 8</div></div>
+  <div class="grid"><article class="card"><h3>What this rule does</h3><p>The Sigma rule selects Windows failed-logon events and removes two documented sources. It intentionally stays simple. Counting five different usernames in five minutes is a SIEM correlation step.</p><div class="callout">The YAML contains no <code>id</code> and no <code>status: experimental</code>.</div></article><article class="card"><h3>Why selection first?</h3><p>A base Sigma rule makes the failure telemetry portable. Your SIEM can then group the selected events by <code>IpAddress</code> and count distinct <code>TargetUserName</code> values.</p></article>
+  <article class="card full"><h3>Sigma answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('sigmaAnswer',this)">Show Sigma answer</button><button class="small-btn" onclick="copyFrom('sigmaCode',this)">Copy Sigma</button></div><div class="answer" id="sigmaAnswer"><pre><code id="sigmaCode">title: Failed Logons for Password Spray Correlation
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4625
+  filter_known_scanner:
+    IpAddress: 10.10.5.20
+  filter_password_sync:
+    WorkstationName: password-sync-01
+  condition: selection and not 1 of filter_*
+fields:
+  - UtcTime
+  - IpAddress
+  - WorkstationName
+  - TargetUserName
+  - LogonType
+falsepositives:
+  - Vulnerability scanners
+  - Shared proxies
+  - Broken SSO connectors
+  - Password sync systems
+level: medium</code></pre></div></article>
+  <article class="card"><h3>Analyst reasoning</h3><p>Correlate the selected events by source IP and workstation, then require five distinct usernames inside five minutes. False positives include vulnerability scanners, shared proxies, broken SSO connectors, and password sync. Use evidence-based filters, not a global exclusion for all internal IPs.</p></article><article class="card"><h3>Validation status</h3><p class="status-good"><b>Executed locally:</b> the YAML parsed successfully and automated checks confirmed that <code>id</code> and <code>status</code> are absent. A live Sigma backend was not used.</p></article></div>
+</section>
+
+<section class="page" data-page="6">
+  <div class="page-head"><div><div class="eyebrow">Week 5 · Day 5</div><h2>Python sliding-window test</h2></div><div class="page-no">Page 6 / 8</div></div>
+  <div class="grid"><article class="card"><h3>What the code does</h3><ol><li>Reads <code>events.jsonl</code> one line at a time.</li><li>Keeps failures and removes two known benign sources.</li><li>Groups rows by source IP and device.</li><li>Slides a five-minute window over each group.</li><li>Prints a breach at five different usernames.</li></ol></article><article class="card"><h3>Expected result</h3><p>Only <code>198.51.100.45 / web-gateway-02</code> and <code>203.0.113.77 / unknown-linux</code> should print.</p><div class="callout">The repeated <code>alice</code> failures do not alert because they are one distinct account.</div></article>
+  <article class="card full"><h3>Python answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('pythonAnswer',this)">Show Python answer</button><button class="small-btn" onclick="copyFrom('pythonCode',this)">Copy Python</button></div><div class="answer" id="pythonAnswer"><pre><code id="pythonCode">import json
+from collections import defaultdict
+from datetime import datetime, timedelta
+
+WINDOW = timedelta(minutes=5)
+THRESHOLD = 5
+KNOWN_SCANNERS = {"10.10.5.20"}
+IGNORED_DEVICES = {"password-sync-01"}
+
+def parse_time(value):
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+groups = defaultdict(list)
+with open("events.jsonl", encoding="utf-8") as handle:
+    for line in handle:
+        event = json.loads(line)
+        if event["result"] != "failure":
+            continue
+        if event["source_ip"] in KNOWN_SCANNERS:
+            continue
+        if event["device"] in IGNORED_DEVICES:
+            continue
+        key = (event["source_ip"], event["device"])
+        groups[key].append(event)
+
+for (source_ip, device), rows in groups.items():
+    rows.sort(key=lambda row: row["timestamp"])
+    for start, first in enumerate(rows):
+        first_time = parse_time(first["timestamp"])
+        window = [
+            row for row in rows[start:]
+            if parse_time(row["timestamp"]) - first_time &lt;= WINDOW
+        ]
+        accounts = sorted({row["account"] for row in window})
+        if len(accounts) &gt;= THRESHOLD:
+            print(
+                f"BREACH {source_ip} / {device}: {len(accounts)} accounts "
+                f"{first['timestamp']} → {window[-1]['timestamp']}"
+            )
+            break</code></pre></div></article>
+  <article class="card"><h3>Analyst reasoning</h3><p>Python uses a real sliding window, so a burst crossing a fixed clock boundary can still be found. False positives remain possible from vulnerability scanners, shared proxies, broken SSO connectors, and password sync; exclusions should be reviewed and time-limited.</p></article><article class="card"><h3>Validation status</h3><p class="status-good"><b>Executed locally:</b> the script returned exactly the two expected malicious sources and no benign source.</p></article></div>
+</section>
+
+<section class="page" data-page="7">
+  <div class="page-head"><div><div class="eyebrow">Week 5 · Day 6</div><h2>Go failure aggregation</h2></div><div class="page-no">Page 7 / 8</div></div>
+  <div class="grid"><article class="card"><h3>What the code does</h3><ol><li>Scans <code>events.jsonl</code>.</li><li>Skips non-failures and the two narrow exclusions.</li><li>Puts each event in a five-minute bucket.</li><li>Stores usernames in a set.</li><li>Prints buckets with at least five usernames.</li></ol></article><article class="card"><h3>Beginner note</h3><p>The Go version uses fixed five-minute buckets to keep the code short. The Python version is the exact sliding-window reference for this test data.</p><div class="callout warning">For production, run overlapping queries or implement the same sliding logic as Python.</div></article>
+  <article class="card full"><h3>Go answer</h3><div class="code-tools"><button class="answer-btn" onclick="toggle('goAnswer',this)">Show Go answer</button><button class="small-btn" onclick="copyFrom('goCode',this)">Copy Go</button></div><div class="answer" id="goAnswer"><pre><code id="goCode">package main
+
+import (
+    "bufio"
+    "encoding/json"
+    "fmt"
+    "os"
+    "sort"
+    "time"
+)
+
+type Event struct {
+    Timestamp string `json:"timestamp"`
+    SourceIP  string `json:"source_ip"`
+    Device    string `json:"device"`
+    Account   string `json:"account"`
+    Result    string `json:"result"`
+}
+
+type Group struct {
+    Accounts map[string]bool
+    Count    int
+}
+
+func main() {
+    file, err := os.Open("events.jsonl")
+    if err != nil { panic(err) }
+    defer file.Close()
+
+    groups := map[string]*Group{}
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        var event Event
+        if err := json.Unmarshal(scanner.Bytes(), &amp;event); err != nil { panic(err) }
+        if event.Result != "failure" || event.SourceIP == "10.10.5.20" || event.Device == "password-sync-01" { continue }
+
+        parsed, err := time.Parse(time.RFC3339, event.Timestamp)
+        if err != nil { panic(err) }
+        bucket := parsed.Truncate(5 * time.Minute).Format(time.RFC3339)
+        key := event.SourceIP + " | " + event.Device + " | " + bucket
+        if groups[key] == nil { groups[key] = &amp;Group{Accounts: map[string]bool{}} }
+        groups[key].Count++
+        groups[key].Accounts[event.Account] = true
+    }
+    if err := scanner.Err(); err != nil { panic(err) }
+
+    keys := make([]string, 0, len(groups))
+    for key := range groups { keys = append(keys, key) }
+    sort.Strings(keys)
+    for _, key := range keys {
+        group := groups[key]
+        if len(group.Accounts) &gt;= 5 {
+            fmt.Printf("BREACH %s → %d accounts in %d failures\n", key, len(group.Accounts), group.Count)
+        }
+    }
+}</code></pre></div></article>
+  <article class="card"><h3>Analyst reasoning</h3><p>Sets count each username once even if it fails repeatedly. That reduces noise from a broken connector. False positives still include scanners, shared proxies, SSO connectors, and password sync, so review the source and account types.</p></article><article class="card"><h3>Validation status</h3><p class="status-warn"><b>Not executed:</b> the validation environment did not have a Go toolchain. The code is provided for local testing with <code>go run detect.go</code>; expected output is the two malicious source buckets.</p></article></div>
+</section>
+
+<section class="page" data-page="8">
+  <div class="page-head"><div><div class="eyebrow">Week 5 · Day 7</div><h2>Capstone: detect, tune, explain</h2></div><div class="page-no">Page 8 / 8</div></div>
+  <div class="grid"><article class="card full"><h3>The complete hunt</h3><div class="flow"><div class="node"><small>1. Filter</small><strong>Failed logons</strong><small>Keep source, device, account, type, time</small></div><div class="arrow">→</div><div class="node"><small>2. Tune</small><strong>Known evidence</strong><small>Scanner IP + password-sync device</small></div><div class="arrow">→</div><div class="node"><small>3. Correlate</small><strong>5 accounts / 5 minutes</strong><small>Group by source and device</small></div><div class="arrow">→</div><div class="node"><small>4. Investigate</small><strong>Source context</strong><small>Check success, geography, MFA, ownership</small></div></div></article>
+  <article class="card"><h3>Why event count alone is insufficient</h3><p>A broken SSO connector can create hundreds of failures for one account. That is a high event count, but it is not the wide account pattern of password spraying. Counting distinct usernames separates <b>repetition</b> from <b>breadth</b>.</p><div class="callout danger">Do not alert only because <code>count() ≥ 5</code>. Require <code>distinct accounts ≥ 5</code>.</div></article><article class="card"><h3>Tune known scanners safely</h3><ol><li>Confirm the scanner owner and ticket.</li><li>Match the exact source IP or device.</li><li>Record an expiry or review date.</li><li>Keep unusual sources and changed identities visible.</li></ol></article>
+  <article class="card full"><h3>Run the fixture validator</h3><p>The browser validator applies a five-minute sliding window, a five-account threshold, the scanner IP exclusion, and the password-sync device exclusion.</p><div class="code-tools"><button class="answer-btn" onclick="runValidator()">Run validator</button></div><div class="validator-grid"><div class="metric"><strong id="correctMetric">—</strong><span>correct fixture decisions</span></div><div class="metric"><strong id="breachMetric">—</strong><span>malicious breaches found</span></div><div class="metric"><strong id="benignMetric">—</strong><span>benign fixtures quiet</span></div></div><div class="status-bar" id="validationResult">Select “Run validator” to test all six fixtures.</div></article>
+  <article class="card"><h3>Analyst reasoning</h3><p>Prioritize unknown external sources, unmanaged devices, and a later successful logon. False positives: vulnerability scanners may test many identities; shared proxies combine many users behind one IP; broken SSO connectors can retry failures; password sync can touch many accounts. Tune with exact, owned infrastructure evidence. Raise the threshold for a busy shared proxy rather than hiding it.</p></article><article class="card"><h3>Validation record</h3><ul class="checklist"><li>TP fixtures match; benign fixtures do not</li><li>Python returned two expected sources</li><li>Go not run here: toolchain unavailable; status shown honestly</li><li>Sigma YAML parsed; no id or status</li><li>HTML structure and JavaScript syntax passed</li><li>KQL and CQL clearly marked not run live</li><li>No YARA: no file or memory content</li></ul></article>
+  </div>
+</section>
+
+<nav class="nav-footer" aria-label="Lab pages"><button class="nav-btn" id="prevBtn" onclick="go(current-1)">← Previous</button><div class="dots" id="dots"></div><button class="nav-btn" id="nextBtn" onclick="go(current+1)">Next →</button></nav>
+<div class="status-bar">Keyboard: <b>←</b> previous · <b>→</b> next · <b>Home</b> introduction · <b>End</b> Day 7. Theme and text-size preferences are saved in this browser.</div>
+</main>
+<script>
+const fixtures = [
+  {id:"spray-alpha",name:"Spray alpha",expected:true,why:"Six different accounts fail from one unknown source in 2m 30s.",events:[
+    ["2026-11-10T09:00:00Z","198.51.100.45","web-gateway-02","aisha","failure","Interactive"],["2026-11-10T09:00:30Z","198.51.100.45","web-gateway-02","ben","failure","Interactive"],["2026-11-10T09:01:00Z","198.51.100.45","web-gateway-02","chen","failure","Interactive"],["2026-11-10T09:01:30Z","198.51.100.45","web-gateway-02","diego","failure","Interactive"],["2026-11-10T09:02:00Z","198.51.100.45","web-gateway-02","elena","failure","Interactive"],["2026-11-10T09:02:30Z","198.51.100.45","web-gateway-02","fatima","failure","Interactive"]]},
+  {id:"spray-beta",name:"Spray beta",expected:true,why:"Five different accounts fail from one unmanaged device in 3m 20s.",events:[
+    ["2026-11-10T09:06:00Z","203.0.113.77","unknown-linux","grace","failure","Remote"],["2026-11-10T09:06:50Z","203.0.113.77","unknown-linux","haruto","failure","Remote"],["2026-11-10T09:07:40Z","203.0.113.77","unknown-linux","imani","failure","Remote"],["2026-11-10T09:08:30Z","203.0.113.77","unknown-linux","jules","failure","Remote"],["2026-11-10T09:09:20Z","203.0.113.77","unknown-linux","kai","failure","Remote"]]},
+  {id:"scanner",name:"Known scanner",expected:false,why:"It is wide, but the exact documented scanner IP is tuned.",events:[
+    ["2026-11-10T09:11:00Z","10.10.5.20","vuln-scanner-01","aisha","failure","Network"],["2026-11-10T09:11:20Z","10.10.5.20","vuln-scanner-01","ben","failure","Network"],["2026-11-10T09:11:40Z","10.10.5.20","vuln-scanner-01","chen","failure","Network"],["2026-11-10T09:12:00Z","10.10.5.20","vuln-scanner-01","diego","failure","Network"],["2026-11-10T09:12:20Z","10.10.5.20","vuln-scanner-01","elena","failure","Network"],["2026-11-10T09:12:40Z","10.10.5.20","vuln-scanner-01","fatima","failure","Network"]]},
+  {id:"shared-proxy",name:"Shared proxy",expected:false,why:"Four accounts are below the five-account threshold.",events:[
+    ["2026-11-10T09:15:00Z","10.20.0.8","corp-proxy-01","lina","failure","Web"],["2026-11-10T09:15:45Z","10.20.0.8","corp-proxy-01","mohammed","failure","Web"],["2026-11-10T09:16:30Z","10.20.0.8","corp-proxy-01","noah","failure","Web"],["2026-11-10T09:17:15Z","10.20.0.8","corp-proxy-01","olivia","failure","Web"]]},
+  {id:"broken-sso",name:"Broken SSO",expected:false,why:"Eight failures are noisy, but all target the same account.",events:[
+    ["2026-11-10T09:20:00Z","10.30.2.14","sso-connector-02","alice","failure","Federated"],["2026-11-10T09:20:20Z","10.30.2.14","sso-connector-02","alice","failure","Federated"],["2026-11-10T09:20:40Z","10.30.2.14","sso-connector-02","alice","failure","Federated"],["2026-11-10T09:21:00Z","10.30.2.14","sso-connector-02","alice","failure","Federated"],["2026-11-10T09:21:20Z","10.30.2.14","sso-connector-02","alice","failure","Federated"],["2026-11-10T09:21:40Z","10.30.2.14","sso-connector-02","alice","failure","Federated"],["2026-11-10T09:22:00Z","10.30.2.14","sso-connector-02","alice","failure","Federated"],["2026-11-10T09:22:20Z","10.30.2.14","sso-connector-02","alice","failure","Federated"]]},
+  {id:"password-sync",name:"Password sync",expected:false,why:"It touches six accounts, but the exact owned sync device is tuned.",events:[
+    ["2026-11-10T09:25:00Z","10.40.1.9","password-sync-01","svc-app1","failure","Service"],["2026-11-10T09:25:25Z","10.40.1.9","password-sync-01","svc-app2","failure","Service"],["2026-11-10T09:25:50Z","10.40.1.9","password-sync-01","svc-app3","failure","Service"],["2026-11-10T09:26:15Z","10.40.1.9","password-sync-01","svc-app4","failure","Service"],["2026-11-10T09:26:40Z","10.40.1.9","password-sync-01","svc-app5","failure","Service"],["2026-11-10T09:27:05Z","10.40.1.9","password-sync-01","svc-app6","failure","Service"]]}
+];
+const allEvents = fixtures.flatMap(f => f.events.map(e => ({timestamp:e[0],source_ip:e[1],device:e[2],account:e[3],result:e[4],logon_type:e[5],fixture:f.id,expected:f.expected?"TP":"TN"})));
+let current=1, textLarge=false;
+const pages=[...document.querySelectorAll('.page')];
+function go(page){current=Math.max(1,Math.min(8,page));pages.forEach(p=>p.classList.toggle('active',Number(p.dataset.page)===current));document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i+1===current));document.getElementById('progress').style.width=(current/8*100)+'%';document.getElementById('prevBtn').disabled=current===1;document.getElementById('nextBtn').disabled=current===8;window.scrollTo({top:0,behavior:'smooth'});}
+function toggle(id,button){const el=document.getElementById(id);el.classList.toggle('open');button.textContent=el.classList.contains('open')?'Hide answer':'Show answer';if(id==='rawJson')button.textContent=el.classList.contains('open')?'Hide JSONL':'Show JSONL';}
+async function copyFrom(id,button){const text=document.getElementById(id).textContent;try{await navigator.clipboard.writeText(text)}catch(e){const area=document.createElement('textarea');area.value=text;document.body.appendChild(area);area.select();document.execCommand('copy');area.remove()}const old=button.textContent;button.textContent='Copied ✓';setTimeout(()=>button.textContent=old,1200);}
+function renderFixtures(){
+  document.getElementById('fixtureTable').innerHTML=fixtures.map(f=>{const users=new Set(f.events.filter(e=>e[4]==='failure').map(e=>e[3]));const first=f.events[0];return `<tr><td><b>${f.name}</b></td><td>${first[1]}<br><small>${first[2]}</small></td><td>${f.events.length}</td><td>${users.size}</td><td><span class="tag ${f.expected?'tp':'tn'}">${f.expected?'TP · alert':'TN · quiet'}</span></td><td>${f.why}</td></tr>`}).join('');
+  const picker=document.getElementById('fixturePicker');picker.innerHTML=fixtures.map((f,i)=>`<button class="small-btn" aria-pressed="${i===0}" onclick="showFixture(${i})">${i+1}. ${f.name}</button>`).join('');showFixture(0);
+  document.getElementById('rawJsonCode').textContent=allEvents.map(e=>JSON.stringify(e)).join('\n');
+}
+function showFixture(index){document.querySelectorAll('#fixturePicker button').forEach((b,i)=>b.setAttribute('aria-pressed',i===index));const f=fixtures[index],e=f.events[0],accounts=[...new Set(f.events.map(x=>x[3]))];document.getElementById('fixtureDetail').innerHTML=`<div class="detail-grid"><div class="detail-item"><small>Source</small><b>${e[1]}</b></div><div class="detail-item"><small>Device</small><b>${e[2]}</b></div><div class="detail-item"><small>Result</small><b>${f.expected?'TP · alert':'TN · quiet'}</b></div><div class="detail-item"><small>Window</small><b>${e[0].slice(11,19)} → ${f.events.at(-1)[0].slice(11,19)}</b></div><div class="detail-item"><small>Failed events</small><b>${f.events.length}</b></div><div class="detail-item"><small>Distinct accounts</small><b>${accounts.length}</b></div></div><p><b>Accounts:</b> ${accounts.join(', ')}</p><p>${f.why}</p>`;}
+function detects(f){if(f.events[0][1]==='10.10.5.20'||f.events[0][2]==='password-sync-01')return false;const rows=f.events.filter(e=>e[4]==='failure').sort((a,b)=>Date.parse(a[0])-Date.parse(b[0]));for(let i=0;i<rows.length;i++){const end=Date.parse(rows[i][0])+5*60*1000;const accounts=new Set(rows.slice(i).filter(e=>Date.parse(e[0])<=end).map(e=>e[3]));if(accounts.size>=5)return true;}return false;}
+function runValidator(){const results=fixtures.map(f=>({name:f.name,actual:detects(f),expected:f.expected}));const correct=results.filter(r=>r.actual===r.expected).length,breaches=results.filter(r=>r.actual).length,benign=results.filter((r,i)=>!fixtures[i].expected&&!r.actual).length;document.getElementById('correctMetric').textContent=`${correct}/6`;document.getElementById('breachMetric').textContent=breaches;document.getElementById('benignMetric').textContent=`${benign}/4`;const box=document.getElementById('validationResult');box.innerHTML=results.map(r=>`${r.actual===r.expected?'✓':'✗'} ${r.name}: ${r.actual?'breach':'quiet'}`).join('<br>');box.style.borderColor=correct===6?'var(--green)':'var(--red)';box.style.color=correct===6?'var(--green)':'var(--red)';}
+const dots=document.getElementById('dots');for(let i=1;i<=8;i++){const b=document.createElement('button');b.className='dot';b.textContent=i;b.title=i===1?'Introduction':`Day ${i-1}`;b.onclick=()=>go(i);dots.appendChild(b)}
+document.getElementById('themeBtn').onclick=()=>{const light=document.documentElement.dataset.theme!=='light';document.documentElement.dataset.theme=light?'light':'dark';document.getElementById('themeBtn').textContent=light?'Dark':'Light';localStorage.setItem('w5theme',light?'light':'dark')};
+document.getElementById('textBtn').onclick=()=>{textLarge=!textLarge;document.body.style.fontSize=textLarge?'18px':'16px';document.getElementById('textBtn').textContent=textLarge?'A−':'A+';localStorage.setItem('w5text',textLarge?'large':'normal')};
+document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key==='ArrowRight')go(current+1);if(e.key==='ArrowLeft')go(current-1);if(e.key==='Home')go(1);if(e.key==='End')go(8)});
+if(localStorage.getItem('w5theme')==='light'){document.documentElement.dataset.theme='light';document.getElementById('themeBtn').textContent='Dark'}if(localStorage.getItem('w5text')==='large'){textLarge=true;document.body.style.fontSize='18px';document.getElementById('textBtn').textContent='A−'}renderFixtures();go(1);
+</script>
+</body>
+</html>

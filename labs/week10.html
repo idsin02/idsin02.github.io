@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 10 Lab - Registry Run Key Persistence</title>
+<style>
+:root{--bg:#08111f;--panel:#101d31;--panel2:#152641;--text:#eef5ff;--muted:#aebed5;--line:#29415f;--cyan:#4fd1c5;--blue:#61a9ff;--amber:#ffcc66;--red:#ff7d8d;--green:#6ee7a8;--shadow:0 18px 46px rgba(0,0,0,.24);--base:16px}
+[data-theme="light"]{--bg:#eef4fb;--panel:#fff;--panel2:#f4f8fd;--text:#10213b;--muted:#586b84;--line:#cfdaea;--cyan:#087f78;--blue:#1768c4;--amber:#9b6500;--red:#ba2940;--green:#087d48;--shadow:0 16px 40px rgba(26,52,90,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;font-size:var(--base)}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(97,169,255,.13),transparent 28%),var(--bg);color:var(--text);font:1rem/1.58 Inter,Segoe UI,Arial,sans-serif;min-height:100vh}button,a{font:inherit}.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.topbar-inner{max-width:1180px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.brand{font-weight:850;letter-spacing:.2px}.brand span,.eyebrow{color:var(--cyan)}.grow{flex:1}.controls{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.icon-btn,.nav-btn,.answer-btn,.small-btn,.dot{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:8px 11px;cursor:pointer;transition:.16s}.icon-btn:hover,.nav-btn:hover,.answer-btn:hover,.small-btn:hover,.dot:hover{border-color:var(--cyan);transform:translateY(-1px)}.icon-btn:focus-visible,.nav-btn:focus-visible,.answer-btn:focus-visible,.small-btn:focus-visible,.dot:focus-visible,a:focus-visible{outline:3px solid color-mix(in srgb,var(--cyan) 45%,transparent);outline-offset:2px}.progress{height:4px;background:var(--line)}.progress>div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .25s}.shell{max-width:1180px;margin:auto;padding:20px 18px 34px}.page{display:none;animation:enter .22s ease}.page.active{display:block}@keyframes enter{from{opacity:.2;transform:translateY(7px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:end;justify-content:space-between;gap:18px;margin:12px 0 18px}.page-head h1,.page-head h2{margin:.15rem 0 0;line-height:1.15}.page-no{color:var(--muted);white-space:nowrap}.hero{padding:30px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,color-mix(in srgb,var(--panel) 90%,var(--blue)),var(--panel));box-shadow:var(--shadow);margin-bottom:18px}.hero h1{font-size:clamp(2rem,5vw,4rem);max-width:820px;margin:.3rem 0 .8rem;line-height:1.03}.hero p{max-width:850px;color:var(--muted);font-size:1.08rem}.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.chip,.tag{border:1px solid var(--line);padding:5px 9px;border-radius:999px;background:var(--panel2);font-weight:700;font-size:.84rem}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{grid-column:span 6;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}.card h3{margin:.05rem 0 .7rem}.card p:first-of-type{margin-top:.25rem}.muted{color:var(--muted)}.callout{border-left:4px solid var(--cyan);background:var(--panel2);padding:12px 14px;border-radius:10px;margin:12px 0}.warning{border-left-color:var(--amber)}.danger{border-left-color:var(--red)}.flow,.attack{display:flex;align-items:stretch;justify-content:center;gap:12px;flex-wrap:wrap}.node,.attack-card{flex:1 1 210px;min-width:0;border:1px solid var(--line);border-radius:15px;background:var(--panel2);padding:15px;display:flex;flex-direction:column;gap:5px}.node small{color:var(--muted)}.arrow{font-size:1.65rem;color:var(--cyan);font-weight:900;align-self:center}.attack-card b{color:var(--cyan)}.attack-card h4{margin:.25rem 0}.attack-link{color:var(--blue)}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:790px}th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}th{background:var(--panel2);position:sticky;top:0}tbody tr:hover{background:color-mix(in srgb,var(--panel2) 72%,transparent)}.tp{color:var(--green)}.tn{color:var(--blue)}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}pre{background:#050b14;color:#e9f3ff;border:1px solid #243854;border-radius:13px;padding:16px;overflow:auto;white-space:pre;tab-size:2;margin:0}[data-theme="light"] pre{background:#10213b;color:#f4f8fd}.code-tools{display:flex;gap:8px;flex-wrap:wrap;margin:11px 0}.answer{display:none}.answer.open{display:block}.event-picker{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.event-picker button[aria-pressed="true"]{border-color:var(--cyan);background:color-mix(in srgb,var(--cyan) 13%,var(--panel))}.event-detail{border:1px solid var(--line);background:var(--panel2);border-radius:14px;padding:15px}.detail-grid,.validator-grid,.field-map{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.detail-item,.metric,.field-map>div{border:1px solid var(--line);background:var(--panel2);padding:12px;border-radius:12px}.detail-item small,.metric span{display:block;color:var(--muted)}.metric strong{font-size:1.8rem}.field-map{grid-template-columns:repeat(2,1fr)}details{border:1px solid var(--line);border-radius:13px;background:var(--panel2);padding:10px 12px}details summary{cursor:pointer;font-weight:750}.result{margin-top:12px;border:1px dashed var(--line);border-radius:12px;padding:12px}.result.pass{border-color:var(--green);color:var(--green)}.result.fail{border-color:var(--red);color:var(--red)}.checklist{padding-left:1.2rem}.checklist li::marker{color:var(--green)}.bottom-nav{max-width:1180px;margin:0 auto 22px;padding:0 18px;display:flex;align-items:center;gap:10px}.dots{display:flex;justify-content:center;gap:6px;flex:1;flex-wrap:wrap}.dot{width:34px;height:34px;padding:0}.dot.active{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 0 2px color-mix(in srgb,var(--cyan) 18%,transparent)}.nav-btn:disabled{opacity:.4;cursor:not-allowed}.kbd{border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;padding:1px 6px;background:var(--panel2)}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+@media(max-width:760px){.card,.card.third{grid-column:1/-1}.page-head{align-items:start}.detail-grid,.validator-grid,.field-map{grid-template-columns:1fr}.topbar-inner{align-items:flex-start}.grow{display:none}.hero{padding:23px}.bottom-nav{align-items:flex-end}.dots{display:none}.controls{width:100%}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><div class="brand">Detection Lab <span>Week 10</span></div><div class="grow"></div><div class="controls"><a class="icon-btn" href="index.html">All labs</a><button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle color theme">Light theme</button><button class="icon-btn" type="button" onclick="resizeText(-1)" aria-label="Decrease text size">Aâˆ’</button><button class="icon-btn" type="button" onclick="resizeText(1)" aria-label="Increase text size">A+</button></div></div><div class="progress" aria-hidden="true"><div id="progress"></div></div></header>
+<main class="shell" id="main">
+<section class="page active" data-page="1">
+  <div class="hero"><div class="eyebrow">Month 3 Â· Persistence &amp; Credential Â· Beginner+</div><h1>Registry Run key persistence</h1><p>Detect a new Windows autorun value when its command uses a script interpreter or points into a user-writable pathâ€”without alerting on exact, approved startup entries.</p><div class="chips"><span class="chip">8 pages</span><span class="chip">8 TP/TN cases</span><span class="chip">Registry + process</span><span class="chip">T1547.001</span><span class="chip">Python + Go</span></div></div>
+  <div class="grid">
+    <article class="card full"><h3>Week goal</h3><p>Use the registry key, value name, value data, writer process, signer, and observed startup process to separate suspicious persistence from normal startup behavior.</p><div class="callout">Success means R1â€“R3 match, while B1â€“B5 remain quiet.</div></article>
+    <article class="card"><h3>Eight-day-page path</h3><ol><li>Introduction and goal</li><li>Events + fixtures</li><li>KQL + tuning</li><li>CrowdStrike CQL</li><li>Sigma selection/filter</li><li>Python path extraction</li><li>Go path normalization</li><li>Capstone validation</li></ol></article>
+    <article class="card"><h3>Detection idea in plain English</h3><ol><li>Was a Run or RunOnce value set?</li><li>Does its command use an interpreter or user-writable path?</li><li>Is it one exact approved startup entry?</li><li>If not, return it to an analyst.</li></ol></article>
+    <article class="card full"><h3>What you will keep</h3><div class="chips"><span class="chip">JSONL fixtures</span><span class="chip">KQL</span><span class="chip">Falcon LogScale CQL</span><span class="chip">Sigma</span><span class="chip">Python</span><span class="chip">Go</span><span class="chip">Optional YARA</span><span class="chip">Validation notes</span></div></article>
+  </div>
+</section>
+
+<section class="page" data-page="2">
+  <div class="page-head"><div><div class="eyebrow">Week 10 Â· Day 1</div><h2>Read the autorun event</h2></div><div class="page-no">Page 2 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>Visual event story</h3><div class="flow"><div class="node"><small>Registry write</small><strong>Run / RunOnce value</strong><small>Value name + command</small></div><div class="arrow" aria-label="then">â†’</div><div class="node"><small>Responsible process</small><strong>Writer image + signer</strong><small>Who created persistence?</small></div><div class="arrow" aria-label="then">â†’</div><div class="node"><small>Next logon</small><strong>Target command starts</strong><small>Corroborating process event</small></div></div></article>
+    <article class="card full"><h3>Eight labeled fixtures</h3><div class="table-wrap"><table><thead><tr><th>Case</th><th>Time / device</th><th>Run value</th><th>Command</th><th>Writer / signer</th><th>Expected</th><th>Why</th></tr></thead><tbody id="eventsTable"></tbody></table></div></article>
+    <article class="card"><h3>Explore one case</h3><div class="event-picker" id="eventPicker"></div><div class="event-detail" id="eventDetail"></div></article>
+    <article class="card"><h3>TP/TN JSONL fixtures</h3><p class="muted">Each line is one correlated case containing a registry-set event and its related startup process event.</p><div class="code-tools"><button class="answer-btn" type="button" onclick="toggle('rawJson')">Show JSONL</button><button class="small-btn" type="button" onclick="copyFrom('rawJsonCode',this)">Copy JSONL</button><button class="small-btn" type="button" onclick="downloadFixtures()">Download JSONL</button></div><div class="answer" id="rawJson"><pre><code id="rawJsonCode">{"case_id":"R1","timestamp":"2026-11-09T09:14:22Z","device":"FIN-LT-014","user":"CONTOSO\\mia","label":"TP","expected_match":true,"registry":{"action":"RegistryValueSet","key":"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run","value_name":"UpdateCheck","value_data":"powershell.exe -NoProfile -WindowStyle Hidden -File \"C:\\Users\\mia\\AppData\\Roaming\\cache\\sync.ps1\""},"actor":{"image":"C:\\Users\\mia\\Downloads\\invoice_viewer.exe","signer":"Unsigned","pid":4880},"process":{"image":"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","command_line":"powershell.exe -NoProfile -WindowStyle Hidden -File \"C:\\Users\\mia\\AppData\\Roaming\\cache\\sync.ps1\"","parent_image":"C:\\Windows\\explorer.exe"},"reason":"New Run value launches PowerShell and a script from AppData; the writer is an unsigned download."}
+{"case_id":"R2","timestamp":"2026-11-09T10:05:40Z","device":"HR-LT-022","user":"CONTOSO\\lee","label":"TP","expected_match":true,"registry":{"action":"RegistryValueSet","key":"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce","value_name":"ChromeUpdate","value_data":"\"C:\\Windows\\System32\\wscript.exe\" \"C:\\Users\\lee\\Downloads\\login.vbs\""},"actor":{"image":"C:\\Users\\lee\\AppData\\Local\\Temp\\setup_tmp.exe","signer":"Unknown","pid":5124},"process":{"image":"C:\\Windows\\System32\\wscript.exe","command_line":"\"C:\\Windows\\System32\\wscript.exe\" \"C:\\Users\\lee\\Downloads\\login.vbs\"","parent_image":"C:\\Windows\\explorer.exe"},"reason":"New RunOnce value uses WScript to execute a VBS file from Downloads."}
+{"case_id":"R3","timestamp":"2026-11-09T11:42:05Z","device":"OPS-LT-031","user":"CONTOSO\\sam","label":"TP","expected_match":true,"registry":{"action":"RegistryValueSet","key":"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run","value_name":"WindowsAudioHelper","value_data":"\"C:\\Users\\sam\\AppData\\Local\\Temp\\svchost.exe\" -silent"},"actor":{"image":"C:\\Users\\sam\\AppData\\Local\\Temp\\driver_update.exe","signer":"Unsigned","pid":6048},"process":{"image":"C:\\Users\\sam\\AppData\\Local\\Temp\\svchost.exe","command_line":"\"C:\\Users\\sam\\AppData\\Local\\Temp\\svchost.exe\" -silent","parent_image":"C:\\Windows\\System32\\userinit.exe"},"reason":"Machine-wide Run value points to an unsigned executable in a user's Temp directory."}
+{"case_id":"B1","timestamp":"2026-11-09T12:10:13Z","device":"FIN-LT-014","user":"CONTOSO\\mia","label":"TN","expected_match":false,"registry":{"action":"RegistryValueSet","key":"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run","value_name":"com.squirrel.Teams.Teams","value_data":"\"C:\\Users\\mia\\AppData\\Local\\Microsoft\\Teams\\Update.exe\" --processStart Teams.exe"},"actor":{"image":"C:\\Users\\mia\\AppData\\Local\\Microsoft\\Teams\\Update.exe","signer":"Microsoft Corporation","pid":7212},"process":{"image":"C:\\Users\\mia\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe","command_line":"Teams.exe --process-start-args","parent_image":"C:\\Users\\mia\\AppData\\Local\\Microsoft\\Teams\\Update.exe"},"reason":"Exact Microsoft Teams value, path, signer, and launcher combination is approved."}
+{"case_id":"B2","timestamp":"2026-11-09T12:22:31Z","device":"HR-LT-022","user":"CONTOSO\\lee","label":"TN","expected_match":false,"registry":{"action":"RegistryValueSet","key":"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run","value_name":"OneDrive","value_data":"\"C:\\Users\\lee\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe\" /background"},"actor":{"image":"C:\\Users\\lee\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe","signer":"Microsoft Corporation","pid":7316},"process":{"image":"C:\\Users\\lee\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe","command_line":"OneDrive.exe /background","parent_image":"C:\\Windows\\System32\\userinit.exe"},"reason":"Exact OneDrive startup value, product path, signer, and switch are approved."}
+{"case_id":"B3","timestamp":"2026-11-09T13:03:55Z","device":"ENG-LT-008","user":"CONTOSO\\ana","label":"TN","expected_match":false,"registry":{"action":"RegistryValueSet","key":"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run","value_name":"ContosoSecurityAgent","value_data":"\"C:\\Program Files\\Contoso\\Security Agent\\agent.exe\" --startup"},"actor":{"image":"C:\\Program Files\\Contoso\\Security Agent\\agent-updater.exe","signer":"Contoso Security Ltd.","pid":7420},"process":{"image":"C:\\Program Files\\Contoso\\Security Agent\\agent.exe","command_line":"agent.exe --startup","parent_image":"C:\\Windows\\System32\\services.exe"},"reason":"Approved security agent uses a Program Files path and exact trusted publisher."}
+{"case_id":"B4","timestamp":"2026-11-09T13:19:44Z","device":"DESIGN-LT-019","user":"CONTOSO\\noor","label":"TN","expected_match":false,"registry":{"action":"RegistryValueSet","key":"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run","value_name":"Discord","value_data":"\"C:\\Users\\noor\\AppData\\Local\\Discord\\Update.exe\" --processStart Discord.exe"},"actor":{"image":"C:\\Users\\noor\\AppData\\Local\\Discord\\Update.exe","signer":"Discord Inc.","pid":7556},"process":{"image":"C:\\Users\\noor\\AppData\\Local\\Discord\\app-1.0.9195\\Discord.exe","command_line":"Discord.exe","parent_image":"C:\\Users\\noor\\AppData\\Local\\Discord\\Update.exe"},"reason":"Known user-installed application is excluded only by exact value, product path, and signer."}
+{"case_id":"B5","timestamp":"2026-11-09T14:01:02Z","device":"OPS-LT-031","user":"NT AUTHORITY\\SYSTEM","label":"TN","expected_match":false,"registry":{"action":"RegistryValueSet","key":"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run","value_name":"SecurityHealth","value_data":"C:\\Windows\\System32\\SecurityHealthSystray.exe"},"actor":{"image":"C:\\Windows\\System32\\TiWorker.exe","signer":"Microsoft Windows","pid":7680},"process":{"image":"C:\\Windows\\System32\\SecurityHealthSystray.exe","command_line":"SecurityHealthSystray.exe","parent_image":"C:\\Windows\\System32\\userinit.exe"},"reason":"Windows system path contains no script interpreter or user-writable location."}</code></pre></div></article>
+    <article class="card full"><h3>MITRE ATT&amp;CK visual map</h3><div class="attack"><div class="attack-card"><b>T1060 Â· legacy reference</b><h4>Registry Run Keys / Startup Folder</h4><p>This older technique identifier is retained because the roadmap names it. MITRE now maps this behavior to the sub-technique at right.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1060/" target="_blank" rel="noopener noreferrer">MITRE legacy page â†—</a></div><div class="arrow" aria-label="now maps to">â†’</div><div class="attack-card"><b>T1547.001 Â· current mapping</b><h4>Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder</h4><p>Run and RunOnce values can start a command when a user logs on.</p><a class="attack-link" href="https://attack.mitre.org/techniques/T1547/001/" target="_blank" rel="noopener noreferrer">MITRE technique page â†—</a></div></div></article>
+  </div>
+</section>
+
+<section class="page" data-page="3">
+  <div class="page-head"><div><div class="eyebrow">Week 10 Â· Day 2</div><h2>KQL behavior query + tuning</h2></div><div class="page-no">Page 3 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>Build it in four checks</h3><ol><li>Keep registry value create/set actions.</li><li>Keep Run and RunOnce keys.</li><li>Look for interpreters or user-writable locations.</li><li>Remove only exact approved combinations.</li></ol></article>
+    <article class="card"><h3>Tuning rule</h3><p>Never exclude all signed files, all AppData startup, or an entire user. Require the value name, product path, and expected signer together.</p><div class="callout warning">An exclusion should have an owner, scope, review date, and evidence from your environment.</div></article>
+    <article class="card full"><h3>KQL answer</h3><div class="code-tools"><button class="answer-btn" type="button" onclick="toggle('kqlAnswer')">Show KQL answer</button><button class="small-btn" type="button" onclick="copyFrom('kqlCode',this)">Copy KQL</button></div><div class="answer" id="kqlAnswer"><pre><code id="kqlCode">let ScriptInterpreters = dynamic(["powershell.exe", "pwsh.exe", "wscript.exe", "cscript.exe", "mshta.exe", "cmd.exe", "python.exe"]);
+DeviceRegistryEvents
+| where ActionType in ("RegistryValueSet", "RegistryValueCreated")
+| where RegistryKey endswith @"\Software\Microsoft\Windows\CurrentVersion\Run"
+    or RegistryKey endswith @"\Software\Microsoft\Windows\CurrentVersion\RunOnce"
+| extend Data = tolower(tostring(RegistryValueData)), ActorSigner = tostring(InitiatingProcessVersionInfoCompanyName)
+| where Data has_any (ScriptInterpreters)
+    or Data contains @"\appdata\"
+    or Data contains @"\downloads\"
+    or Data contains @"\temp\"
+    or Data contains "%appdata%\"
+    or Data contains "%localappdata%\"
+    or Data contains "%temp%\"
+| where not(RegistryValueName == "com.squirrel.Teams.Teams" and Data contains @"\microsoft\teams\update.exe" and ActorSigner =~ "Microsoft Corporation")
+| where not(RegistryValueName == "OneDrive" and Data contains @"\microsoft\onedrive\onedrive.exe" and ActorSigner =~ "Microsoft Corporation")
+| where not(RegistryValueName == "ContosoSecurityAgent" and Data contains @"\program files\contoso\security agent\agent.exe" and ActorSigner =~ "Contoso Security Ltd.")
+| where not(RegistryValueName == "Discord" and Data contains @"\appdata\local\discord\update.exe" and ActorSigner =~ "Discord Inc.")
+| project Timestamp, DeviceName, RegistryKey, RegistryValueName, RegistryValueData, InitiatingProcessFileName, InitiatingProcessCommandLine, ActorSigner, InitiatingProcessAccountName
+| order by Timestamp desc</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning Â· false positives</h3><p><b>Likely false positives:</b> Microsoft Teams or OneDrive rewriting their startup entries after an update, approved security/management agents, and approved user-installed applications that use per-user AppData startup. Verify the exact value name, target path, signer, writer process, update time, software owner, and whether the command later ran. A trusted signer lowers risk; it does not make every command safe.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="4">
+  <div class="page-head"><div><div class="eyebrow">Week 10 Â· Day 3</div><h2>CrowdStrike CQL translation</h2></div><div class="page-no">Page 4 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>Translate the behavior</h3><p>Keep the same Run/RunOnce scope, suspicious command indicators, and exact exclusions. Field names vary by Falcon data source and tenant, so inspect one known registry event first.</p></article>
+    <article class="card"><h3>Small field map</h3><div class="field-map"><div>Meaning<br><b>Registry key</b></div><div>Example Falcon field<br><code>RegObjectName</code></div><div>Value name<br><code>RegistryValueName</code></div><div>Example Falcon field<br><code>RegValueName</code></div><div>Value data<br><code>RegistryValueData</code></div><div>Example Falcon field<br><code>RegStringValue</code></div><div>Writer image<br><code>InitiatingProcessFileName</code></div><div>Example Falcon field<br><code>ImageFileName</code></div><div>Signer/company<br><code>InitiatingProcessVersionInfoCompanyName</code></div><div>Example Falcon field<br><code>SignInfo</code></div></div></article>
+    <article class="card full"><h3>CrowdStrike CQL answer</h3><div class="code-tools"><button class="answer-btn" type="button" onclick="toggle('cqlAnswer')">Show CrowdStrike CQL answer</button><button class="small-btn" type="button" onclick="copyFrom('cqlCode',this)">Copy CQL</button></div><div class="answer" id="cqlAnswer"><pre><code id="cqlCode">#event_simpleName=RegSystemConfigValueUpdate
+| RegObjectName=/\\Software\\Microsoft\\Windows\\CurrentVersion\\Run(Once)?$/i
+| RegStringValue=/(powershell|pwsh|wscript|cscript|mshta|cmd|python)\.exe|\\(AppData|Downloads|Temp)\\|%(APPDATA|LOCALAPPDATA|TEMP)%\\/i
+| case {
+    RegValueName="com.squirrel.Teams.Teams" RegStringValue=/\\Microsoft\\Teams\\Update\.exe/i SignInfo="Microsoft Corporation" | drop();
+    RegValueName="OneDrive" RegStringValue=/\\Microsoft\\OneDrive\\OneDrive\.exe/i SignInfo="Microsoft Corporation" | drop();
+    RegValueName="ContosoSecurityAgent" RegStringValue=/\\Program Files\\Contoso\\Security Agent\\agent\.exe/i SignInfo="Contoso Security Ltd." | drop();
+    RegValueName="Discord" RegStringValue=/\\AppData\\Local\\Discord\\Update\.exe/i SignInfo="Discord Inc." | drop();
+    *;
+  }
+| select([@timestamp, aid, ComputerName, RegObjectName, RegValueName, RegStringValue, ImageFileName, CommandLine, SignInfo])</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning Â· false positives</h3><p><b>Likely false positives:</b> product updaters that refresh legitimate Run values, approved remote-management agents, and per-user applications installed under AppData. Confirm <code>RegObjectName</code>, <code>RegValueName</code>, <code>RegStringValue</code>, writer path, signature fields, and the tenant's actual registry event name before production use.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="5">
+  <div class="page-head"><div><div class="eyebrow">Week 10 Â· Day 4</div><h2>Sigma selection + filters</h2></div><div class="page-no">Page 5 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>Read the condition</h3><div class="flow"><div class="node"><strong>Run key</strong><small>selection_key</small></div><div class="arrow">+</div><div class="node"><strong>Risky data</strong><small>selection_data</small></div><div class="arrow">âˆ’</div><div class="node"><strong>Exact products</strong><small>filter_*</small></div></div></article>
+    <article class="card"><h3>Portable fields</h3><p><code>TargetObject</code> normally contains the registry key plus value name. <code>Details</code> carries the value data. The rule deliberately contains no <code>id</code> and no <code>status: experimental</code>.</p></article>
+    <article class="card full"><h3>Sigma answer</h3><div class="code-tools"><button class="answer-btn" type="button" onclick="toggle('sigmaAnswer')">Show Sigma answer</button><button class="small-btn" type="button" onclick="copyFrom('sigmaCode',this)">Copy Sigma</button></div><div class="answer" id="sigmaAnswer"><pre><code id="sigmaCode">title: Registry Run Key Points to Interpreter or User-Writable Path
+description: Detects Run or RunOnce values that launch a script interpreter or content from a user-writable location.
+author: Detection Engineering Learning Lab
+logsource:
+  product: windows
+  category: registry_set
+detection:
+  selection_key:
+    TargetObject|contains: '\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'
+  selection_data:
+    Details|contains:
+      - 'powershell.exe'
+      - 'pwsh.exe'
+      - 'wscript.exe'
+      - 'cscript.exe'
+      - 'mshta.exe'
+      - 'cmd.exe'
+      - '\\AppData\\'
+      - '\\Downloads\\'
+      - '\\Temp\\'
+      - '%APPDATA%\\'
+      - '%LOCALAPPDATA%\\'
+      - '%TEMP%\\'
+  filter_teams:
+    TargetObject|endswith: '\\Run\\com.squirrel.Teams.Teams'
+    Details|contains: '\\Microsoft\\Teams\\Update.exe'
+  filter_onedrive:
+    TargetObject|endswith: '\\Run\\OneDrive'
+    Details|contains: '\\Microsoft\\OneDrive\\OneDrive.exe'
+  filter_agent:
+    TargetObject|endswith: '\\Run\\ContosoSecurityAgent'
+    Details|contains: '\\Program Files\\Contoso\\Security Agent\\agent.exe'
+  filter_discord:
+    TargetObject|endswith: '\\Run\\Discord'
+    Details|contains: '\\AppData\\Local\\Discord\\Update.exe'
+  condition: selection_key and selection_data and not 1 of filter_*
+falsepositives:
+  - Microsoft Teams or OneDrive startup entries after product updates
+  - Approved security or management agents
+  - Approved user-installed applications using per-user startup
+level: medium</code></pre></div></article>
+    <article class="card full"><h3>Analyst reasoning Â· false positives</h3><p><b>Likely false positives:</b> Teams/OneDrive updater writes, approved agents, and user-installed applications. Sigma's common registry schema may not carry signer information, so use its filters as pre-filtering and verify the writer's signature in the source EDR before closing an alert.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="6">
+  <div class="page-head"><div><div class="eyebrow">Week 10 Â· Day 5</div><h2>Python: extract paths from value data</h2></div><div class="page-no">Page 6 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>Easy reading plan</h3><ol><li>Read one JSON object.</li><li>Get <code>registry.value_data</code>.</li><li>Find quoted or full Windows paths.</li><li>If only a bare interpreter exists, keep that token.</li><li>Print the case and paths.</li></ol></article>
+    <article class="card"><h3>Expected examples</h3><pre><code>R1 -> ['C:\Users\mia\AppData\Roaming\cache\sync.ps1']
+R2 -> ['C:\Windows\System32\wscript.exe', 'C:\Users\lee\Downloads\login.vbs']
+B5 -> ['C:\Windows\System32\SecurityHealthSystray.exe']</code></pre></article>
+    <article class="card full"><h3>Python answer</h3><div class="code-tools"><button class="answer-btn" type="button" onclick="toggle('pythonAnswer')">Show Python answer</button><button class="small-btn" type="button" onclick="copyFrom('pythonCode',this)">Copy Python</button></div><div class="answer" id="pythonAnswer"><pre><code id="pythonCode">import json
+import re
+
+# Quoted paths or full Windows paths ending in a useful extension.
+PATH = re.compile(
+    r'"([^"]+\.(?:exe|com|cmd|bat|ps1|vbs|js|py))"'
+    r'|((?:[A-Za-z]:\\|%[A-Za-z_]+%\\)[^"]*?\.(?:exe|com|cmd|bat|ps1|vbs|js|py))',
+    re.IGNORECASE,
+)
+BARE_INTERPRETER = re.compile(
+    r'(?i)(?:^|\s)(powershell|pwsh|wscript|cscript|mshta|cmd|python)\.exe\b'
+)
+
+def extract_paths(command):
+    paths = []
+    for match in PATH.finditer(command):
+        paths.append(match.group(1) or match.group(2))
+    if not paths:
+        bare = BARE_INTERPRETER.search(command)
+        if bare:
+            paths.append(bare.group(0).strip())
+    return paths
+
+with open("events.jsonl", encoding="utf-8") as source:
+    for line in source:
+        event = json.loads(line)
+        data = event["registry"]["value_data"]
+        print(event["case_id"], "-&gt;", extract_paths(data))</code></pre></div></article>
+    <article class="card"><h3>Run it</h3><pre><code>python solution.py</code></pre><p class="muted">Place <code>events.jsonl</code> beside the script. The lab's build validator executed this exact code against all eight lines.</p></article>
+    <article class="card"><h3>Why extraction matters</h3><p>The first executable may be a trusted interpreter while the second path is the suspicious script. Keep every extracted path; do not stop after <code>powershell.exe</code> or <code>wscript.exe</code>.</p></article>
+  </div>
+</section>
+
+<section class="page" data-page="7">
+  <div class="page-head"><div><div class="eyebrow">Week 10 Â· Day 6</div><h2>Go: normalize and classify paths</h2></div><div class="page-no">Page 7 / 8</div></div>
+  <div class="grid">
+    <article class="card"><h3>Easy reading plan</h3><ol><li>Trim spaces and surrounding quotes.</li><li>Change <code>/</code> to <code>\</code>.</li><li>Lowercase for comparison.</li><li>Classify AppData, Downloads, Temp, Windows, or Program Files.</li><li>Print a small test table.</li></ol></article>
+    <article class="card"><h3>Normalization visual</h3><div class="flow"><div class="node"><small>Input</small><strong>"C:/Users/lee/Downloads/login.vbs"</strong></div><div class="arrow">â†’</div><div class="node"><small>Normalized</small><strong>c:\users\lee\downloads\login.vbs</strong></div><div class="arrow">â†’</div><div class="node"><small>Class</small><strong>user-writable: Downloads</strong></div></div></article>
+    <article class="card full"><h3>Go answer</h3><div class="code-tools"><button class="answer-btn" type="button" onclick="toggle('goAnswer')">Show Go answer</button><button class="small-btn" type="button" onclick="copyFrom('goCode',this)">Copy Go</button></div><div class="answer" id="goAnswer"><pre><code id="goCode">package main
+
+import (
+    "fmt"
+    "strings"
+)
+
+func normalize(path string) string {
+    path = strings.TrimSpace(path)
+    path = strings.Trim(path, "\"'")
+    path = strings.ReplaceAll(path, "/", "\\")
+    return strings.ToLower(path)
+}
+
+func classify(path string) string {
+    p := normalize(path)
+    switch {
+    case strings.Contains(p, "\\appdata\\") || strings.HasPrefix(p, "%appdata%\\") || strings.HasPrefix(p, "%localappdata%\\"):
+        return "user-writable: AppData"
+    case strings.Contains(p, "\\downloads\\"):
+        return "user-writable: Downloads"
+    case strings.Contains(p, "\\temp\\") || strings.HasPrefix(p, "%temp%\\"):
+        return "user-writable: Temp"
+    case strings.HasPrefix(p, "c:\\windows\\"):
+        return "system location"
+    case strings.HasPrefix(p, "c:\\program files\\"):
+        return "installed application"
+    default:
+        return "review"
+    }
+}
+
+func main() {
+    tests := []string{
+        `"C:\Users\mia\AppData\Roaming\cache\sync.ps1"`,
+        `C:/Users/lee/Downloads/login.vbs`,
+        `%TEMP%\svchost.exe`,
+        `"C:\Windows\System32\wscript.exe"`,
+        `"C:\Program Files\Contoso\Security Agent\agent.exe"`,
+    }
+    for _, path := range tests {
+        fmt.Printf("%-68s -&gt; %s\n", normalize(path), classify(path))
+    }
+}</code></pre></div></article>
+    <article class="card"><h3>Run it</h3><pre><code>go run main.go</code></pre><p class="muted">Validation status: not executed because the Go toolchain was unavailable in the build environment. Run this command locally to verify the five printed classifications.</p></article>
+    <article class="card"><h3>Optional YARA triage</h3><p>If an autorun value references a file and the file is actually available, scan that file as one supporting step. A YARA match is not proof of persistence by itself.</p><div class="code-tools"><button class="answer-btn" type="button" onclick="toggle('yaraAnswer')">Show YARA answer</button><button class="small-btn" type="button" onclick="copyFrom('yaraCode',this)">Copy YARA</button></div><div class="answer" id="yaraAnswer"><pre><code id="yaraCode">rule Week10_Suspicious_Autorun_Script
+{
+    meta:
+        description = "Optional triage rule for a script referenced by an autorun value"
+        author = "Detection Engineering Learning Lab"
+    strings:
+        $a = "FromBase64String" ascii nocase
+        $b = "DownloadString" ascii nocase
+        $c = "Invoke-WebRequest" ascii nocase
+        $d = "Start-Process" ascii nocase
+        $e = "-WindowStyle Hidden" ascii nocase
+    condition:
+        filesize &lt; 2MB and 2 of them
+}</code></pre></div></article>
+  </div>
+</section>
+
+<section class="page" data-page="8">
+  <div class="page-head"><div><div class="eyebrow">Week 10 Â· Day 7</div><h2>Capstone: explain and prove the alert</h2></div><div class="page-no">Page 8 / 8</div></div>
+  <div class="grid">
+    <article class="card full"><h3>Selected case evidence</h3><div class="event-picker" id="capPicker"></div><div id="capstoneFlow" class="event-detail"></div></article>
+    <article class="card full"><h3>Exact benign startup exclusions</h3><div class="table-wrap"><table><thead><tr><th>Value name</th><th>Required path fragment</th><th>Required signer</th><th>Why narrow</th></tr></thead><tbody><tr><td>com.squirrel.Teams.Teams</td><td>\Microsoft\Teams\Update.exe</td><td>Microsoft Corporation</td><td>Does not exclude other Teams-named values or unsigned copies.</td></tr><tr><td>OneDrive</td><td>\Microsoft\OneDrive\OneDrive.exe</td><td>Microsoft Corporation</td><td>Requires the official product path and publisher.</td></tr><tr><td>ContosoSecurityAgent</td><td>\Program Files\Contoso\Security Agent\agent.exe</td><td>Contoso Security Ltd.</td><td>Only the approved enterprise agent is filtered.</td></tr><tr><td>Discord</td><td>\AppData\Local\Discord\Update.exe</td><td>Discord Inc.</td><td>Only the known per-user product combination is filtered.</td></tr></tbody></table></div></article>
+    <article class="card"><h3>Run the fixture validator</h3><div class="validator-grid"><div class="metric"><strong class="tp">3</strong><span>true positives</span></div><div class="metric"><strong class="tn">5</strong><span>benign negatives</span></div><div class="metric"><strong style="color:var(--cyan)">8/8</strong><span>expected decisions</span></div></div><div class="code-tools"><button class="answer-btn" type="button" onclick="runValidation()">Run browser validator</button></div><div id="validationResult" class="result" aria-live="polite">Press the button to test all eight cases.</div></article>
+    <article class="card"><h3>Validation status</h3><ul class="checklist"><li>Fixture logic executed: 8/8 decisions passed</li><li>Python path extractor executed: passed on 8 JSONL lines</li><li>Go normalizer/classifier not executed: Go toolchain unavailable</li><li>Sigma YAML parsed: passed; no <code>id</code> or <code>status</code></li><li>HTML structure and internal targets checked</li></ul></article>
+    <article class="card full"><h3>Analyst reasoning Â· false positives</h3><p><b>Likely false positives:</b> Teams and OneDrive update cycles, approved security or management agents, and legitimate user-installed applications. For every alert, show the registry write, responsible process, signer, target command, and corroborating process start. Do not close it merely because the target is signed or familiar; require the exact exclusion combination and verify ownership.</p></article>
+    <article class="card"><h3>Honest limits</h3><ul><li>KQL was not executed in a live Microsoft Defender tenant.</li><li>CrowdStrike CQL was not executed in a live Falcon tenant; verify event and field names.</li><li>The Sigma rule parsed as YAML but was not converted for a production backend.</li><li>Optional YARA syntax was not engine-tested, and no referenced payload file was present to scan.</li></ul></article>
+    <article class="card"><h3>Final hunt checklist</h3><ol><li>Confirm the value was newly created or changed.</li><li>Review writer process, signer, user, and device.</li><li>Parse the command and inspect every referenced path.</li><li>Find the related process start at logon.</li><li>Apply only an exact approved exclusion.</li><li>Record outcome, evidence, owner, and tuning decision.</li></ol></article>
+    <article class="card full"><h3>Week 10 complete</h3><p>You now have a portfolio-ready chain: labeled registry and process fixtures â†’ tuned KQL â†’ Falcon translation â†’ Sigma â†’ Python extraction â†’ Go normalization â†’ reproducible evidence that suspicious cases match and benign startup entries stay quiet.</p></article>
+  </div>
+</section>
+</main>
+<nav class="bottom-nav" aria-label="Lab page navigation"><button class="nav-btn" id="prevBtn" type="button" onclick="go(current-1)">â† Previous</button><div class="dots" id="dots"></div><button class="nav-btn" id="nextBtn" type="button" onclick="go(current+1)">Next â†’</button></nav>
+<script>
+const events=[{"case_id": "R1", "timestamp": "2026-11-09T09:14:22Z", "device": "FIN-LT-014", "user": "CONTOSO\\mia", "label": "TP", "expected_match": true, "registry": {"action": "RegistryValueSet", "key": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "value_name": "UpdateCheck", "value_data": "powershell.exe -NoProfile -WindowStyle Hidden -File \"C:\\Users\\mia\\AppData\\Roaming\\cache\\sync.ps1\""}, "actor": {"image": "C:\\Users\\mia\\Downloads\\invoice_viewer.exe", "signer": "Unsigned", "pid": 4880}, "process": {"image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "command_line": "powershell.exe -NoProfile -WindowStyle Hidden -File \"C:\\Users\\mia\\AppData\\Roaming\\cache\\sync.ps1\"", "parent_image": "C:\\Windows\\explorer.exe"}, "reason": "New Run value launches PowerShell and a script from AppData; the writer is an unsigned download."}, {"case_id": "R2", "timestamp": "2026-11-09T10:05:40Z", "device": "HR-LT-022", "user": "CONTOSO\\lee", "label": "TP", "expected_match": true, "registry": {"action": "RegistryValueSet", "key": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce", "value_name": "ChromeUpdate", "value_data": "\"C:\\Windows\\System32\\wscript.exe\" \"C:\\Users\\lee\\Downloads\\login.vbs\""}, "actor": {"image": "C:\\Users\\lee\\AppData\\Local\\Temp\\setup_tmp.exe", "signer": "Unknown", "pid": 5124}, "process": {"image": "C:\\Windows\\System32\\wscript.exe", "command_line": "\"C:\\Windows\\System32\\wscript.exe\" \"C:\\Users\\lee\\Downloads\\login.vbs\"", "parent_image": "C:\\Windows\\explorer.exe"}, "reason": "New RunOnce value uses WScript to execute a VBS file from Downloads."}, {"case_id": "R3", "timestamp": "2026-11-09T11:42:05Z", "device": "OPS-LT-031", "user": "CONTOSO\\sam", "label": "TP", "expected_match": true, "registry": {"action": "RegistryValueSet", "key": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "value_name": "WindowsAudioHelper", "value_data": "\"C:\\Users\\sam\\AppData\\Local\\Temp\\svchost.exe\" -silent"}, "actor": {"image": "C:\\Users\\sam\\AppData\\Local\\Temp\\driver_update.exe", "signer": "Unsigned", "pid": 6048}, "process": {"image": "C:\\Users\\sam\\AppData\\Local\\Temp\\svchost.exe", "command_line": "\"C:\\Users\\sam\\AppData\\Local\\Temp\\svchost.exe\" -silent", "parent_image": "C:\\Windows\\System32\\userinit.exe"}, "reason": "Machine-wide Run value points to an unsigned executable in a user's Temp directory."}, {"case_id": "B1", "timestamp": "2026-11-09T12:10:13Z", "device": "FIN-LT-014", "user": "CONTOSO\\mia", "label": "TN", "expected_match": false, "registry": {"action": "RegistryValueSet", "key": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "value_name": "com.squirrel.Teams.Teams", "value_data": "\"C:\\Users\\mia\\AppData\\Local\\Microsoft\\Teams\\Update.exe\" --processStart Teams.exe"}, "actor": {"image": "C:\\Users\\mia\\AppData\\Local\\Microsoft\\Teams\\Update.exe", "signer": "Microsoft Corporation", "pid": 7212}, "process": {"image": "C:\\Users\\mia\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe", "command_line": "Teams.exe --process-start-args", "parent_image": "C:\\Users\\mia\\AppData\\Local\\Microsoft\\Teams\\Update.exe"}, "reason": "Exact Microsoft Teams value, path, signer, and launcher combination is approved."}, {"case_id": "B2", "timestamp": "2026-11-09T12:22:31Z", "device": "HR-LT-022", "user": "CONTOSO\\lee", "label": "TN", "expected_match": false, "registry": {"action": "RegistryValueSet", "key": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "value_name": "OneDrive", "value_data": "\"C:\\Users\\lee\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe\" /background"}, "actor": {"image": "C:\\Users\\lee\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe", "signer": "Microsoft Corporation", "pid": 7316}, "process": {"image": "C:\\Users\\lee\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe", "command_line": "OneDrive.exe /background", "parent_image": "C:\\Windows\\System32\\userinit.exe"}, "reason": "Exact OneDrive startup value, product path, signer, and switch are approved."}, {"case_id": "B3", "timestamp": "2026-11-09T13:03:55Z", "device": "ENG-LT-008", "user": "CONTOSO\\ana", "label": "TN", "expected_match": false, "registry": {"action": "RegistryValueSet", "key": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "value_name": "ContosoSecurityAgent", "value_data": "\"C:\\Program Files\\Contoso\\Security Agent\\agent.exe\" --startup"}, "actor": {"image": "C:\\Program Files\\Contoso\\Security Agent\\agent-updater.exe", "signer": "Contoso Security Ltd.", "pid": 7420}, "process": {"image": "C:\\Program Files\\Contoso\\Security Agent\\agent.exe", "command_line": "agent.exe --startup", "parent_image": "C:\\Windows\\System32\\services.exe"}, "reason": "Approved security agent uses a Program Files path and exact trusted publisher."}, {"case_id": "B4", "timestamp": "2026-11-09T13:19:44Z", "device": "DESIGN-LT-019", "user": "CONTOSO\\noor", "label": "TN", "expected_match": false, "registry": {"action": "RegistryValueSet", "key": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "value_name": "Discord", "value_data": "\"C:\\Users\\noor\\AppData\\Local\\Discord\\Update.exe\" --processStart Discord.exe"}, "actor": {"image": "C:\\Users\\noor\\AppData\\Local\\Discord\\Update.exe", "signer": "Discord Inc.", "pid": 7556}, "process": {"image": "C:\\Users\\noor\\AppData\\Local\\Discord\\app-1.0.9195\\Discord.exe", "command_line": "Discord.exe", "parent_image": "C:\\Users\\noor\\AppData\\Local\\Discord\\Update.exe"}, "reason": "Known user-installed application is excluded only by exact value, product path, and signer."}, {"case_id": "B5", "timestamp": "2026-11-09T14:01:02Z", "device": "OPS-LT-031", "user": "NT AUTHORITY\\SYSTEM", "label": "TN", "expected_match": false, "registry": {"action": "RegistryValueSet", "key": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "value_name": "SecurityHealth", "value_data": "C:\\Windows\\System32\\SecurityHealthSystray.exe"}, "actor": {"image": "C:\\Windows\\System32\\TiWorker.exe", "signer": "Microsoft Windows", "pid": 7680}, "process": {"image": "C:\\Windows\\System32\\SecurityHealthSystray.exe", "command_line": "SecurityHealthSystray.exe", "parent_image": "C:\\Windows\\System32\\userinit.exe"}, "reason": "Windows system path contains no script interpreter or user-writable location."}];
+let current=Math.min(8,Math.max(1,Number(localStorage.getItem('week10Page'))||1));
+const interpreters=['powershell.exe','pwsh.exe','wscript.exe','cscript.exe','mshta.exe','cmd.exe','python.exe'];
+function lower(v){return String(v||'').toLowerCase()}
+function isRunKey(key){const k=lower(key);return k.endsWith('\\software\\microsoft\\windows\\currentversion\\run')||k.endsWith('\\software\\microsoft\\windows\\currentversion\\runonce')}
+function suspiciousData(data){const d=lower(data);return interpreters.some(x=>d.includes(x))||['\\appdata\\','\\downloads\\','\\temp\\','%appdata%\\','%localappdata%\\','%temp%\\'].some(x=>d.includes(x))}
+function isExcluded(e){const n=e.registry.value_name,d=lower(e.registry.value_data),s=lower(e.actor.signer);return (n==='com.squirrel.Teams.Teams'&&d.includes('\\microsoft\\teams\\update.exe')&&s==='microsoft corporation')||(n==='OneDrive'&&d.includes('\\microsoft\\onedrive\\onedrive.exe')&&s==='microsoft corporation')||(n==='ContosoSecurityAgent'&&d.includes('\\program files\\contoso\\security agent\\agent.exe')&&s==='contoso security ltd.')||(n==='Discord'&&d.includes('\\appdata\\local\\discord\\update.exe')&&s==='discord inc.')}
+function detect(e){return isRunKey(e.registry.key)&&suspiciousData(e.registry.value_data)&&!isExcluded(e)}
+function shortPath(v){const p=String(v).replaceAll('\\','/').split('/');return p.slice(-2).join('\\')}
+function safe(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function go(n){current=Math.min(8,Math.max(1,n));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',Number(p.dataset.page)===current));document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i+1===current));document.getElementById('progress').style.width=(current/8*100)+'%';document.getElementById('prevBtn').disabled=current===1;document.getElementById('nextBtn').disabled=current===8;localStorage.setItem('week10Page',current);window.scrollTo({top:0,behavior:'smooth'});document.title=`Week 10 Lab Â· Page ${current}`}
+function toggle(id){document.getElementById(id).classList.toggle('open')}
+async function copyFrom(id,btn){const text=document.getElementById(id).innerText;try{await navigator.clipboard.writeText(text)}catch(_){const a=document.createElement('textarea');a.value=text;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=old,1100)}
+function renderEvents(){document.getElementById('eventsTable').innerHTML=events.map(e=>`<tr><td><b>${safe(e.case_id)}</b></td><td>${safe(e.timestamp.replace('T',' '))}<br><span class="muted">${safe(e.device)}</span></td><td>${safe(e.registry.value_name)}<br><span class="muted">${safe(e.registry.key.split('\\').slice(-1)[0])}</span></td><td><code>${safe(e.registry.value_data)}</code></td><td>${safe(shortPath(e.actor.image))}<br><span class="muted">${safe(e.actor.signer)}</span></td><td><span class="tag ${e.expected_match?'tp':'tn'}">${e.label}</span></td><td>${safe(e.reason)}</td></tr>`).join('');const picker=events.map((e,i)=>`<button class="small-btn" type="button" aria-pressed="${i===0}" onclick="showEvent(${i},this)">${e.case_id} Â· ${e.label}</button>`).join('');document.getElementById('eventPicker').innerHTML=picker;document.getElementById('capPicker').innerHTML=events.map((e,i)=>`<button class="small-btn" type="button" aria-pressed="${i===0}" onclick="showCapstone(${i},this)">${e.case_id}</button>`).join('');showEvent(0,document.querySelector('#eventPicker button'));showCapstone(0,document.querySelector('#capPicker button'))}
+function showEvent(i,btn){document.querySelectorAll('#eventPicker button').forEach(b=>b.setAttribute('aria-pressed','false'));if(btn)btn.setAttribute('aria-pressed','true');const e=events[i];document.getElementById('eventDetail').innerHTML=`<div class="detail-grid"><div class="detail-item"><small>Registry value</small><b>${safe(e.registry.value_name)}</b></div><div class="detail-item"><small>Writer signer</small><b>${safe(e.actor.signer)}</b></div><div class="detail-item"><small>Expected</small><b class="${e.expected_match?'tp':'tn'}">${e.label}</b></div></div><p><b>Value data:</b> <code>${safe(e.registry.value_data)}</code></p><p><b>Related process:</b> <code>${safe(e.process.command_line)}</code></p><p>${safe(e.reason)}</p>`}
+function showCapstone(i,btn){document.querySelectorAll('#capPicker button').forEach(b=>b.setAttribute('aria-pressed','false'));if(btn)btn.setAttribute('aria-pressed','true');const e=events[i];document.getElementById('capstoneFlow').innerHTML=`<div class="flow"><div class="node"><small>Registry write</small><strong>${safe(e.registry.value_name)}</strong><small>${safe(e.registry.key)}</small></div><div class="arrow">â†’</div><div class="node"><small>Responsible process</small><strong>${safe(shortPath(e.actor.image))}</strong><small>${safe(e.actor.signer)}</small></div><div class="arrow">â†’</div><div class="node"><small>Target command</small><strong>${safe(shortPath(e.process.image))}</strong><small>${safe(e.process.command_line)}</small></div><div class="arrow">â†’</div><div class="node"><small>Decision</small><strong class="${e.expected_match?'tp':'tn'}">${e.expected_match?'Investigate':'Keep quiet'}</strong><small>${safe(e.reason)}</small></div></div>`}
+function runValidation(){const rows=events.map(e=>({id:e.case_id,actual:detect(e),expected:e.expected_match}));const bad=rows.filter(r=>r.actual!==r.expected);const tp=rows.filter(r=>r.actual&&r.expected).length;const tn=rows.filter(r=>!r.actual&&!r.expected).length;const el=document.getElementById('validationResult');el.className='result '+(bad.length?'fail':'pass');el.innerHTML=bad.length?`<b>${events.length-bad.length}/${events.length} passed</b><br>Review: ${bad.map(x=>x.id).join(', ')}`:`<b>8/8 decisions passed</b><br>${tp} suspicious cases matched Â· ${tn} benign cases stayed quiet`}
+function downloadFixtures(){const blob=new Blob([document.getElementById('rawJsonCode').innerText+'\n'],{type:'application/x-ndjson'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='week10-events.jsonl';a.click();URL.revokeObjectURL(a.href)}
+function resizeText(delta){const now=Number(localStorage.getItem('week10Text'))||16;const next=Math.min(20,Math.max(14,now+delta));document.documentElement.style.setProperty('--base',next+'px');localStorage.setItem('week10Text',next)}
+function setTheme(theme){document.documentElement.dataset.theme=theme;document.getElementById('themeBtn').textContent=theme==='dark'?'Light theme':'Dark theme';localStorage.setItem('week10Theme',theme)}
+document.getElementById('themeBtn').addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));
+document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key==='ArrowRight')go(current+1);if(e.key==='ArrowLeft')go(current-1)});
+document.getElementById('dots').innerHTML=Array.from({length:8},(_,i)=>`<button class="dot" type="button" aria-label="Go to page ${i+1}" onclick="go(${i+1})">${i+1}</button>`).join('');
+document.documentElement.style.setProperty('--base',(Number(localStorage.getItem('week10Text'))||16)+'px');setTheme(localStorage.getItem('week10Theme')||'dark');renderEvents();go(current);
+</script>
+</body>
+</html>
